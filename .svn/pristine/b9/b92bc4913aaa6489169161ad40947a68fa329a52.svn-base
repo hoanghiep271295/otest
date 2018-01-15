@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Hệ thống dạy, học và thi trực tuyến";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="container">
+    <div class="loading-page full-parrent center" id="loading-page" style="width:100%">
+        <div class="center full-parrent" style="width:100%;text-align:center;">
+            Loading............
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var _objectfromserver = @Html.Raw(ViewBag.defaultvalue);
+    function getDefaultFromServer()
+    {
+        return  _objectfromserver;
+    }
+</script>
+@section scripts {
+<link href="~/Content/customcss/custom.css" rel="stylesheet" />
+    <script src="~/Scripts/Inform.js"></script>
+    @foreach (var item in ViewBag.jsx)
+        {
+        <script src="@item"></script>
+    }
+
+}

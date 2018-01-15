@@ -1,0 +1,13 @@
+﻿var QuestionGroupFI = React.creatClass({
+
+    render: function () {
+        return (
+            <div>
+
+
+
+            </div>
+            );
+    }
+
+});

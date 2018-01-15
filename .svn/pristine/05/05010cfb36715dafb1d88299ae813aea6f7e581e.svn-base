@@ -1,0 +1,73 @@
+﻿
+//hien thi cac o co du lieu de keo tu day di
+//day chinh la cac answer va se duoc lap vao listanswer
+var Drag = React.createClass({
+    allowDrop: function (event) {
+        if (!!event) {
+            event.preventDefault();
+        }
+    },
+    drop: function (event) {
+        debugger
+        //1712240001_1712270010_FI
+        var targetdrop = event.currentTarget.id;
+
+        // var idDropTarget = targetdrop.split('_')[1];
+        console.log(global);
+        //1712240001_1712270010_FIMOVE
+        if (!!global) {
+            //lay questiongroup cua vi tri dang duoc drop
+            var targetdraggroupcode = global.split('_')[0];
+            //lay questiongroup cua vi tri dang duoc drag
+            var targetdropgroupcode = targetdrop.split('_')[0];
+            //kiem tra neu hop le có nghĩa là 2 questiongroup === nhau thì chúng cùng 1 group
+            //-> cho phép tranferdata
+            if (targetdropgroupcode === targetdraggroupcode) {
+                var data = event.dataTransfer.getData("text");
+                event.target.appendChild(document.getElementById(data));
+            } else {
+                log.show("Không thể thực hiện được thao tác này", false);
+            }
+
+        }
+    },
+    dragStart: function (event) {
+        if (!!event) {
+            global = event.target.id;
+            event.dataTransfer.setData("text", event.target.id);
+        }
+    },
+    dragEnter: function (event) {
+        log.show("dragEnter", true);
+        if (event.target.className === "droptarget") {
+            event.target.style.border = "3px dotted red";
+            event.target.style.background = "#3CE9FF";
+        }
+    },
+    dragLeave: function (event) {
+        log.show("dragLeave", true);
+        if (event.target.className === "droptarget") {
+            event.target.style.border = "";
+            event.target.style.background = "#F5EDB2";
+        }
+    },
+    render() {
+        var code = this.props.id;
+        // var answercode = code.split("_")[1];
+        //từ trên gửi xuống code theo thứ tự QEUESTIONGROUPCODE_ANSWERCODE
+        var questiongroupcode = code.split('_')[0];
+        var answerContent = this.props.content;
+        return (
+            <li id={questiongroupcode+"_"+ this.props.type}
+                className={questiongroupcode}
+                onDrop={this.drop}
+                onDragOver={this.allowDrop}>
+                <div id={code + "_" + this.props.type}
+                            draggable="true"
+                            onDragStart={this.dragStart}>
+                            <span key={'error_' + this.props.id}
+                            dangerouslySetInnerHTML={{ __html : answerContent }}></span>
+                </div>
+          </li>);
+}
+});

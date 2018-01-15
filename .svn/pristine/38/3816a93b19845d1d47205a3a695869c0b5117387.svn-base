@@ -1,0 +1,566 @@
+﻿/**
+ * Quy tắc đặt tên
+ * QUESTIONGROUP :Câu hỏi hay được hiểu hay hơn chính là đầu bài của câu hỏi
+ * QUESTION : câu hỏi con trong một đề bài
+ * ANSWER : Câu trả lời cho một câu hỏi con 
+ */
+var ListQuestion = React.createClass({
+    getInitialState: function () {
+        this.mylist = [];
+        return {
+            agGrid: { setRowData: null, getDataChange: null, setNextRow: null, setPrevRow: null },
+            rowSelect: null,
+            columnDefs: [
+                { headerName: "Tên", field: "NAME", width: 380, editable: false },
+                { headerName: "Hiển thị", field: "LOCK", width: 120, editable: false, type: 'invcheckbox' }
+            ],
+            currentQuestionTypeCodeView : '',
+            currentQuestiongroupcode:'',
+            tab: null,
+            countQuestion: 0,
+            quesGroupcode: null,
+            questionGroupfull: null,
+            questiontypeQuestion: null,
+            textSelected: '',
+            popupindex:0,
+            hidDataSearch: { code: null, typeCode: false, name: null, typeName: false, note: null, typeNote: false, year: null, typeYear: false },
+            buts:[{ ref: 'cmdAdd', callback: this.onNewClick }
+                 , { ref: 'cmdPrint', callback: this.onReport }
+                 , { ref: 'cmdSearch', callback: this.onSearch }
+                 , { ref: 'cmdEdit', callback: this.onEditClick }
+                 , { ref: 'cmdDelete', callback: this.onDeleteClick }
+                 , { ref: 'cmdRefresh', callback: this.Refresh }
+            ],
+            popup:null
+        };
+    },
+    componentWillMount: function () {
+    },
+    componentDidMount: function () {
+
+        if (this.props.parent.getKeyValue('questiontypecodeview') === "CO") {
+            this.setState({ popup: this.refs[this.props.id + '_PopupCO'] });
+        } else {
+            this.setState({ popup: this.refs[this.props.id + '_Popup'] });
+        }
+    },
+    initAgGrid: function (setRowData, getDataChange, setNextRow, setPrevRow) {
+        var agGrid = {
+            setRowData: setRowData,
+            getDataChange: getDataChange,
+            setNextRow: setNextRow,
+            setPrevRow: setPrevRow
+        };
+        this.setState({ agGrid: agGrid });
+    },
+    onActive: function () {
+        var id = this.props.id;
+        var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+        this.setState({ questiontypeQuestion: this.props.parent.getKeyValue('questiontypecodeview') });
+        console.log("onActive",this.props.parent.getKeyValue('questiontypecodeview'));
+        this.setState({ quesGroupcode: questiongroupcode });
+     
+        var that = this;
+        if (isMiss(questiongroupcode)) {
+            bootbox.alert("Chưa chọn nhóm câu hỏi", function ()
+            { that.props.parent.ChooseTab('questiongroup') });
+            return;
+        }
+        this.loadData();
+        document.getElementById(id + '_content_group').innerHTML = this.props.parent.getKeyValue('questiongroupcontent');
+    },
+    /**
+    *Lấy lại toàn bộ dữ liệu 
+    */
+    Refresh: function () {
+        this.loadData(this.state.searchstatus, this.state.rowSelect[0]);
+    },
+    /**
+    *Lấy lại toàn bộ dữ liệu được gọi bởi popup - với đối tượng vào để xử lý phù hợp
+    */
+    ReloadList: function (obj) {
+        //Mặc định theo giá trị tìm kiếm hiện tại, thiết lập theo bản ghi hiện tại
+        this.loadData(this.state.searchstatus, obj);
+    },
+    /**
+    * Cập nhật lại thông tin sau khi gọi xóa dữ liệu thành công
+    */
+    ReloadListDelete: function () {
+        //cập nhật lại danh sách
+        this.loadData();//(this.state.currentcode);
+    },
+    /**
+     * replace all encode text  by html tag
+     * @param {string} text - parameter
+     * @returns {html tag} html
+     */
+    replacetextByHtml(text) {
+        var html = text.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+        return html;
+    },
+    /**
+     * Load list question
+     * @returns {list question} - list question to show on Agrid   
+     */
+    loadData: function () {
+        var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+        var pageSize = 0;
+        var page = 1;
+        $.ajax({
+            url: "/Question/getListQuestion",
+            dataType: 'json',
+            data: {
+                groupcode: questiongroupcode,
+                page: page,
+                pageSize: pageSize
+            },
+            success: function (data) {
+                //no need to stringify one more because datafirst already parse on server 
+                this.setState({ countQuestion: data.data.length });           
+                this.state.agGrid.setRowData(data.data);
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    onNewClick: function () {
+        var id = this.props.id;
+        var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+        var questiontypecode = this.props.parent.getKeyValue('questiontypecode');
+        var questiontypecodeview = this.props.parent.getKeyValue('questiontypecodeview');
+        var questiongroupname = this.props.parent.getKeyValue('questiongroupname');
+        var questiongroupcontent = this.props.parent.getKeyValue('questiongroupcontent');
+        var obj = {
+            QUESTIONGROUPCODE: questiongroupcode,
+            QUESTIONTYPECODE: questiontypecode,
+            QUESTIONTYPECODEVIEW: questiontypecodeview,
+            QUESTIONGROUPNAME: questiongroupname,
+            QUESTIONGROUPCONTENT: questiongroupcontent
+        };
+        var ins;
+        var Com;
+        //sử dụng trong trường hợp thêm mới
+        console.log("current: ", this.state.currentQuestionTypeCodeView, questiontypecodeview);
+        if (this.state.currentQuestionTypeCodeView !== questiontypecodeview) {
+            this.setState({ currentQuestionTypeCodeView: questiontypecodeview });
+            switch (questiontypecodeview) {
+                case 'CO':
+                    Com = COQuestion;
+                    ins = ReactDOM.render(<Com ReloadData={this.ReloadList} parent= {this.props.parent} id={id + '_popupdetailCO' } />, document.getElementById(id + "_popup"));
+                    break;
+                default:
+                   Com = GENPopupQuestion; 
+                    ins = ReactDOM.render(<Com ReloadData={this.ReloadList} parent= {this.props.parent} id={id + '_popupdetail' }/>, document.getElementById(id + "_popup"));
+            }
+
+            this.setState({ popup: ins });
+            ins.ClearInput(obj);
+            ins.Show();
+        } else {
+            this.state.popup.ClearInput(obj);
+            this.state.popup.Show();
+        }
+    },
+    onEditClick: function () {
+        var id = this.props.id;
+        if (!this.state.rowSelect) {
+            bootbox.alert('Chưa chọn bản ghi');
+        }
+        else if (this.state.rowSelect.length !== 1) {
+            bootbox.alert('Chưa chọn bản ghi hoặc nhiều hơn một bản ghi');
+        } else {
+            var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+            var questiontypecode = this.props.parent.getKeyValue('questiontypecode');
+            var questiontypecodeview = this.props.parent.getKeyValue('questiontypecodeview');
+            var questiongroupname = this.props.parent.getKeyValue('questiongroupname');
+            var questiongroupcontent = this.props.parent.getKeyValue('questiongroupcontent');
+            var obj = this.state.rowSelect[0];
+            obj.QUESTIONGROUPCODE = questiongroupcode;
+            obj.QUESTIONTYPECODE = questiontypecode;
+            obj.QUESTIONTYPECODEVIEW = questiontypecodeview;
+            obj.QUESTIONGROUPNAME = questiongroupname;
+            obj.QUESTIONGROUPCONTENT = questiongroupcontent;
+            var ins;
+            var Com;
+            //sử dụng trong trường hợp thêm mới
+            console.log("current: ", this.state.currentQuestionTypeCodeView, questiontypecodeview);
+
+            this.setState({popupindex:this.state.popupindex + 1});
+            if (this.state.currentQuestionTypeCodeView!==questiontypecodeview)
+        {
+                this.setState({ currentQuestionTypeCodeView: questiontypecodeview });
+                switch (questiontypecodeview) {
+                    case 'CO':
+                        Com = COQuestion;
+                        ins = ReactDOM.render(<Com ReloadData={this.ReloadList} parent= {this.props.parent} id={id + '_popupdetailCO' + this.state.popupindex} statusQuestion="edit"/>, document.getElementById(id + "_popup"));
+                break;
+                    default:
+                       Com = GENPopupQuestion; 
+                       ins = ReactDOM.render(<Com ReloadData={this.ReloadList} id={id + '_popupdetail' + this.state.popupindex }/>, document.getElementById(id + "_popup"));
+                 }
+                this.setState({ popup: ins });
+                ins.SetInput(obj);
+                ins.Show();
+            } else {
+                this.state.popup.SetInput(obj);
+                this.state.popup.Show();
+            }
+        }
+    },
+    handDelete: function () {
+        if (!!this.state.rowSelect) {
+            var data = [];
+            this.state.rowSelect.forEach(function (item) {
+                data.push(item.CODE);
+            });
+            var postData = { code: data };
+            $.ajax({
+                url: "/Question/DeleteQuestion",
+                type: "POST",
+                dataType: "json",
+                traditional: true,
+                data: postData,
+                success: function (data) {
+                    if (data.ret >= 0) {
+                        this.refreshRowData();
+                        log.show("Done !", true);
+                    }
+                    else {
+                        log.show("Can not delete", false);
+                    }
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.log(err.toString());
+                }
+            });
+        }
+       
+    },
+    onDeleteClick: function () {
+        var that = this;
+        //  confirm.show(null, this.handDelete, null);
+        bootbox.confirm({
+            message: "Do you want to delete these items ?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    that.handDelete();
+                }
+                else {
+                    log.show("No items have been deleted !", true);
+                }
+            }
+        });
+    },
+    onReport: function () {
+        console.log("onReport");
+    },
+    onSearch: function () {
+        var dataSearch = [
+                           { title: 'Mã', id: 'CODESEARCH', type: 'text' }
+                           , { title: 'Tên', id: 'NAMESEARCH', type: 'text' }
+                           , { title: 'Ghi chú', id: 'NOTESEARCH', type: 'text' }
+        ];
+        var obj = this.state.searchstatus;//Dữ liệu mặc định
+        this.props.parent.ShowSearch(this.props.id + '_search', dataSearch, obj, this.doSearch);
+        //        console.log('Gọi tìm kiếm');
+    },
+    handleSearch: function () {
+        this.loadData();
+    },
+    onSearchSQL: function () {
+        console.log("search SQL GRADE");
+    },
+    refreshRowData: function () {
+        this.loadData();
+    },
+    onRowSelect: function (itemSelect) {
+        this.setState({ rowSelect: itemSelect });
+        if (itemSelect.length > 0) {
+            this.props.parent.setKeyValue('questioncode', itemSelect[0].CODE);
+            this.props.parent.setKeyValue('questionname', itemSelect[0].NAME);
+            this.props.parent.setKeyValue('questioncontent', itemSelect[0].CONTENT);
+        } else {
+            this.props.parent.setKeyValue('questioncode', '');
+            this.props.parent.setKeyValue('questionname', '');
+            this.props.parent.setKeyValue('questioncontent', '');
+        }
+    },
+    /**
+    * khi co bat cu viec dien tra tren noi dung nhom cau hoi thì sẽ chạy vào phương thức này
+    * @returns {} 
+    */
+    onMouseup: function () {
+        var selected = this.getSelectionText();
+        if (!!selected) {
+            console.log('text selected :', selected);
+            this.setState({ textSelected: selected });
+        }
+    },
+    /**
+    * lay doan text duoc boi den
+    * @returns {} 
+    */
+    getSelectionText: function () {
+        var text = "";
+        console.log(window.getSelection());
+        if (window.getSelection) {
+            text = window.getSelection().toString();
+
+        } else if (! document.selection && document.selection.type !== "Control") {
+            text = document.selection.createRange().text;
+        }
+        return text;
+    },
+    /**
+     * replace 1 doan text bang 1 the html hoac 1 doan text khac
+     * @param {string or html} - htmltag 
+     * @param {string} - id of question we recieved from server for a question 
+     * @param {string}- type : type of question 
+     * @returns {} 
+     */
+    replaceSelectedText: function (htmltag, idInput, type) {
+        var sel, range;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.rangeCount) {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+                //create an element
+                var markerEl = document.createElement(htmltag);
+                //code question format : questiongroupcode_idquestion_type
+                markerEl.id = this.state.quesGroupcode.toString() + '_' + idInput.toString() + '_' + type.toString();
+                range.insertNode(markerEl);
+                /////set type of question before insert
+                var questiontype = this.props.parent.getKeyValue("questiontypeQuestion");
+                console.log(questiontype);
+                if (questiontype === 'FG') {
+                    //add function focusout for input type FG
+                    $("#" + markerEl.id).attr("onfocusout", "myFunction('" + markerEl.id + "')");
+                    //add class inputFG
+                    $("#" + markerEl.id).attr("class", "inputFG");
+                }
+                else
+                    if (questiontype === 'FI') {
+                        //add function ondrop for div type FI
+                        $("#" + markerEl.id).attr("ondragstart", "dragstart_handler(event)");
+                        $("#" + markerEl.id).attr("ondragover", "dragover_handler(event)");
+                        $("#" + markerEl.id).attr("ondrop", "drop_handler(event)");
+                        $("#" + markerEl.id).addClass("dropClass");
+                    }
+                    else
+
+                        if (questiontype === 'FF') {
+                        debugger
+                            var option = document.createElement("option");
+                            option.text = "(Chọn đáp án đúng)";
+                            document.getElementById(markerEl.id).add(option);
+                            //add function focusout for input type FF
+                            document.getElementById(markerEl.id).setAttribute("class", "FFClass");
+                            document.getElementById(markerEl.id).setAttribute("onClick", "clickFunction('" + markerEl.id + "')");
+                            document.getElementById(markerEl.id).setAttribute("id", markerEl.id);
+                        }
+            }
+        }
+        else
+            if (document.selection && document.selection.createRange) {
+                range = document.selection.createRange();
+                range.text = htmltag;
+            }
+    },
+    /**
+    * replace all specail html by symboys,use the return to save in database
+    * @param {html} html 
+    * @returns {} 
+    */
+    replaceAllHtml: function (html) {
+        var text = html.replace(/</g , '&lt;').replace(/>/g, '&gt;');
+        return text;
+    },
+    //add question cho  3 dạng FF, FI, FF
+    addQuestion: function () {
+        if (!!this.state.textSelected) {
+            var questiongroupcode = this.props.parent.getKeyValue("questiongroupcode");
+            ///number of question
+            var number = parseInt(this.state.countQuestion) + 1;
+            var questiontype = this.props.parent.getKeyValue("questiontypecodeview");
+            $.ajax({
+                url: "/Question/UpdateQuestionF",
+                dataType: 'json',
+                data: {
+                    CODEVIEW: questiontype + '_' + number,
+                    NAME: questiontype + "_" + number,
+                    CONTENT: number,
+                    ORD: parseInt(number),
+                    QUESTIONGROUPCODE: questiongroupcode,
+                    questiontypeCodeView: this.props.parent.getKeyValue("questiontypecodeview")
+                     },
+                success: function (data) {
+                    if (data.ret >= 0) {            
+                        this.refreshRowData();
+                        log.show("Ghi thành công!", true);
+                        var questiontype = this.state.questiontypeQuestion;
+                        switch (questiontype) {
+                            case 'FG':
+                                this.replaceSelectedText("input", data.code,"FG");
+                                break;
+                            case 'FI':
+                                this.replaceSelectedText("input", data.code,"FI");
+                                break;
+                            case 'FF':
+                                this.replaceSelectedText("select", data.code, "FF");
+                                break;
+                            default:
+                                console.log("something wrong here !!");
+                        }
+                  
+                        //update questiongroup 
+                        var contentQuestiongroup = $("#" + this.props.id + '_questiongroupcontent').html();
+                        var text = this.replaceAllHtml(contentQuestiongroup);
+                        // console.log(text);
+                        var obj = this.props.parent.getKeyValue('questiongroup');
+                        //change context of questiongroup from html by specail symbol to save in database
+                        obj.CONTENT = text;
+                        this.updateQuestiongroup(obj);
+                    } else {
+                        log.show("Ghi lỗi!", false);
+                    }
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.log(err.toString());
+                }
+            });
+        } else
+            log.show("Không có nội dung được chọn!", false);
+    },
+    //addAnswer: function (questioncode, questiongroupcode) {
+    //    var number = parseInt(this.state.countQuestion) + 1;
+    //    $.ajax({
+    //        url: "/Question/UpdateAnswer",
+    //        dataType: 'json',
+    //        data: {
+    //            CODEVIEW : 'FG_'+ number,
+    //            NAME: 'New Answer ' + number,
+    //            QUESTIONCODE: questioncode,
+    //            QUESTIONGROUPCODE: questiongroupcode,
+    //            CONTENT: this.state.textSelected,
+    //            TRUEANSWER: 1
+    //        },
+    //        success: function (data) {
+    //            if (data.ret >= 0) {
+    //                log.show('Thêm câu trả lời thành công!', true);
+    //            }
+    //        }.bind(this),
+    //        error: function (xhr, status, err) {
+    //            console.log(err.toString());
+    //        }
+    //    });
+    //},
+    /**
+     * update questiongroup after select
+     * @param {object} obj 
+     * @returns {obj questiongroup} 
+     */
+    updateQuestiongroup(obj) {
+        var currentquestion = obj;
+        console.log(currentquestion);
+        var node = new Object();
+        //hình thức câu hỏi
+        node.QUESTIONTYPECODE = obj.QUESTIONTYPECODE;
+        // mục đích sử dụng câu hỏi này cho
+        node.QUESTIONUSECODELIST = obj.QUESTIONUSECODELIST;
+        // mã câu hỏi 
+        node.CODE = obj.CODE;
+        //mã hiển thị câu hỏi
+        node.CODEVIEW = obj.CODEVIEW;
+        ///tên câu hỏi
+        node.NAME = obj.NAME;
+        //trạng thái hiển thị câu hỏi
+        node.LOCK = obj.LOCK;
+        //ghi chú
+        node.NOTE = obj.NOTE;
+        node.SUBJECTCONTENTCODE = obj.SUBJECTCONTENTCODE;
+        node.SUBJECTCODE = obj.SUBJECTCODE;
+        node.CONTENT = obj.CONTENT;
+
+        $.ajax({
+            url: "/Question/UpdateQgroup",
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                CODE: node.CODE,
+                CODEVIEW: node.CODEVIEW,
+                NAME: node.NAME,
+                LOCK: node.LOCK,
+                NOTE: node.NOTE,
+                CONTENT: node.CONTENT,
+                SUBJECTCONTENTCODE: node.SUBJECTCONTENTCODE,
+                SUBJECTCODE: node.SUBJECTCODE,
+                QUESTIONTYPECODE: node.QUESTIONTYPECODE,
+                QUESTIONUSECODELIST: node.QUESTIONUSECODELIST
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    console.log("updated content_question successfully");
+                }
+                else {
+                    console.log(" update content_question fail");
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    render: function () {
+        var id = this.props.id;
+        return (
+            <div id={id+'_list'} className="tab-pane fade in active">
+           <span id={id+"_popup"}> </span>
+                <div className="row">
+                    <div className="col-xs-12">
+                <div id={id + '_questiongroupcontent'}>
+                    Nội dung câu hỏi
+                <div id={id + '_content_group'} onMouseUp={this.onMouseup}
+                     className="container contentquestionlist" >
+                </div>
+                </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-xs-12">
+                        <button type="button" className="btn btn-default" 
+                                onClick={this.addQuestion}
+                                 ref={id + '_button'} key={id + '_button'}
+                                 title='Tạo câu hỏi'><i className="fa add" title="Tạo câu hỏi"> </i> Tạo câu hỏi</button>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-xs-12">
+
+                <div id={id+'_grid'} className="ag-fresh customgridsmall">
+                </div>
+                    <AgGrid container={id+'_grid'}
+                            initAgGrid={this.initAgGrid}
+                            loadData={this.loadData}
+                            onRowSelect={this.onRowSelect}
+                            columnDefs={this.state.columnDefs}
+                            headerCheckBox={true}>
+                    </AgGrid>
+                    </div>
+                </div>
+            </div>
+            );
+    }
+});
+

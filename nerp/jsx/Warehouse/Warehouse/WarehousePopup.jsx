@@ -1,0 +1,185 @@
+﻿/**
+*Tham số đầu vào: 
+*ReloadData(obj): hàm lấy lại dữ liệu trên lưới có truyền obj -> thường là code của bản ghi hiện tại để chọn phù hợp
+*/
+var WarehousePopup = React.createClass({   
+    ClearInput:function(obj){
+        this.ClearThing();//clear
+    },
+    /**
+    *Hiển thị, được gọi bởi component cha 
+    */
+    Show: function () {
+        //Tên tương ứng với form đã được định nghĩa ở dưới
+        $('#warehouse_modalform').modal('show');
+    },
+    /**
+    *Ẩn form hiện tại
+    */
+    Hide: function () {
+        $('#warehouse_modalform').modal('hide');
+    },
+    /**
+    *thực tế xóa trên form
+    */
+    ClearThing:function()
+    {
+        this.refs.warehouse_CODE.value = "";
+        this.refs.warehouse_CODEVIEW.value ="";
+        this.refs.warehouse_NAME.value = "";
+        this.refs.warehouse_LOCK.value = "";
+        this.refs.warehouse_NOTE.value = "";
+  
+        //Set status
+        this.refs.warehouse_popup_status.innerHTML = 'new';
+
+    },
+    /**
+    *Hàm gán dữ liệu để sửa, được gọi bởi component cha của component này
+    *para obj: thông tin về dữ liệu được thay đổi
+    */
+    SetInput: function (obj) {
+        //Sử dụng cú pháp của react để thực hiện tương tác dữ liệu
+        this.refs.warehouse_CODE.value = obj.CODE;
+        this.refs.warehouse_CODEVIEW.value =obj.CODEVIEW;
+        this.refs.warehouse_NAME.value = obj.NAME;
+        this.refs.warehouse_LOCK.checked=(obj.LOCK==0);
+        this.refs.warehouse_NOTE.value = obj.NOTE;
+        //Set status
+        this.refs.warehouse_popup_status.innerHTML = 'edit';
+    },
+
+    /**
+    *Kiểm tra để gọi load lại cho dữ liệu từ component cha (danh sách)
+    *para obj: là mã của bản ghi mới được thao tác
+    */
+    ReloadData:function(obj)
+    {
+        if(this.props.ReloadData===null||this.props.ReloadData==='undefined')
+        {
+            return false;
+        }
+        else
+        {
+            this.props.ReloadData(obj);
+            return true;
+        }
+    },
+    /**
+    *gọi khi bấm nút ghi
+    */
+    SaveClick: function ()
+    {
+        this.SaveData(true);//true: kết thúc form
+    },
+    /**
+    *gọi khi bấm nút ghi và tạo mới
+    */
+    SaveContinueClick: function () {
+        this.SaveData(false);//false: không kết thúc, sẽ tự động tạo mới
+    },
+    /**
+      *Thực tế ghi dữ liệu
+    *para isClose xác định sau khi ghi xong sẽ đóng form, hay là tiếp tục tạo mới
+    */
+    SaveData:function(isClose){
+        var data = {
+            NAME    : this.refs.warehouse_NAME.value,
+            CODEVIEW: this.refs.warehouse_CODEVIEW.value,
+            NOTE: this.refs.warehouse_NOTE.value,
+            LOCK: this.refs.warehouse_LOCK.checked ?0:1,
+            CODE: this.refs.warehouse_CODE.value
+        }
+        //console.log(data);
+        //Add or edit 1 item
+        $.ajax({
+            url: "/warehouse/Update",
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function (data) {
+                if (data.ret >= 0) {
+                    if(isClose)
+                    {
+                        //Ghi và kết thúc
+                        this.Hide();
+                    }
+                    else {
+                        //Ghi và tạo form mới
+                        this.ClearThing();
+                    }
+                    //Load lại dữ liệu trên grid
+                    this.ReloadData(data.obj); //Truyền code để chọn đúng bản ghi - xử lý trên grid
+
+                }
+                else {
+                    //Sử dụng bootbox để thông báo, thay vì thông báo của hệ thống
+                    bootbox.alert('Lỗi ghi dữ liệu');
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error('unknow:url', status, err.toString());
+            }.bind(this)
+        });
+
+    },
+    /**
+    * Sinh giao diện 
+    * - Đặt ID và ref cho form hiển thị - tránh tranh chấp khi dùng nhiều tab khác nhau
+    * - Các đối tượng khác trên form cần phải đặt id, ref giống nhau và thêm tiền tố form để tránh tranh chấp khi dùng nhiều tab
+    */
+    render: function () {
+        return (
+                <div  className="modal fade" id="warehouse_modalform" ref="warehouse_modalform" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div className="modal-dialog">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                        <h4 className="modal-title" id="myModalLabel">Thêm kho</h4>
+                      </div>
+                      <div className="modal-body">
+                          <form className="form-horizontal" role="form">
+                              <input type="text" id="warehouse_CODE" ref="warehouse_CODE" className="form-control col-md-10 hidden"/>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Mã</label>
+                                  <div className="col-sm-10">
+                                      <input type="text" className="form-control" id="warehouse_CODEVIEW" ref="warehouse_CODEVIEW" />
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Tên</label>
+                                  <div className="col-sm-10">
+                                      <input type="text" className="form-control" id="warehouse_NAME" ref="warehouse_NAME" />
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <div className="col-sm-offset-2 col-sm-10">
+                                      <div className="checkbox">
+                                          <label>
+                                              <input type="checkbox" id='warehouse_LOCK' ref='warehouse_LOCK'/> Hiển thị
+                                          </label>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Ghi chú</label>
+                                  <div className="col-sm-10">
+                                      <textarea className="form-control" rows="4" id="warehouse_NOTE" ref="warehouse_NOTE"></textarea>
+                                  </div>
+                              </div>
+                          </form>
+                      </div>
+             <div className="box-footer modal-footer">
+                 {/*Phần dành để hiển thị trạng thái - không thay đổi*/}
+                <span className="label label-warning" style={{float:'left'}} id="warehouse_popup_status" ref='warehouse_popup_status'>i</span>
+                <button type="button" className="btn btn-primary" onClick={this.SaveClick}><i className="fa fa-floppy-o"></i> Ghi</button>
+                <button type="button" className="btn btn-primary" onClick={this.SaveContinueClick}><i className="fa fa-plus-circle"></i> Ghi và thêm mới</button>
+                <button type="button" className="btn btn-default " data-dismiss="modal"><i className="fa fa-sign-out" ></i>Thoát</button>
+              </div>
+
+                    </div>
+                  </div>
+            </div>
+            );
+    }
+});

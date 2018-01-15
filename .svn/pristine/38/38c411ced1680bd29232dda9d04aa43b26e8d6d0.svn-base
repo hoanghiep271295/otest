@@ -1,0 +1,35 @@
+﻿var MCQuestion = React.createClass({
+    onchange:function()
+    {
+        var selected=$('#sel1').val();
+        if(selected === dang1)
+        {
+            $("#input3").prop('disabled', false);
+        }
+        else
+        {
+
+        }
+        if(selected ===  )
+     },
+    render:function()
+    {
+        return(
+            <div>
+             <div class="form-group" id="mcquestion">
+              <label for="sel1">Select list:</label>
+              <select class="form-control" id="sel1">            
+                <option value="dang3">3</option>
+                <option value="dang4">4</option>
+              </select>
+             </div>
+               
+              <div class="form-control" id="sel2">               
+                <input id="input3" />
+                <input id="input4" />
+              </div>
+               
+            </div>
+            );
+    }
+});

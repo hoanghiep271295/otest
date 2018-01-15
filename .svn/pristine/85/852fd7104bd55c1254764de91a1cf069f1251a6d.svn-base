@@ -1,0 +1,297 @@
+﻿var ExamResult = React.createClass({
+    getInitialState: function () {
+        return {
+            listGroupQuesion: [],// list groupcode
+            listQuestion: [],/// list question
+            listAnswer: [],///list answer follow question
+            objHalltudent: null, ///object Hall student
+            objExamForm: null, /// Objet Exam Form
+            listExamDetail: [], ///list ExamFromdetail
+            listAnswerStudent: [], ///list answer of student get from server
+            numberQuestion: 0
+        }
+    },
+    componentDidMount: function ()
+    {
+        this.loadData();
+    },
+    loadData: function () {
+        var defaultvalue = window.getDefaultFromServer();
+        var markcode = defaultvalue.markcode;
+        var examtimecode = defaultvalue.examtimecode;
+        $.ajax({
+            url: "/ExamResult/ShowExamResult",
+            dataType: 'json',
+            data: {
+                markcode: markcode,
+                examtimecode: examtimecode
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    this.setState({
+                        listGroupQuesion: data.liQuestiongroup,
+                        listQuestion: data.li_question,
+                        listAnswer: data.li_answer,
+                        objHalltudent: data.ObjexamHallstudent,
+                        objExamForm: data.ObjexamForm,
+                        listExamDetail: data.liExamformDetail,
+                        listAnswerStudent : data.li_examresult,
+                        numberQuestion: data.numberQuestion
+                    });
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    render: function () {
+        var listQgroup = [];
+        var index = 0;
+        var that = this;
+        this.state.listGroupQuesion.forEach(function (rowitem) {
+            index++;
+            var type = rowitem._QUESTIONTYPECODE.CODEVIEW;
+            switch (type) {
+            //writing
+              case 'WR':
+              listQgroup.push(<WritingAnswer    
+                                key={index}
+                                number={index}
+                                ident={rowitem.CODE}
+                                objQuestionGroup={rowitem}
+                                dataQuestion={that.state.listQuestion}
+                                dataAnswer={that.state.listAnswer}
+                                listAnswerStudent= {that.state.listAnswerStudent}
+                                questiontype={"WR"}  />);
+                  break;
+                  //câu hỏi một nhiều chỉ dành cho một câu hỏi cho một nhóm;
+                  //Câu hỏi ỏ nhóm, tự động sinh ra một bản ghi câu hỏi giả để lien kết, sau đó có các đáp án. 
+                case 'MS':
+              listQgroup.push(<QuestionGroupMS 
+                                key={index}
+                                number={index}
+                                ident={rowitem.CODE}
+                                objQuestionGroup={rowitem}
+                                dataQuestion={that.state.listQuestion}
+                                dataAnswer={that.state.listAnswer}
+                                listAnswerStudent= {that.state.listAnswerStudent}
+                                questiontype={"MS"} 
+                                 />);
+                    break;
+                    //: Viết lại câu; (câu hỏi chính ở nhóm), sau đó câu hỏi chi tiết chính là các từ;
+                    //Một câu hỏi có thể có nhiều đáp án đúng 
+                    //(để cho phép so sánh chỉ cần đúng một trong các đáp án đó là tính điểm)
+                case 'RW':
+                listQgroup.push(<QuestionGroupRW
+                                key={index}
+                                number={index}
+                                ident={rowitem.CODE}
+                                objQuestionGroup={rowitem}
+                                dataQuestion={that.state.listQuestion}
+                                dataAnswer={that.state.listAnswer}
+                                listAnswerStudent= {that.state.listAnswerStudent}
+                                questiontype={"RW"} 
+                        />);
+                    break;
+                    //dạng kéo thả vào trong đoạn văn
+                case 'FI':
+                    listQgroup.push(<QuestionGroupFI
+                                     key={index}
+                                      number={index}
+                                     ident={rowitem.CODE}
+                                     objQuestionGroup={rowitem}
+                                    dataQuestion={that.state.listQuestion}
+                                    dataAnswer={that.state.listAnswer}
+                                    listAnswerStudent= {that.state.listAnswerStudent}
+                                      questiontype={"RW"} 
+                     />);
+                    break;
+                    //dạng điền từ vào trong ô trống
+                case 'FG':
+                    console.log("FG chưa làm");
+                    break;
+                    // dạng kéo thả vào 
+                case 'PA':
+                    console.log("FG chưa làm");
+                    break;
+                    //MC,CO
+                default:
+                    listQgroup.push(<QuestionGroup 
+                                                key={index}
+                                                number={index}
+                                                ident={rowitem.CODE}
+                                                objQuestionGroup={rowitem.CONTENT}
+                                                dataQuestion={that.state.listQuestion}
+                                                dataAnswer={that.state.listAnswer}
+                                                listAnswerStudent= {that.state.listAnswerStudent}
+                                                questiontype={type} 
+                                                   />);
+                    break;
+            }
+
+         });
+        return (
+                <div className="examform" >
+                        {listQgroup}
+                  </div>
+   
+            );
+       }
+});
+
+
+//nhóm câu hỏi
+var QuestionGroup = React.createClass({
+    render: function () {
+        var listQuestion = [];
+        var index = 0;
+        var that = this;
+        //duyệt trong danh sách câu hỏi,nếu như câu hỏi nào có mã questriongrop bằng câu hỏi mã questiongroup truyền xuống thì sẽ cho hiển thị trên 1 ô
+        this.props.dataQuestion.forEach(function (rowitem) {
+            if (rowitem.QUESTIONGROUPCODE === that.props.ident) {
+                index++;
+                listQuestion.push(<Question key={index}
+                                            index={index}
+                                            iden={rowitem.CODE}
+                                            objQuestionGroupContent={that.props.objQuestionGroup}
+                                            objQuestion={rowitem}
+                                            listanswer={that.props.dataAnswer}
+                                            listAnswerStudent= {that.props.listAnswerStudent}
+                                            questiontype={that.props.questiontype} />);
+            }
+        });
+            var id = this.props.ident;
+            var questiongroup = $("<div/>").html(this.props.objQuestionGroup).text().trim();
+            return (
+               <div>
+                    <div className="container questiongroup">
+                <b>{this.props.number}.</b>
+                    </div>
+                    <div>
+                    <div style={{position:'relative'}}>
+                        <fieldset className="fieldsetGroup">
+                            <div className="divCenter">
+                              <span key={'error_'+ id}
+                                    dangerouslySetInnerHTML={{ __html: questiongroup}}>
+                              </span>
+                             </div>
+                              <ul>
+                            {listQuestion}
+                             </ul>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            );
+}
+});
+
+
+
+var Question = React.createClass({
+    
+    render: function() {
+        var listanswer = [];
+        var questiontype = this.props.questiontype;
+        var that = this;
+        switch (questiontype) {
+            case 'MC':
+                listanswer = (<QuestionGroupMC id={this.props.index}
+                                               idQuestion= {this.props.iden}
+                                               questionGroupContent= {this.props.objQuestionGroupContent}
+                                               listAnswer= {this.props.listanswer}
+                                               listStudentAnswer={this.props.listAnswerStudent}   
+                                               />);
+                //kết thúc MC
+                break;
+                //trường hợp 2
+                // speaking,recording
+         case 'LA':
+                  listanswer = (<RecorderAnswer id={this.props.iden} 
+                                                ans={that.props.listAnswerStudent}/>);
+                  break;
+        //trường hợp số 3
+             ///writing
+            case 'WR':
+            var id = 0;
+            this.props.listAnswerStudent.forEach(function (rowitem) {
+                if (that.props.iden === rowitem.QUESTIONCODE) {
+                    listanswer.push(<Writing   key={id}
+                                               id={that.props.iden+'WR'}
+                                               ans={rowitem.ANSWERTEXT}/>
+                );
+             }
+            id++;
+        });
+                break;
+        //trường hợp số 4
+            case 'CO':
+                listanswer = (<QuestionGroupCO id={this.props.index}
+                                                idQuestion= {this.props.iden}
+                                                questionGroupContent= {this.props.objQuestionGroupContent}
+                                                listAnswer= {this.props.listanswer}
+                                                listStudentAnswer={this.props.listAnswerStudent}   
+                                                />);
+                    break;
+            default:
+            //     console.log('chua lam');
+            break;
+        }
+            var index = this.props.index;
+            var question = $('<div/>').html(this.props.objQuestion.CONTENT).text();
+            return (
+               <div>
+                   <li style={{'listStyle':'none'}}>
+                   <div className="container" style={{width:'100%',margin:'20px'}}>
+                   <div className="col-sm-1" style={{'fontWeight':'bold'}}>{this.props.index}.</div>
+                        <div className="col-sm-11">
+                            <span key={'error_'+ index} dangerouslySetInnerHTML={{ __html: question }}></span>
+                        </div>
+                    </div>
+                    <ul className="list-unstyled flex-container">
+                        {listanswer}
+                    </ul>
+                </li>
+            </div>
+             );
+        }
+});
+
+
+
+var RecorderAnswer = React.createClass({
+    componentDidMount: function () {
+    },
+    getFile:function(id, lst)
+    {
+        if(!!lst)
+        {
+            return '';
+        }
+        var i;
+        for(i=0 ; i< lst.length; i++)
+        {
+            if( id===lst[i].QUESTIONCODE)
+            {
+                return lst[i].ANSWERFILE;
+            }
+        }
+        return '';
+    },
+    render: function () {
+        var index = this.props.id;
+        var ans = this.props.ans;
+        var thefile = this.getFile(index, ans);
+        return (
+            <div className="flex-item" style={{ width:'auto', margin:'auto'}}>
+                <video controls autoPlay>
+                <source src={thefile} type="video/mp4"/>
+                    Chưa có file
+                </video>
+            </div>
+            );
+}
+});
+
+ReactDOM.render(<ExamResult />, document.getElementById('container'));

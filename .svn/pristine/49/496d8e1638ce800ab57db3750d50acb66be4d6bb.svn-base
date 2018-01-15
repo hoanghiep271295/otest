@@ -1,0 +1,75 @@
+﻿var Course = React.createClass({
+    getInitialState: function () {
+        return {
+            liExam: []
+        }
+    },
+    onClick: function () {
+        var data = this.props.app.getBreadCrumb();
+        if (data.length >= 2) {
+            data.splice(1, 2);
+        }
+        var item = {
+            'name': this.props.name,
+            'id': this.props.subjectcode
+        };
+        data.push(item);
+        this.props.app.setBreadCrumb(data);
+        this.props.app.setKeyValue('subjectcode', this.props.subjectcode);
+        this.props.app.setKeyValue('coursecode', this.props.code);
+        window.history.pushState({}, '', '/CourseStudent/Index?id=' + this.props.subjectcode);
+        ReactDOM.render(<ListSubjectContent app={this.props.app}/>, document.getElementById('content'));
+    },
+    getMarkCode: function(coursecode) {
+        $.ajax({
+            url: '/Mark/GetByStudentCourse',
+            dataType: 'json',
+            data: {
+                coursecode: coursecode
+            },
+            success: function (data) {
+                if (!!data.data) {
+                    var markcode = data.data.CODE;
+                    this.getMark(markcode, coursecode);
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }.bind(this)
+        });
+    },
+    getMark: function(markcode, coursecode) {
+        $.ajax({
+            url: '/ExamResult/GetResult',
+            dataType: 'json',
+            data: {
+                markcode: markcode,
+                coursecode: coursecode
+            },
+            success: function (data) {
+                if (!!data.data) {
+                    this.setState({ liExam: data.data });
+                    $('#ModalMark').modal('show');
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }.bind(this)
+        });
+    },
+    render: function () {
+        return (
+            <div className="col-md-12" style={{margin: '5px'}}>
+               <div className="col-md-3 coursename">
+                    <a onClick={this.onClick} id={this.props.id}> Mã lớp: {this.props.codeview} - Tên lớp: {this.props.name}</a>
+               </div>
+               <div className="col-md-2" >
+                   <span className="btn_getMark" onClick={() =>this.getMarkCode(this.props.code)} id={this.props.code}>Xem điểm</span>
+                </div>
+                <PopupMark parent={this} liexam = {this.state.liExam} />
+            </div>
+
+        );
+    }
+
+});

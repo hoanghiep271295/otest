@@ -1,0 +1,3 @@
+E:\hiep\NewOne\nerp\obj\Debug\nerp_thanhnt.csprojResolveAssemblyReference.cache
+E:\hiep\NewOne\nerp\obj\Debug\nerp.dll
+E:\hiep\NewOne\nerp\obj\Debug\nerp.pdb

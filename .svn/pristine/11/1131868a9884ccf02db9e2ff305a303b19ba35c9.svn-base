@@ -1,0 +1,297 @@
+﻿var ExamResult = React.createClass({
+    getInitialState: function () {
+        return {
+            listGroupQuesion: [],// list groupcode
+            listQuestion: [],/// list question
+            listAnswer: [],///list answer follow question
+            objHalltudent: null, ///object Hall student
+            objExamForm: null, /// Objet Exam Form
+            listExamDetail: [], ///list ExamFromdetail
+            listAnswerStudent: [], ///list answer of student get from server
+            numberQuestion: 0
+        }
+    },
+    componentWillMount: function () {
+       // this.loadData();
+    },
+    componentDidMount: function() {
+        this.loadData();
+    },
+    loadData: function () {
+        var defaultvalue = window.getDefaultFromServer();
+        var markcode = defaultvalue.markcode;
+        var examtimecode = defaultvalue.examtimecode;
+        $.ajax({
+            url: "/ExamResult/ShowExamResult",
+            dataType: 'json',
+            data: {
+                markcode: markcode,
+                examtimecode: examtimecode
+            },
+            success: function (data) {
+
+                if (data.ret >= 0) {
+                    this.setState({
+                        listGroupQuesion: data.liQuestiongroup,
+                        listQuestion: data.li_question,
+                        listAnswer: data.li_answer,
+                        objHalltudent: data.ObjexamHallstudent,
+                        objExamForm: data.ObjexamForm,
+                        listExamDetail: data.liExamformDetail,
+                        listAnswerStudent : data.li_examresult,
+                        numberQuestion: data.numberQuestion
+                    });
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    render: function () {
+        var listQgroup = [];
+        var index = 0;
+        var that = this;
+        this.state.listGroupQuesion.forEach(function (rowitem) {
+            index++;
+            var type = rowitem._QUESTIONTYPECODE.CODEVIEW;
+            listQgroup.push(<QuestionGroup key={index}
+                            number={index}
+                            ident={rowitem.CODE}
+                            objQuestionGroup={rowitem.CONTENT}
+                            dataQuestion={that.state.listQuestion}
+                            dataAnswer={that.state.listAnswer}
+                            listAnswerStudent= {that.state.listAnswerStudent}
+                            questiontype={type} />);
+            
+         });
+        return (
+            <div>
+                <div className="container"  style={{height:'100vh','backgroundColor':'white','maxWidth':'75%','margin':'auto','overflowY':'scroll'}}>
+                    <div className="inline" style={{ padding: '0 8px', marginTop: '30px' }}>
+                        {listQgroup}
+                    </div>
+                  </div>
+            </div>
+            );
+       }
+});
+var QuestionGroup = React.createClass({
+    render: function () {
+        var listQuestion = [];
+        var index = 0;
+        var that = this;
+        //duyệt trong danh sách câu hỏi,nếu như câu hỏi nào có mã questriongrop bằng câu hỏi mã questiongroup truyền xuống thì sẽ cho hiển thị trên 1 ô
+        this.props.dataQuestion.forEach(function (rowitem) {
+            if (rowitem.QUESTIONGROUPCODE === that.props.ident) {
+                index++;
+                listQuestion.push(<Question key={index}
+                                    index={index}
+                                    iden={rowitem.CODE}
+                                    objQuestion={rowitem}
+                                    listanswer={that.props.dataAnswer}
+                                    listAnswerStudent= {that.props.listAnswerStudent}
+                                    questiontype={that.props.questiontype} />);
+            }
+        });
+            var id = this.props.ident;
+            var questiongroup = $("<div/>").html(this.props.objQuestionGroup).text().trim();
+            return (
+               <div>
+                    <div>
+                     <h3>{this.props.number}</h3>
+                        <span key={'error_'+ id} dangerouslySetInnerHTML={{ __html: questiongroup}}></span>
+                    </div>
+                    <div>
+                    <div style={{position:'relative'}}>
+                        <fieldset style={{'padding':'20px 20px 10px','marginRight':'0','border':'1px solid #c0c0c0',clear:'both', backgroundColor:'#f2f2f2','marginLeft': 0,'marginBottom':'20px',margin:'0 2px'}}>
+                        <ul>
+                            {listQuestion}
+                        </ul>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            );
+}
+});
+var Question = React.createClass({
+    ///check answer to show out
+    //item here is answer from list answer from table answer
+    //arr here is list answer of student from table examresult
+    CheckItem: function(item,arr) {
+        // debugger
+        for (var i = 0; i < arr.length; i++) {
+            //if answer.QUESTIONCODE ===  studentanswer.QUESTIONCODE
+        
+            if (item.QUESTIONCODE === arr[i].QUESTIONCODE) {
+                var count = 0;
+                count++;
+                ///this case: this answer is right and it's student's answer too
+                ///mark is glyphicon-ok and radio button will be checked
+                if (item.TRUEANSWER === 1 && item.CODE===arr[i].ANSWERCODE)
+                {
+                    return 1;
+                }
+                ///this case this answer is right and it isn't student's answer
+                ///mark is glyphicon-ok and  radio button will not be checked
+                if (item.TRUEANSWER === 1 && item.CODE !== arr[i].ANSWERCODE) {
+                    return 2;
+                }
+                ///this case : this answer is false and it's student's answer
+                ///mark is glyphicon-remove and  radio button will be checked
+                if (item.TRUEANSWER !== 1 && item.CODE === arr[i].ANSWERCODE) {
+                    return 3;
+                }
+                ///this case : this case is false and it is'nt student's answer
+                ///mark is glyphicon-remove and  radio button will not be checked
+                if (item.TRUEANSWER !== 1 && item.CODE !== arr[i].ANSWERCODE) {
+                    return 4;
+                }
+
+            }
+        }
+        //default
+        return 1;
+    },
+    render: function() {
+        var listanswer = [];
+        var indent = 0;
+        var listStudentAnswer = this.props.listAnswerStudent;
+        //  console.log('question',this.props.index);    
+        var that = this;
+        var questiontype = that.props.questiontype;
+        switch (questiontype) {
+            case 'MC':
+                this.props.listanswer.forEach(function(rowitem) {
+                    indent++;
+                    //    console.log('answer',indent);
+                    ///insert content answer from list answer of table Answer 
+                    var answer = $("<div/>").html(rowitem.CONTENT).text();
+                    //check case to show
+                    switch (that.CheckItem(rowitem,listStudentAnswer)) {
+                        case 1:
+                        case 2:///mark is glyphicon-ok and radio button will be checked
+                            listanswer.push(
+                                    <li key={indent} className='flex-item' id={rowitem.QUESTIONCODE}>
+                                                            <input type="radio" id={rowitem.CODE} name={rowitem.QUESTIONCODE} defaultChecked/> &nbsp; &nbsp; &nbsp;
+                                        <label id={indent} htmlFor={rowitem.CODE}>
+                                            <span key={'error_'+ indent} dangerouslySetInnerHTML={{ __html: answer }}></span>
+                                        </label>&nbsp;&nbsp;
+                                    <span className="glyphicon glyphicon-ok" style={{color:'green'}}></span>
+
+                            </li>);
+                            break;
+
+                        case 3:
+                        case 4:
+                            //mark is glyphicon-remove and  radio button will be checked
+                        listanswer.push(<li key={indent} className='flex-item' id={rowitem.QUESTIONCODE}>
+                                            <input type="radio" id={rowitem.CODE} name={rowitem.QUESTIONCODE} defaultChecked/> &nbsp; &nbsp; &nbsp;
+                                            <label id={indent} htmlFor={rowitem.CODE}>
+                                                <span key={'error_'+ indent} dangerouslySetInnerHTML={{ __html: answer }}></span>
+
+                                            </label>&nbsp;&nbsp;
+                                            <span className="glyphicon glyphicon-remove" style={{color: 'red' }}></span>
+
+                                    </li>);
+                        break;
+                }
+        });
+        //kết thúc MC
+        break;
+        //trường hợp 2
+        // speaking,recording
+         case 'LA':
+                  listanswer = (<RecorderAnswer id={that.props.iden} ans={that.props.listAnswerStudent}/>);
+                  break;
+        //trường hợp số 3
+        ///writing
+        case 'WR':
+            var id = 0;
+            this.props.listAnswerStudent.forEach(function (rowitem) {
+                if (that.props.iden === rowitem.QUESTIONCODE) {
+                    listanswer.push(<Writing   key={id}
+                id={that.props.iden+'WR'}
+                ans={rowitem.ANSWERTEXT}/>
+                );
+             }
+            id++;
+        });
+        break;
+        //trường hợp số 4
+         case 'CO':
+        //    console.log('trường hợp CO');
+        break;
+            default:
+            //     console.log('chua lam');
+            break;
+        }
+            var index = this.props.index;
+            var question = $('<div/>').html(this.props.objQuestion.CONTENT).text();
+            return (
+               <div>
+                   <li style={{'listStyle':'none'}}>
+                   <div className="container" style={{width:'100%',margin:'20px'}}>
+                   <div className="col-sm-1" style={{'fontWeight':'bold'}}>{this.props.index}.</div>
+                        <div className="col-sm-11">
+                            <span key={'error_'+ index} dangerouslySetInnerHTML={{ __html: question }}></span>
+                        </div>
+                    </div>
+                    <ul className="list-unstyled flex-container">
+                        {listanswer}
+                    </ul>
+                </li>
+            </div>
+             );
+        }
+});
+var RecorderAnswer = React.createClass({
+    componentDidMount: function () {
+    },
+    getFile:function(id, lst)
+    {
+        if(!!lst)
+        {
+            return '';
+        }
+        var i;
+        for(i=0 ; i< lst.length; i++)
+        {
+            if( id===lst[i].QUESTIONCODE)
+            {
+                return lst[i].ANSWERFILE;
+            }
+        }
+        return '';
+    },
+    render: function () {
+        var index = this.props.id;
+        var ans = this.props.ans;
+        var thefile = this.getFile(index, ans);
+        return (
+            <div className="flex-item" style={{ width:'auto', margin:'auto'}}>
+                <video controls autoPlay>
+                <source src={thefile} type="video/mp4"/>
+                    Chưa có file
+                </video>
+            </div>
+            );
+}
+});
+
+var Writing = React.createClass({
+    render: function () {
+        var index = this.props.id;
+        var answer = this.props.ans;
+        return (
+            <div >
+               <div  id={index} className="form-control" style={{margin:'auto', display:'block',width:'700px',height:'200px',fontFamily:'Arial',fontSize:'13px', padding:'10px 10px',  lineHeight:'1.25', color:'#464a4c',backgroundColor:'#fff'}}>
+{answer}
+</div>
+ <span></span>
+ </div>
+                  );
+}
+});
+ReactDOM.render(<ExamResult />, document.getElementById('container'));

@@ -1,0 +1,4 @@
+E:\hiep\NewOne\project\IS.Lang\bin\Debug\IS.Lang.dll
+E:\hiep\NewOne\project\IS.Lang\bin\Debug\IS.Lang.pdb
+E:\hiep\NewOne\project\IS.Lang\obj\Debug\IS.Lang.dll
+E:\hiep\NewOne\project\IS.Lang\obj\Debug\IS.Lang.pdb

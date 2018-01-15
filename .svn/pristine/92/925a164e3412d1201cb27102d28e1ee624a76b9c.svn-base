@@ -1,0 +1,299 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>IS.Sess</name>
+    </assembly>
+    <members>
+        <member name="T:IS.Sess.session">
+            <summary>
+            manage all sesion information
+            </summary>
+        </member>
+        <member name="M:IS.Sess.session.gotoPage(System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Set information to go to
+            </summary>
+            <param name="ppage"></param>
+            <param name="title"></param>
+            <param name="pinform"></param>
+            <param name="waitingtime"></param>
+        </member>
+        <member name="M:IS.Sess.session.login(IS.basetype.STAFF_INFO,System.Collections.Generic.List{IS.basetype.STAFFPRIORITY})">
+            <summary>
+            Thực hiện ghi nhận login vào trong biến tạm thời để xử lý về sau
+            </summary>
+            <param name="staff"></param>
+            <param name="li"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IS.Sess.session.logout">
+            <summary>
+            Remove login information
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IS.Sess.session.isLogin">
+            <summary>
+            Check the login status, 0 is logined
+            </summary>
+            <returns>-1: not yet, 0 is logged</returns>
+        </member>
+        <member name="P:IS.Sess.session.loginCode">
+            <summary>
+            Mã đăng nhập
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginName">
+            <summary>
+            Tên đăng nhập - username
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginFullName">
+            <summary>
+            get the login full name
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginImg">
+            <summary>
+            ảnh của người đăng nhập hiện tại
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginTime">
+            <summary>
+            Thời điểm đăng nhập
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginDepartment">
+            <summary>
+            Đơn vị quản lý của người đăng nhập
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginDepartmentName">
+            <summary>
+            Tên của đơn vị đang đăng nhập
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginType">
+            <summary>
+            Thông tin về đơn vị tham gia nghiên cứu của giáo viên
+            </summary>
+            <summary>
+            Type of login; LECTURER, ADMIN, STUDENT 
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginLeveltitlecode">
+            <summary>
+            Chức vụ 
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginArmyrankcode">
+            <summary>
+            Quân hàm
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginDegreecode">
+            <summary>
+            Học vị
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.loginAcademictitlecode">
+            <summary>
+            học hàm
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.STAFF">
+            <summary>
+            Nhân viên đang đăng nhập
+            </summary>
+        </member>
+        <member name="M:IS.Sess.session.func(System.String)">
+            <summary>
+            Get priority of login man with //old version
+            </summary>
+            <param name="funcCode"> the code want to check</param>
+            <returns>0: no permit, then the permition</returns>
+        </member>
+        <member name="M:IS.Sess.session.funcEx(System.String)">
+            <summary>
+            Locate the STAFFPRIORITY according to funcCode of this staff
+            </summary>
+            <param name="funcCode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IS.Sess.session.funcList(System.String)">
+            <summary>
+            Trả về danh sách các phân quyền mà giáo viên này có với mã đã được đưa vào để kiểm tra
+            </summary>
+            <param name="funcCode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IS.Sess.session.getFunctionList">
+            <summary>
+            return all permission list from login user, with ,'' according to in list of sql statements
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:IS.Sess.session.currentPage">
+            <summary>
+            Trang hiện tại
+            </summary>
+        </member>
+        <member name="M:IS.Sess.session.clearLoginFail">
+            <summary>
+            Xóa trạng thái đếm lần đăng nhập không thành công
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IS.Sess.session.loginFail">
+            <summary>
+            Tăng số lên đăng nhập không thành công
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:IS.Sess.session.loginFailCount">
+            <summary>
+            Lấy số lần đăng nhập không thành công
+            </summary>
+        </member>
+        <member name="M:IS.Sess.session.genSecurityCode">
+            <summary>
+            try to gen the security code and save it to session to use later
+            </summary>
+            <returns>security code generated</returns>
+        </member>
+        <member name="P:IS.Sess.session.securityCode">
+            <summary>
+            Lấy mã ngẫu nhiên hiện tại
+            </summary>
+        </member>
+        <member name="M:IS.Sess.session.getItem4Page">
+            <summary>
+            Get the number items perpage
+            </summary>
+            <returns>number of items per page depend on web.config, default 20</returns>
+        </member>
+        <member name="M:IS.Sess.session.getItem4PageLong">
+            <summary>
+            Get the number items perpage
+            </summary>
+            <returns>number of items per page depend on web.config, default 20</returns>
+        </member>
+        <member name="P:IS.Sess.session.pDEPARTMENTCODE">
+            <summary>
+            current department for the staff
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.pPARTYDEPARTMENTCODE">
+            <summary>
+            current party department for the staff
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.pCHANGEPASS">
+            <summary>
+            this parameter based on login status
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.pPROVINCECODE">
+            <summary>
+            this parameter based on login status
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.pDISTRICTCODE">
+            <summary>
+            this parameter based on login status
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.pCURRENTPAGECODE">
+            <summary>
+            Get curent page code for insert and update refresh problem
+            </summary>
+        </member>
+        <member name="M:IS.Sess.session.pGenCURRENTPAGECODE">
+            <summary>
+            Do the gen CURRENTPAGECODE and set to sesion CURRENTPAGECODE
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:IS.Sess.session.pSessionCode">
+            <summary>
+            Get current session ID in database
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.pLoginSession">
+            <summary>
+            current login sesion
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gTITLE">
+            <summary>
+            title of university; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gRECTOR">
+            <summary>
+            rector of university; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gHEADEDU">
+            <summary>
+            header of education department; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gDEAN">
+            <summary>
+            header of education department; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gUNIT1">
+            <summary>
+            university ; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gUNIT2">
+            <summary>
+            education department; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gBRANCH">
+            <summary>
+            Phân hệ; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gBRANCHCODE">
+            <summary>
+            Phân hệ; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gWEEKEND">
+            <summary>
+            Number of rest day at the weekend; 1: only sunday, 2: saturday and sunday; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gVERSION">
+            <summary>
+            the min Number of students in a course; in backend it is load automatically when loging; in front end before using it, the function systemparameter.loadParameter must be called
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.gWORKINGYEAR">
+            <summary>
+            The end day of term2; return DateTime.MinValue when it is null
+            </summary>
+        </member>
+        <member name="P:IS.Sess.session.tTEMPDATATABLE">
+            <summary>
+            lưu các đối tượng bảng tạm thời trong hệ thống
+            </summary>
+        </member>
+        <member name="M:IS.Sess.session.getLang">
+            <summary>
+            Get the current language of the web
+            </summary>
+            <returns>language code, vn, en, ...</returns>
+        </member>
+        <member name="P:IS.Sess.session.frontlang">
+            <summary>
+            Ngôn ngữ hiện tại của hệ thống cho phần hiển thị
+            </summary>
+        </member>
+    </members>
+</doc>

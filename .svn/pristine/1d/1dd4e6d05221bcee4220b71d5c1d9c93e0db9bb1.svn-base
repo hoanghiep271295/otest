@@ -1,0 +1,119 @@
+﻿var Changepass = React.createClass({
+    getInitialState: function () {
+        return {
+           data:[]
+        };
+    },
+    componentWillMount: function () {
+        
+    },
+   
+    componentDidMount: function () {
+        var defaultvalue = getDefaultFromServer();
+        console.log('code:',defaultvalue.code);
+        console.log('thetype:',defaultvalue.thetype);
+        $('#txtUsername').val(defaultvalue.codeview);
+    },
+   
+    handleCancel:function()
+    {
+        window.location.replace("/home/index");
+    },
+    handleSubmit: function (e) { //Yêu cầu đăng nhập
+        e.preventDefault();
+        var passwordOld = this.refs.txtPasswordOld.getDOMNode().value;//$("#txtUsername").val();
+        var password = this.refs.txtPassword.getDOMNode().value;//$("#txtPassword").val();
+        var passwordRe = this.refs.txtPasswordRe.getDOMNode().value;//$("#txtPassword").val();
+        var sec = this.refs.txtSectext.getDOMNode().value;//$("#txtSectext").val();
+        var username = this.refs.txtUsername.getDOMNode().value;//$("#txtSectext").val();
+        if (password !== passwordRe)
+        {
+            alert('Hai lần nhập mật khẩu không giống nhau');
+            return;
+        }
+        var defaultvalue = getDefaultFromServer();
+        console.log('thetype:', defaultvalue.thetype);
+
+        $.ajax({
+            url: "/admin/ChangeMyPass",
+            dataType: 'json',
+            data: {
+                passwordOld: passwordOld,
+                password: password,
+                passwordRe: passwordRe,
+                secText: sec,
+                username: username,
+                thetype: defaultvalue.thetype
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    bootbox.alert({
+                        message: "Đổi mật khẩu thành công: " ,
+                        callback: function (result) {
+                           // if (data.thetype === "LECTURER") {
+                                window.location.replace("/home/admin");
+                            //} else {
+                            //    window.location.replace("/home/index2");
+                            //}
+                        }
+                    }); 
+                }
+                else {
+                    if (data.ret ==-1) {
+                        bootbox.alert("Thông tin thay đổi người dùng không chính xác");
+                    }
+                    else {
+                        bootbox.alert("Lỗi không lấy được dữ liệu");
+                    }
+                }
+
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    render: function () {
+        
+        return (
+			<div className="col-md-4 col-md-offset-4">
+                            <div className="box box-primary">
+                                <div className="box-header with-border">
+                                    <h3 className="box-title">Đổi mật khẩu</h3>
+                                </div>
+                                <form role="form" onSubmit={this.handleSubmit}>
+                                    <div className="box-body">
+                                        <div className="form-group">
+                                            <label>Tên đăng nhập</label>
+                                            <input type="text" className="form-control" id="txtUsername" ref="txtUsername" placeholder="Tên đăng nhập" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Mật khẩu cũ</label>
+                                            <input type="password" className="form-control" id="txtPasswordOld" ref="txtPasswordOld" placeholder="Mật khẩu cũ" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Mật khẩu</label>
+                                            <input type="password" className="form-control" id="txtPassword" ref="txtPassword" placeholder="Mật khẩu mới" />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Nhập lại mật khẩu mới</label>
+                                            <input type="password" className="form-control" id="txtPasswordRe" ref="txtPasswordRe" placeholder="Nhập lại mật khẩu mới" />
+                                        </div>
+                                        <div id="divShowsec" className="form-group hidden">
+                                            <label>Nhập giá trị kết quả: (<span id="txtQuestion">dđ</span>)</label>
+                                            <input type="text" className="form-control" id="txtSectext" ref="txtSectext" placeholder="Chuỗi bảo mật" />
+                                        </div>
+                                    </div>
+                                    <div className="box-footer">
+                                        <button type="submit" className="btn btn-primary">Đổi mật khẩu</button>
+                                        <button type="button" className="btn pull-right" onClick={this.handleCancel}>Thoát</button>
+                                    </div>
+                                </form>
+                            </div>
+			</div>
+           
+        );
+}
+});
+//ReactDOM.render(<Changepass/>, document.getElementById('contents'));
+var count = 0;;

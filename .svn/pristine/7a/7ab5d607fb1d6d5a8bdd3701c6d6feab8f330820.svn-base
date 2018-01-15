@@ -1,0 +1,97 @@
+﻿var QuestionGroupFI = React.createClass({
+    componentWillMount:function() {
+    },
+    componentDidMount: function () {
+        document.getElementById(this.props.id + '_questiontypeFI').innerHTML = this.props.objQuestionGroup.CONTENT;
+    },
+    CheckItem: function (item, arr, questioncode) {
+        for (var i = 0; i < arr.length; i++) {
+            if (this.CheckItemInArray(questioncode, arr)) {
+                //kiểm tra xem xem câu trả lời của sinh viên và câu trả lời trong danh sách câu trả lời có cùng mã câu hỏi không
+                if (item.QUESTIONCODE === arr[i].QUESTIONCODE && item.QUESTIONGROUPCODE === arr[i].QUESTIONGROUPCODE) {
+                    var count = 0;
+                    count++;
+                    ///this case: this answer is right and it's student's answer too
+                    ///mark is glyphicon-ok and radio button will be checked
+                    //sau khi radio button được check thì disable tất cả các radio button còn lại
+                    if (item.TRUEANSWER === 1 && item.CODE === arr[i].ANSWERCODE) {
+                        //nếu vào trường hợp này là câu trả lời là câu trả lời đúng thì cần disable tất cả các radio button còn lại
+                        return 1;
+                    }
+                    ///this case this answer is right and it isn't student's answer
+                    ///mark is glyphicon-ok and  radio button will not be checked
+                    if (item.TRUEANSWER === 1 && item.CODE !== arr[i].ANSWERCODE) {
+                        return 2;
+                    }
+                    ///this case : this answer is false and it's student's answer
+                    ///mark is glyphicon-remove and  radio button will be checked
+                    if (item.TRUEANSWER !== 1 && item.CODE === arr[i].ANSWERCODE) {
+                        return 3;
+                    }
+                    ///this case : this case is false and it is'nt student's answer
+                    ///mark is glyphicon-remove and  radio button will not be checked
+                    if (item.TRUEANSWER !== 1 && item.CODE !== arr[i].ANSWERCODE) {
+                        return 4;
+                    }
+                }
+            }
+                //đây là trường hợp câu hỏi không được thí sinh làm bài
+            else {
+                ///this case this answer is right
+                ///mark is glyphicon-ok and  radio button will not be checked
+                if (item.TRUEANSWER === 1) {
+                    return 2;
+                }
+                ///this case : this case is false and it is'nt student's answer
+                ///mark is glyphicon-remove and  radio button will not be checked
+                if (item.TRUEANSWER !== 1) {
+                    return 4;
+                }
+            }
+
+        }
+    },
+    //giả sử như sinh viên vẫn chưa nhập câu trả lời cho câu hỏi đó thì công việc của chúng ta là
+    // sẽ hiển thị lên câu đúng sai và không đánh dấu tích vào bất kì đâu cả, giống trường hợp 2 và 4 ở trên
+    /**
+     * @param {string} questioncode - mã của câu hỏi trong  danh sách câu trả lời
+     * @param {arrau} arr - mảng câu trả lời của sinh viên listStudentAnswer
+     * @returns {boolean} - Kiểm tra xem câu hỏi này đã được sinh viên làm hay chưa, nếu đã làm thì sẽ có hiển thị check radio button
+     */
+    CheckItemInArray(questioncode, arr) {
+        var count = 0;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].QUESTIONCODE === questioncode) {
+                return true; }
+            count++;
+            if (count === arr.length) {
+                return false;
+            }
+        }
+    },
+
+    render: function () {
+        var listanswer = [];
+        var listStudentAnswer = this.props.listAnswerStudent;
+        var listAnswer = this.props.dataQuestion;
+      //  var idQuestion = this.props.id;
+        listAnswer.map((rowitem) => {
+            if (rowitem.QUESTIONGROUPCODE === this.props.id) {
+
+            }
+        });
+
+
+        return (
+            <div>
+           <div className="container questiongroup"><b>{this.props.number}.</b></div>
+            <div className="fieldsetGroup">
+                <span id={this.props.id +'_questiontypeFI'}> </span>
+            </div>
+            </div>
+            );
+
+
+    }
+
+}); 

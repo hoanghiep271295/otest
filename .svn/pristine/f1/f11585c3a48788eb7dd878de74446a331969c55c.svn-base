@@ -1,0 +1,18 @@
+﻿var QuestionGroupFF = React.createClass({
+    componentWillMount:function() {
+        
+    },
+
+    componentDidMount: function () {
+        
+    },
+
+    render: () => {
+        return(
+            
+            <div></div>
+            );
+
+    }
+
+}); 

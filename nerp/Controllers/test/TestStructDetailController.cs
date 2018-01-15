@@ -1,0 +1,210 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Web.Mvc;
+using IS.Config;
+using IS.fitframework;
+using IS.localcomm;
+using IS.Lang;
+using IS.Sess;
+using IS.uni;
+using Newtonsoft.Json;
+namespace nerp.Controllers.core
+{
+    public class TestStructDetailController : Controller
+    {
+        session ses = new session();
+        localcommonlib com = new localcommonlib();
+        // GET: TestStructDetail
+        public JsonResult getAllSearch(int page, int pageSize, string teststructcode, string code, bool codetype, string name, bool nametype,
+                                   string note, bool notetype)
+        {
+            List <TESTSTRUCTDETAIL_OBJ> li;
+            //mặc định cho phần trang
+            if (pageSize == 0)
+            {
+                pageSize = AppConfig.item4page();
+            }
+            if (page < 1)
+            {
+                page = 1;
+            }
+            //Khai báo lấy dữ liệu
+            TESTSTRUCTDETAIL_BUS bus = new TESTSTRUCTDETAIL_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            lipa.Add(new fieldpara("TESTSTRUCTCODE", teststructcode, 0));
+            if (!string.IsNullOrEmpty(code))
+            {
+                lipa.Add(codetype ? new fieldpara("CODEVIEW", code, 0) : new fieldpara("CODEVIEW", code, 1));
+            }
+            if (!string.IsNullOrEmpty(name))
+            {
+                lipa.Add(nametype ? new fieldpara("NAME", name, 0) : new fieldpara("NAME", name, 1));
+            }
+            if (!string.IsNullOrEmpty(note))
+            {
+                lipa.Add(notetype ? new fieldpara("NOTE", note, 0) : new fieldpara("NOTE", note, 1));
+            }
+            int countpage;
+            int totalItem = 0;
+            //order by theorder, with pagesize and the page
+            var data = bus.getAllBy2("CODE", pageSize, page, out countpage, out totalItem, lipa);
+            //Chỉ số đầu tiên của trang hiện tại (đã trừ -1)
+            int startpage = (page - 1) * pageSize;
+            return Json(new
+            {
+                lst = data,//Danh sách
+                totalItem = totalItem, // số lượng tất cả các bản ghi
+                totalPage = countpage, // số lượng trang
+                startindex = startpage,//bắt đầu số trang
+                ret = 0//ok
+            }, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// sử dụng để hiển thị lên tên và số câu hỏi, tổng điểm
+        /// mục đích là để đổi tên
+        /// </summary>
+        /// <param name="testStructCode"></param>
+        /// <param name="subjectCode"></param>
+        /// <returns></returns>
+        public JsonResult GetList2(string testStructCode, string subjectCode)
+        {
+            // get danh sách subjectcontent
+            SUBJECTCONTENT_BUS busSubjectcontent = new SUBJECTCONTENT_BUS();
+            var liSubjectContent = busSubjectcontent.getAllBy2(new fieldpara("SUBJECTCODE", subjectCode, 0),
+                                                                    new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+           // var listTestStructDetail = getDetailByTestStruct(testStructCode);
+            foreach (var item in liSubjectContent)
+            {
+                var testStructDetail = getTestStructDetail(testStructCode, item.CODE);
+                if (testStructDetail != null)
+                {
+                    int amount = testStructDetail.AMOUNT;
+                    double totalMark = testStructDetail.TOTALMARK;
+                    if (amount != 0 || totalMark != 0)
+                    {
+                        string name = item.NAME + "(" + amount + "-" + totalMark + ")";
+                        item.NAME = name;
+                    }
+                    
+                }
+                //else
+                //    item.NAME = item.NAME + "(0 - 0)";
+
+            }
+            return Json(new {data = liSubjectContent}, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <param name="teststructcode"></param>
+        /// <returns>trả về list</returns>
+        public List<TESTSTRUCTDETAIL_OBJ> getDetailByTestStruct(string teststructcode)
+        {
+
+            TESTSTRUCTDETAIL_BUS bus = new TESTSTRUCTDETAIL_BUS();
+            List<TESTSTRUCTDETAIL_OBJ> data = bus.getByTestStruct(teststructcode, ses.gUNIVERSITYCODE);
+            bus.CloseConnection();
+            return data;
+        }
+
+        public TESTSTRUCTDETAIL_OBJ getTestStructDetail(string testStructCode, string subjectContentCode)
+        {
+            TESTSTRUCTDETAIL_BUS bus = new TESTSTRUCTDETAIL_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            lipa.Add(new fieldpara("TESTSTRUCTCODE", testStructCode, 0));
+            lipa.Add(new fieldpara("SUBJECTCONTENTCODE", subjectContentCode, 0));
+            lipa.Add(new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+            var data = bus.GetByKey(lipa.ToArray());
+            bus.CloseConnection();
+            return data;
+        }
+
+        public JsonResult GetTestStructDetailJson(string testStructCode, string subjectContentCode)
+        {
+            var data = getTestStructDetail(testStructCode, subjectContentCode);
+            return Json(new {data = data}, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Delete(List<String> code)
+        {
+            var ret = 0;
+            if (code != null)
+            {
+                var bus = new TESTSTRUCTDETAIL_BUS();
+                for (var i = 0; i < code.Count; i++)
+                {
+                    if (code[i] != null)
+                    {
+                        var item = bus.GetByID(new TESTSTRUCTDETAIL_OBJ.BusinessObjectID(code[i]));
+                        if (item == null)
+                        {
+                            ret = -1;
+                            continue;
+                        }
+                        if (ret >= 0)
+                        {
+                            ret = bus.delete(item._ID);
+                        }
+                    }
+                }
+                bus.CloseConnection();
+            }
+            return Json(new
+            {
+                ret = ret
+            }, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Update(TESTSTRUCTDETAIL_OBJ obj)
+        {
+            TESTSTRUCTDETAIL_BUS bus = new TESTSTRUCTDETAIL_BUS();
+            int ret = 0;
+            int add = 0;
+            TESTSTRUCTDETAIL_OBJ objTemp = null;
+            //kiểm tra tồn tại cho trường hợp sửa
+            if (!string.IsNullOrEmpty(obj.CODE))//edit
+            {
+                objTemp = bus.GetByID(new TESTSTRUCTDETAIL_OBJ.BusinessObjectID(obj.CODE));
+            }
+            else
+            {
+                objTemp = new TESTSTRUCTDETAIL_OBJ();
+            }
+            if (ret < 0)
+            {
+                //đóng kết nối trước khi trả về
+                bus.CloseConnection();
+                //ban ghi sửa đã bị xóa
+                return Json(new { sussess = ret }, JsonRequestBehavior.AllowGet);
+            }
+            //hết kiểm tra tồn tại bản ghi
+            objTemp.SUBJECTCODE = obj.SUBJECTCODE;
+            objTemp.SUBJECTCONTENTCODE = obj.SUBJECTCONTENTCODE;
+            objTemp.TESTSTRUCTCODE = obj.TESTSTRUCTCODE;
+            objTemp.TESTSTRUCTCONTENTCODE = obj.TESTSTRUCTCONTENTCODE;
+            objTemp.AMOUNT = obj.AMOUNT;
+            objTemp.TOTALMARK = obj.TOTALMARK;
+            objTemp.QUESTIONTYPECODE = obj.QUESTIONTYPECODE;
+            //Kiểm tra tình trạng sửa hay là thêm mới
+            if (string.IsNullOrEmpty(obj.CODE))
+            {
+                //Thêm mới
+                add = 1;
+                //Sinh mã
+                objTemp.CODE = bus.genNextCode(obj);
+            }
+            if (add == 1)
+            {
+                ret = bus.insert(objTemp);
+            }
+            else
+            {
+                //gán _ID để xác định bản ghi sẽ được cập nhật
+                objTemp._ID.CODE = obj.CODE;
+                ret = bus.update(objTemp);
+            }
+            bus.CloseConnection();
+            //some thing like that
+            return Json(new { ret = ret }, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

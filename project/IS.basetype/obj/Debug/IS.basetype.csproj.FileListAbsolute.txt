@@ -1,0 +1,4 @@
+E:\hiep\NewOne\project\IS.basetype\bin\Debug\IS.basetype.dll
+E:\hiep\NewOne\project\IS.basetype\bin\Debug\IS.basetype.pdb
+E:\hiep\NewOne\project\IS.basetype\obj\Debug\IS.basetype.dll
+E:\hiep\NewOne\project\IS.basetype\obj\Debug\IS.basetype.pdb

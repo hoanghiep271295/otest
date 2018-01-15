@@ -1,0 +1,6 @@
+﻿var RAQuestion = React.createClass({
+    render: function() {
+        return (<div></div>);
+    }
+
+});

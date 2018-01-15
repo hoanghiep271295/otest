@@ -1,0 +1,238 @@
+﻿var StudentProfile = React.createClass( {
+    getInitialState: function() {
+        return {
+            title:'',
+            keyvalue:[]
+        };
+    },
+    componentWillMount:function()
+    {
+        var obj = getDefaultFromServer();
+        this.setState({ List1: obj.limark});        
+        this.setState({ List2: obj.limark2});        
+    },
+
+
+    componentDidMount: function () {
+        var obj = getDefaultFromServer();
+        this.setState({ currentcode: obj.code });
+        setTitle('sys_title', 'Hồ sơ: ' + obj.name);
+        var path = [{ title: 'Quản trị', status: 'active', link: '' }];
+        setTree('sys_path', path);
+        this.refs['hoten'].value=obj.name;
+        this.refs['Ngaysinh'].value=obj.birthday;
+        this.refs['Diachi'].value=obj.address;
+        this.refs['Email'].value=obj.email;
+        this.refs['Dienthoai'].value=obj.tel;
+        this.refs['note'].value=obj.note;
+        this.refs['lock'].value=(obj.khoa);
+        this.refs['sex'].value=obj.sex;
+        this.refs['codeview'].value=obj.codeview;
+        this.setKeyValue('class',[{CODE:obj.classcode}]);
+
+        this.setState({ popup: this.refs[this.props.id + '_Popup'] });
+        //console.log(this.refs['lock'].value);
+    },
+    /**
+* Thiết lập một giá trị theo key - có thể là object
+*/
+    setKeyValue:function(key,value)
+    {
+        keyvalue=this.state.keyvalue;
+        keyvalue[key]=value;
+        this.state.keyvalue=keyvalue;
+    },
+    /**
+    * Lấy một giá trị theo key, nếu chưa có thì trả về null - dành cho các trường hợp cần truyền tham số từ các tab
+    */
+    getKeyValue:function(key)
+    {
+        keyvalue=this.state.keyvalue;
+        if (!isMiss(keyvalue[key])) return keyvalue[key];
+        else return null;
+    },
+    onEditClick: function () {
+        //console.log('Hello');
+        var obj1 = getDefaultFromServer();
+        //if (this.state.rowSelect.length !== 1)
+        //{
+        //    bootbox.alert('Chưa chọn bản ghi hoặc nhiều hơn một bản ghi');
+        //}
+        //else
+        //{
+        //    var currentobj = this.state.rowSelect[0];
+        //console.log(this.refs['hoten'].value);
+        var obj = { 
+            NAME: this.refs['hoten'].value
+                        , CODE: this.state.currentcode
+                        , BIRTHDAY: convertDate(this.refs['Ngaysinh'].value)
+                        , ADDRESS: this.refs['Diachi'].value
+                        , EMAIL:  this.refs['Email'].value
+                        , TEL: this.refs['Dienthoai'].value
+                        , NOTE: this.refs['note'].value
+                        , CODEVIEW: this.refs['codeview'].value
+                        , LOCK: parseInt( this.refs['lock'].value)
+                        , SEX: this.refs['sex'].value
+            };
+        //    //gọi hàm từ trong đối tượng popup form để thiết lập tham số, sau đó hiển thị
+        this.state.popup.SetInput(obj);
+        this.state.popup.Show();
+        console.log(obj);
+        //}
+        //console.log('Hello2');
+
+    },
+    onChangePassClick: function () {
+        
+    },
+    ReloadList: function (obj) {
+        //Mặc định theo giá trị tìm kiếm hiện tại, thiết lập theo bản ghi hiện tại
+        // this.loadData(this.state.searchstatus, obj);
+        this.refs['hoten'].value = obj.NAME;
+        this.refs['Ngaysinh'].value = converDateFormat(obj.BIRTHDAY);
+        this.refs['Diachi'].value=obj.ADDRESS;
+        this.refs['Email'].value=obj.EMAIL;
+        this.refs['Dienthoai'].value=obj.TEL;
+        this.refs['note'].value= obj.NOTE;
+        this.refs['codeview'].value=obj.CODEVIEW;
+        this.refs['lock'].value=obj.LOCK;
+        this.refs['sex'].value=obj.SEX;
+        //console.log(obj);
+    },
+    render: function () {
+        var listRow = [];
+        var List1= this.state.List1;
+        if (!!List1) {
+            List1.forEach(function (item, index) {
+                var url = '/coursestudent/index/' + item.MARKCODE + "/" + item.COURSECODE;
+                listRow.push(
+               <tr>
+                  <td>{index+1}.</td>
+                  <td> <a href={url} target="_blank"> {item.NAME} </a> </td>
+                  <td>
+                    <div className="progress progress-xs">
+                      <div className="progress-bar progress-bar-danger" style={{width:item.COUNTLEARNT*100/item.COUNT}}></div>
+                    </div>
+                  </td>
+                  <td><span className="badge bg-red">{item.COUNTLEARNT*100/item.COUNT}%</span></td>
+                </tr>
+                );
+                });
+            }
+
+            var listRow2 = [];
+            var List2= this.state.List2;
+            if (!!List2) {
+                List2.forEach(function (item, index) {
+                    var url = '/studentexam/index/' + item.MARKCODE + "/" + item.COURSECODE;
+                    listRow2.push(
+                   <tr>
+                      <td>{index+1}.</td>
+                      <td> <a href={url} target="_blank"> {item.NAME} </a> </td>
+                      <td>
+                        <div className="progress progress-xs">
+                          <div className="progress-bar progress-bar-danger" style={{width:item.MARK10*100/item.MARKMAX}}></div>
+                        </div>
+                      </td>
+                      <td><span className="badge bg-red">{item.MARK10*100/item.MARKMAX}%</span></td>
+                    </tr>
+                            );
+            });
+            }
+
+        return(
+    <div className="row">
+       <StudentPopup ReloadData={this.ReloadList} ref={this.props.id+'_Popup'} id={this.props.id+'_Popup'} parent={this} />
+        
+        <div className="col-md-6">
+          <div className="box box-primary">
+            <div className="box-header with-border">
+              <h3 className="box-title">Thông tin cá nhân</h3>
+            </div>
+            <form role="form">
+              <div className="box-body">
+                    
+                <div classname="form-group">
+                  <label >Họ tên</label>
+                    <input type="text" ref="note" className="form-control hidden" /> 
+                    <input type="text" ref="lock" className="form-control hidden" /> 
+                    <input type="text" ref="sex" className="form-control hidden" /> 
+                    <input type="text" ref="codeview" className="form-control hidden" /> 
+
+                  <input className="form-control" ref="hoten" id="Hoten" placeholder="Họ và tên"/>
+                </div>
+                <div className="form-group">
+                  <label >Ngày sinh</label>
+                  <input className="form-control" ref="Ngaysinh" id="Ngaysinh" placeholder="Ngày sinh"/>
+                </div>
+                <div className="form-group">
+                  <label >Địa chỉ</label>
+                  <input className="form-control" ref="Diachi" id="Diachi" placeholder="Địa chỉ"/>
+                </div>
+                <div className="form-group">
+                  <label >EMail</label>
+                  <input className="form-control" ref="Email" id="Email" placeholder="E mail"/>
+                </div>
+                <div className="form-group">
+                  <label >Điện thoại</label>
+                  <input className="form-control" ref="Dienthoai" id="Dienthoai" placeholder="Điện thoại"/>
+                </div>
+              </div>
+              <div className="box-footer">
+                  <button type="button" className="btn btn-default" onClick={this.onChangePassClick}>Thay mật khẩu</button>
+                <button type="button" className="btn  btn-info pull-right"  onClick={this.onEditClick}>Cập nhật hồ sơ</button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+        
+        <div className='col-md-6'>
+            <div className="box box-primary">
+            <div className="box-header with-border">
+              <h3 className="box-title">Các khoá đã học</h3>
+            </div>
+            <div className="box-body">
+              <table className="table table-condensed">
+                <tr>
+                  <th style={{width:'30px'}}>TT</th>
+                  <th>Khoá học</th>
+                  <th>Tiến trình</th>
+                  <th style={{width:'40px'}}>Tỷ lệ</th>
+                </tr>
+                  {listRow}
+              </table>
+            </div>
+        </div>
+
+           <div className="box box-primary">
+            <div className="box-header with-border">
+              <h3 className="box-title">Kết quả thi/ Bài tập/ Kiểm tra</h3>
+            </div>
+            <div className="box-body">
+              <table className="table table-condensed">
+                <tr>
+                  <th style={{width:'30px'}}>TT</th>
+                  <th>Đợt thi</th>
+                  <th>Mức độ</th>
+                  <th style={{width:'40px'}}>Tỷ lệ</th>
+                </tr>
+                  {listRow2}
+              </table>
+            </div>
+        </div>
+        </div>
+
+
+    </div>
+
+        );
+		}
+
+} );
+
+//----------------
+ReactDOM.render(
+    <StudentProfile />,
+    document.getElementById('container')
+);

@@ -1,0 +1,36 @@
+﻿
+//dep
+var WritingAnswer = React.createClass({
+    render: function () {
+        var listAnswer = [];
+        var that= this;
+        this.props.listAnswerStudent.forEach(function(rowitem) {
+            if (rowitem.QUESTIONGROUPCODE === that.props.ident) {
+                listAnswer.push(
+                    <div>
+                    <textarea  className="form-control flex-item textareawriting" disabled>
+                        {rowitem.ANSWERTEXT}
+                    </textarea>
+                    </div>
+                    );
+            }
+        });
+        var questiongroup = $('<div />').html(this.props.objQuestionGroup.CONTENT).text().trim();
+        var indexQgroup = this.props.ident;
+        return (
+                     <div>
+        <div className="container questiongroup">
+                <h4 style={{fontWeight:'bold'}}>{this.props.number}.</h4>
+        </div>
+                <div className="fieldsetGroup">
+                     <div className="col-sm-10" style={{ width :'fit-content' }}>
+                                        <span style={{ textAlign: 'left' }}
+key={'error_' + indexQgroup} 
+dangerouslySetInnerHTML={{ __html: questiongroup }}></span>
+</div>
+{listAnswer}
+</div>
+</div>
+                  );
+}
+});

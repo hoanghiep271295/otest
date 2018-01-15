@@ -1,0 +1,295 @@
+﻿/**
+ * Quy tắc đặt tên
+ *Cung cấp ra ngoài các hàm: 
+ * ClearInput(obj): Xóa các text box - được gọi từ cha
+ * SetInput(obj): Thiết lập thông tin trên các ô text tương ứng - được gọi từ cha
+ * ReloadData(): callback function được gán từ cha vào để cập nhật lại thông tin của cha nếu cần thiết
+ */
+var CourseRegisterPopup = React.createClass({
+    getInitialState: function() {
+        return {
+            agGrid: { setRowData: null, getDataChange: null, setNextRow: null, setPrevRow: null },
+            rowSelect: null,
+            columnDefs: [
+                { headerName: "Mã sinh viên", field: "CODEVIEW", width: 100,align: 'center', editable: false },
+                { headerName: "Tên sinh viên", field: "NAME", width: 150,align: 'center', editable: false },
+                { headerName: "Số điện thoại", field: "PHONE", width: 120,align: 'center', editable: false },
+                { headerName: "Email", field: "EMAIL", width: 120, align: 'center', editable: false }
+            ],
+            listStudentNotRegisted: [],
+            listClass: [],
+            listGrade: []
+        };
+    },
+    initAgGrid: function(setRowData, getDataChange, setNextRow, setPrevRow, setSelect) {
+        var agGrid = {
+            setRowData: setRowData,
+            getDataChange: getDataChange,
+            setNextRow: setNextRow,
+            setPrevRow: setPrevRow,
+            setSelect: setSelect
+        };
+        this.setState({ agGrid: agGrid });
+    },
+    componentWillMount: function() {
+        //Load các thông tin về danh mục các thứ khác nếu cần hiết
+    },
+    componentDidMount: function() {
+         // this.setState({ popup: this.refs[this.props.id + '_Popup'] });
+        //   this.getListStudentUnRegisted();
+    },
+    onRowSelect : function(itemSelect) {
+        if (!!itemSelect && itemSelect.length > 0) {
+            this.setState({ rowSelect: itemSelect });
+        }
+    }
+    ,
+    /**
+     * cần load danh sách những sinh viên thuộc lớp (class) mà chưa đăng kí vào lớp môn học
+     * @param {string} gradecode : Mã khóa học 
+     * @param {string} classcode : Mã lớp học
+     * @returns {danh sách sinh viên} 
+     */
+    loadData: function (gradecode, classcode) {
+        $.ajax({
+            url: '/StudentRegisCourse/LoadListStudentNotRegisted',
+            traditional :true,
+            data: {
+                courseCode: this.props.parent.getKeyValue('courseCode').CODE,
+                classCode :classcode,
+                gradeCode : gradecode
+            },
+            dataType: 'json',    
+            success: function (data) {
+                if (data.ret >= 0) {
+                    this.state.agGrid.setRowData(data.lst);                   
+                }
+                this.state.agGrid.setRowData(data.lst);
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    Show: function () {
+        $('#' + this.props.id).modal('show');
+    },
+    /**
+    *Ẩn form hiện tại
+    */
+    Hide: function () {
+        $('#' + this.props.id).modal('hide');
+    },
+    /**
+    *hàm được gọi để xóa dữ liệu trên form cho phép thêm mới; được gọi bởi component có component này (list)
+    */
+    /**
+    *hàm được gọi để xóa dữ liệu trên form cho phép thêm mới; được gọi bởi component có component này (list)
+    */
+    ClearInput: function () {
+        console.log("do clear");
+        this.loadData();
+        
+    },
+    /**
+    *Hàm gán dữ liệu để sửa, được gọi bởi component cha của component này
+    *para obj: thông tin về dữ liệu được thay đổi
+    */
+    SetInput: function () {
+        //Set status
+        this.refs[this.props.id + "_status"].innerHTML = 'edit';
+    },
+
+    /**
+   *Kiểm tra để gọi load lại cho dữ liệu từ component cha (danh sách)
+   *para obj: là mã của bản ghi mới được thao tác
+   */
+    ReloadData: function (obj) {
+        var classCode = this.props.parent.getKeyValue('comboGrade');
+        if (isMiss(this.props.ReloadData)) {
+            return false;
+        }
+        else {
+            this.props.ReloadData(classCode, obj);
+            return true;
+        }
+    },
+    /**
+    *gọi khi bấm nút ghi
+    */
+    SaveClick: function ()
+    {
+        this.SaveData(true);
+    },
+    /**
+    *gọi khi bấm nút ghi và tạo mới
+    */
+    SaveContinueClick: function () {
+        this.SaveData(false);
+    },
+    /**
+     *Thực tế ghi dữ liệu
+   *para isClose xác định sau khi ghi xong sẽ đóng form, hay là tiếp tục tạo mới
+   */
+    SaveData: function (isClose) {
+        //Add or edit 1 item
+        if (!!this.state.rowSelect) {
+            var listStudentCode = [];
+            this.state.rowSelect.forEach(function(item) {
+                listStudentCode.push(item.CODE);
+            });
+            var courseObj = this.props.parent.getKeyValue('courseCode');
+            var subjectObj = this.props.parent.getKeyValue('subjectCode');
+          var  postData = {
+                listStudentCode: listStudentCode,
+                coursecode: courseObj.CODE,
+                subjectcode: subjectObj.CODE
+          };
+            if (!!listStudentCode.length) {
+                $.ajax({
+                    url: "/StudentRegisCourse/UpdateStudentCourse",
+                    type: 'POST',
+                    data: postData,
+                    dataType: 'json',
+                    traditional: true,
+                    success: function (data) {
+                        if (data.ret >= 0) {
+                            if (isClose) {
+                                this.Hide();
+                            }
+                            //sau khi ghi dữ liệu thành công thì cần reload lại grid ở bên ngoài 
+                            //và cả grid ở bên trong popup
+                            this.loadData();
+                            //set cho nó thời gian trễ để server kịp thời xử lý
+                            //load lại dữ liệu ở grid ngoài cùng
+                                this.ReloadData();
+                      
+                        } else {
+                            log.show('Lỗi ghi dữ liệu',false);
+                        }
+                    }.bind(this),
+                    error: function (xhr, status, err) {
+                        console.error(this.props.url, status, err.toString());
+                    }.bind(this)
+                });
+            }
+            
+        }
+    },
+    //thao tác khi click trực tiếp vào 1 element, xử lý sự kiện onclick item
+    ComboOnSelect: function (element) {
+        console.log('On ComboOnSelect', element);
+        if (!!element.parent) {
+            console.log("do oncheck");
+            var gradecode = element.parent;
+            var classcode = element.id;
+            this.loadData(gradecode, classcode);
+        }
+        
+    },
+    //thao tác khi check  vào một note bất kì, khi hiển thị ở dạng checkbox
+    ComboOnCheck: function (elements, status) {
+        console.log("on ComboOnCheck", elements, status);
+        var gradecode = elements.parent;
+        var classcode = elements.id;
+        console.log("do oncheck");
+        this.loadData(gradecode,classcode);
+    },
+    //thao tác khi click expand tree
+    ComboOnExpand: function (element, status) {
+        console.log('ComboOnExpand', element, status);
+    },
+    /**
+     * Hien thi danh sach cay len tren popup bao gồm khóa học và lớp học
+     * 
+     * @returns {} 
+     */
+    
+    loadGradeDownTree: function () {
+
+        $.ajax({
+            url: '/StudentRegisCourse/LoadListGrade',
+            dataType: 'json',
+            data: {},
+            success: function (data) {
+                this.loadData(data.classDefault.GRADECODE, data.classDefault.CODE);
+                if (data.ret > 0) {
+                   
+                    this.setState({ listGrade: data.lst });
+                   
+                    if (data.lst.length > 0)
+                        this.refs[this.props.id+ '_dropdowntree'].setValue(data.lst[0].CODE);
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    render: function () {
+        //mô tả dạng dữ liệu sẽ được hiển thị lên trên dropdowntree
+        //var arr3 = [
+        //    { id: "1", title: "Khong", parent: '' }, 
+        //    { id: "2", title: "Có không", parent: '' },
+        //    { id: "4", title: "Có 1", parent: '1' },
+        //    { id: "5", title: "Có 11", parent: '4' },
+        //    { id: "6", title: "Có 12", parent: '4' }
+        //];
+        var arr3 = this.state.listGrade;
+        console.log(arr3);
+        var mapping = { id: 'CODE', text: 'NAME', parent: 'EDUCATIONLEVELCODE', idext: 'CODE' }
+        return (
+                <div className="modal fade" id={ this.props.id} ref={ this.props.id} role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div className="modal-dialog" style={{'width':'75%'}}>
+                    <div className="box box-info">
+                      <div className="modal-header with-border">
+                        <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                        <h4 className="modal-title" id={ this.props.id +"_form_title"} ref={this.props.id+"_form_title"} >Danh sách sinh viên chưa đăng kí vào lớp môn học</h4>
+                          <input type="hidden" id={this.props.id+ "_parentCode"} ref={this.props.id+ "_parentCode"} />{/*Lưu lại mã code của cha hiện tại*/}    
+                      </div>
+                      <div className="modal-body">
+                      <form className="form-horizontal" id='myform' role="form">
+                            <div className="form-group">
+                                <label  className="col-sm-2 control-label">Chọn lớp </label>
+                                 <div className="col-sm-10">
+                            <DropdownTree title='Khóa học'
+                                                id={this.props.id + '_dropdowntree'} 
+                                                lst={this.state.listGrade} 
+                                                onSelect={this.ComboOnSelect}
+                                                onCheck={this.ComboOnCheck} 
+                                                onExpand={this.ComboOnExpand} 
+                                                check={false} 
+                                                selectChildren={true}
+                                                mapper={mapping} 
+                                                ref={this.props.id + '_dropdowntree'}/>
+                        </div>
+                                </div>
+                                </form>
+                                <div className="form-group">
+                       <div id={this.props.id+'_grid'} className="ag-fresh customgrid">
+                          </div>
+                            <AgGrid container={this.props.id+'_grid'}
+                                    initAgGrid={this.initAgGrid}
+                                    loadData={this.loadData}
+                                    onRowSelect={this.onRowSelect}
+                                    columnDefs={this.state.columnDefs}
+                                    headerCheckBox={true}>
+                            </AgGrid>
+                             </div>
+                     
+                        </div>
+                        <div className="box-footer modal-footer">{/*Phần dành để hiển thị trạng thái - không thay đổi*/}
+                        <span className="label label-warning" style={{float:'left'}} id={this.props.id+"_status"} ref={this.props.id+"_status"}>i</span>
+                        <button type="button" className="btn btn-primary" onClick={this.SaveClick}><i className="fa fa-floppy-o"></i> Ghi</button>
+                        <button type="button" className="btn btn-primary" onClick={this.SaveContinueClick}><i className="fa fa-plus-circle"></i> Ghi và thêm mới</button>
+                        <button type="button" className="btn btn-default " data-dismiss="modal"><i className="fa fa-sign-out"></i>Thoát</button>
+                        </div>
+
+    </div>
+  </div>
+</div>
+            );
+}
+});
+
+

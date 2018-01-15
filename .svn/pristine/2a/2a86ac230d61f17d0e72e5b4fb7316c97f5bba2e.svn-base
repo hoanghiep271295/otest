@@ -1,0 +1,337 @@
+﻿/**
+ * Quy tắc đặt tên
+ * QUESTIONGROUP :Câu hỏi hay được hiểu hay hơn chính là đầu bài của câu hỏi
+ * QUESTION : câu hỏi con trong một đề bài
+ * ANSWER : Câu trả lời cho một câu hỏi con 
+ */
+
+var PopupQuestion = React.createClass({
+      getInitialState: function () {
+          return {
+              tab: null,
+              page: 1
+          };
+      },
+      componentWillMount: function () {
+          component.add('popupanswerquestion', this);
+      },
+      onSave: function () {
+          //khởi tạo một đối tượng    
+          var node = new Object();
+          var parent = component.get('listQuestion');
+          switch (parent.state.questiontypeQuestion) {
+              //Multichoice/
+              case 'MC':
+                  node.ANSWERCODE = $('#hidANSWERCODE').val();
+                  $('textarea.CONTENTQUESTION').html(window.tinymce.get('CONTENTQUESTION').getContent());
+                  node.CONTENT = $('textarea.CONTENTQUESTION').html();
+                  break;
+              //nội dung câu hỏi nhập dạng 1,2,3 nên không cần dùng tinyMCE
+              case 'FI':
+                  node.CONTENT = $('#FICONTENTQUESTION').val();
+                  node.ANSWERCODE = $('#hidFIANSWERCODE').val();
+                  break;
+           //nội dung câu hỏi nhập dạng 1,2,3 nên không cần dùng tinyMCE
+          // Câu hỏi điền vào đoạn trống tự gõ từ 
+              case 'FG':
+                  node.CONTENT = $('#FGCONTENTQUESTION').val();
+                  node.ANSWERCODE = $('#hidFGANSWERCODE').val();
+                  break;
+            //trường hợp câu hỏi tổng hợp
+              case 'CO':
+                  node.ANSWERCODE = $('#hidCOANSWERCODE').val();
+                  $('textarea.CONTENTQUESTION').html(window.tinymce.get('CONTENTQUESTION').getContent());
+                  node.CONTENT = $('textarea.CONTENTQUESTION').html();
+                  break;
+            //trường hợp nghe nói cũng nên lưu lại answẻcode để khi sửa câu hỏi sẽ không mất dữ liệu câu hỏi
+              case 'LA':
+                  node.ANSWERCODE = $('#hidLAANSWERCODE').val();
+                  $('textarea.CONTENTQUESTION').html(window.tinymce.get('CONTENTQUESTION').getContent());
+                  node.CONTENT = $('textarea.CONTENTQUESTION').html();
+                  break;
+                  //writing
+              case 'WR':
+                  node.ANSWERCODE = $('#hidWRANSWERCODE').val();
+                  $('textarea.CONTENTQUESTION').html(window.tinymce.get('CONTENTQUESTION').getContent());
+                  node.CONTENT = $('textarea.CONTENTQUESTION').html();
+                  break;
+
+        // default
+        //nội dung câu hỏi
+              default:
+                  $('textarea.CONTENTQUESTION').html(window.tinymce.get('CONTENTQUESTION').getContent());
+                  node.CONTENT = $('textarea.CONTENTQUESTION').html();
+                  break;
+          }      
+          //mã của câu hỏi 
+          node.QUESTIONGROUPCODE = $('#QUESTIONGROUPCODE').val();
+          //mã của câu hỏi con
+          node.CODE = $('#CODEQUESTION').val();
+          // mã hiển thị của câu hỏi còn
+          node.CODEVIEW = $('#CODEVIEWQUESTION').val();
+          //tên của câu hỏi con
+          node.NAME = $('#NAMEQUESTION').val();
+          //trạng thái hiển thị của câu hỏi con
+          node.LOCK = $('#LOCKQUESTION').prop("checked") ? 1 : 0;
+          //thứ tự hiển thị
+          node.ORD = $('#ORDQUESTION').val();
+          //điểm cho câu hỏi 
+          node.MARK = $('#MARKQUESTION').val();
+          //câu trả  lời   
+
+          $.ajax({
+              url: "/Question/UpdateQuestion",
+              dataType: 'json',
+              type: 'post',
+              data: {
+                  ANSWERCODE: node.ANSWERCODE,
+                  CODE: node.CODE,
+                  CODEVIEW: node.CODEVIEW,
+                  NAME: node.NAME,
+                  LOCK: node.LOCK,
+                  ORD: node.ORD,
+                  MARK: node.MARK,
+                  CONTENT: node.CONTENT,
+                  QUESTIONGROUPCODE: node.QUESTIONGROUPCODE
+              },
+              success: function (data) {
+                  if (data.ret >= 0) {
+                      var list = component.get('listQuestion');
+                      list.refreshRowData();
+                      log.show("Ghi thành công!", true);
+                  }
+                  else {
+                      log.show("Ghi lỗi!", false);
+                  }
+              }.bind(this),
+              error: function (xhr, status, err) {
+                  console.log(err.toString());
+              }
+          });
+      },
+      handleSubmit: function () {
+          //mã nhóm câu hỏi, questiongroup là câu hỏi,question là chi tiết câu hỏi
+          var questiongroup = $('#QUESTIONGROUPCODE').val();
+          //mã chi tiết câu hỏi con
+          var code = $('#CODEQUESTION').val();
+          // mã hiển thị của chi tiết câu hỏi con
+          var codeview = $('#CODEVIEWQUESTION').val();
+          if (codeview === "") {
+              //alert("Chưa nhập mã");
+              log.show("Chưa nhập mã!", false);
+              //move to edit interface
+              $("#NewModalQuestion").modal('show');
+              return false;
+          }
+          else {
+              //Check trùng codeview
+              $.ajax({
+                  url: "/Question/checkCodeViewExitQUESTION",
+                  data: {
+                      questiongroup: questiongroup,
+                      code: code,
+                      codeView: codeview
+                  },
+                  dataType: 'json',
+                  success: function (data) {
+                      if (data.sussess >= 0) {
+                          this.onSave();
+                      } else {                   
+                          log.show("Mã đã tồn tại!", false);
+                      }
+                  }.bind(this),
+                  error: function (xhr, status, err) {
+                      console.error(this.props.url, status, err.toString());
+                  }.bind(this)
+              });
+          }
+          return true;
+      },
+    //xác nhận thay đổi
+      ConfirmSubmit: function () {
+          var parent = component.get('listQuestion');
+          if (parent.state.questiontypeQuestion === 'MC') {
+              var childMc = component.get('MCQuestion');
+              childMc.onCheckChange();
+          } else 
+              if( parent.state.questiontypeQuestion === 'CO')
+          {
+                  var childCo = component.get('COQuestion');
+                  childCo.onCheckChange();
+          }
+              else
+          {
+              this.handleSubmit();
+          }
+      },     
+      render: function () {
+        // ReSharper disable once AssignedValueIsNeverUsed
+          var result = null;
+          var title = null;
+          var parent = component.get('listQuestion');
+          switch (parent.state.questiontypeQuestion) {
+                 //1
+              case 'MC':
+                  result = (<MCQuestion />);
+                  title = 'câu hỏi một nhiều : MC';
+                  break;
+                 //2
+              case 'PA':
+                  result = (<PAQuestion />);
+                  title = 'câu hỏi ghép đôi : PA';
+                  break;
+                 //3
+              case 'FI':
+                  result = (<FIQuestion />);
+                  title = 'câu hỏi điển từ vào đoạn trống : FI';
+                  break;
+                  //4
+              case 'FG':
+                  result = (<FGQuestion />);
+                  title = 'câu hỏi điền vào đoạn trống tự gõ từ : FG ';
+                  break;
+                  //5
+              case 'CO':
+                  result = (<COQuestion />);
+                  title = 'câu hỏi tổng kết : CO ';
+                  break;
+                  //6
+              case 'RW':
+                  result = (<RWQuestion />);
+                  title = 'viết lại câu :RW';
+                  break;
+                  //7
+              case 'LA':
+                  result = (<LAQuestion />);
+                  title = 'nghe nói : LA';
+                  break;
+                  //8
+              case 'WR':
+                  result = (<WRQuestion />);
+                  title = 'bài viết : WR';
+                  break;
+
+              default:
+                  result = 'question do nothing';
+                  break;
+          }
+          return (
+          <div className="modal fade" id="NewModalQuestion" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style={{"height":"100%","overflow": "auto"}}>
+                    <div className="modal-dialog">
+                      <div className="modal-content">
+                        <div className="modal-header">
+                          <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                          <h4 className="modal-title" id="myModalLabel" style={{ fontFamily: 'serif'}}>Thêm câu hỏi mới dạng {title}</h4>
+                        </div>
+                        <div className="modal-body">
+                            <form className="form-horizontal" id='myform' role="form" style={{ fontFamily: 'serif'}}>
+                                <input type="text" id="CODEQUESTION" className="form-control col-md-10 hidden" />
+                                 <div className="form-group">
+                                    <label className="col-sm-2 control-label">Câu hỏi</label>
+                                    <div className="col-sm-10">
+                                          <input type="hidden" className="form-control" id="QUESTIONGROUPCODE" disabled />
+                                          <div style={{'height':'30px','textAlign':'center',overflowY:'scroll'}} type="text" className="form-control" id="QUESTIONGROUPNAME" ></div>
+                                    </div>
+                                   </div>
+                                 <div className="form-group">
+                                    <label className="col-sm-2 control-label">Mã</label>
+                                    <div className="col-sm-10">
+                                        <input type="text" className="form-control" id="CODEVIEWQUESTION" />
+                                    </div>
+                                </div>
+                                 <div className="form-group">
+                                    <label className="col-sm-2 control-label">Tên chi tiết </label>
+                                    <div className="col-sm-10">
+                                        <input type="text" className="form-control" id="NAMEQUESTION" />
+                                    </div>
+                                </div>
+                                 <div className="form-group">
+                                    <label className="col-sm-2 control-label">Hiển thị</label>
+                                    <div className="col-sm-10">
+                                        <input type="checkbox" id="LOCKQUESTION" />
+                                    </div>
+                                 </div>
+                                 <div className="form-group">
+                                    <label className="col-sm-2 control-label">Thứ tự hiển thị</label>
+                                    <div className="col-sm-10">
+                                        <input type="number" className="form-control" id="ORDQUESTION" />
+                                    </div>
+                                  </div>
+                                 <div className="form-group">
+                                    <label className="col-sm-2 control-label">Điểm</label>
+                                    <div className="col-sm-10">
+                                      <input type="number" className="form-control" id="MARKQUESTION"
+                                             min='0.1' max='10'maxLength="2"
+                                              placeholder="Only float with comma !" step="0.01" />
+                                    </div>
+                                   </div>                                
+                                 <div className="form-group" id="contentques">
+                                    <label className="col-sm-2 control-label">Nội dung chi tiết</label>
+                                    <div className="col-sm-10">
+                                        <textarea className="CONTENTQUESTION form-control" id='CONTENTQUESTION'></textarea>
+                                    </div>
+                                   
+                                </div>
+                                 <div>
+                                     {result}
+                                 </div>                              
+                            </form>
+                        </div>
+                         <div className="modal-footer">
+                        <button id='btn_PrevQuestion' title="Previous" className="btn btn-default" onClick={this.props.onPre}><i className="fa fa-angle-left fa-lg"></i></button>
+                        <button id='btn_NextQuestion' title="Next" className="btn btn-default" onClick={this.props.onNext}><i className="fa fa-angle-right fa-lg"></i></button>
+                        <button type="button" className="btn btn-primary" onClick={this.props.clearData}><i className="fa fa-plus" aria-hidden="true"></i> Thêm mới</button>
+                        <button type="button" className="btn btn-primary" onClick={this.ConfirmSubmit}><span className="glyphicon  glyphicon-save-file"></span> Lưu</button>
+                        <button type="button" className="btn btn-danger" data-dismiss="modal"><i className="fa fa-times" aria-hidden="true"></i> Đóng</button>
+                         </div>
+                      </div>
+                    </div>
+          </div>
+            );
+      }
+});
+
+
+//Rewrite
+//Merge: function () {
+//    var str = $('#CONTENT_QUESTION_RW').val();
+//    console.log(str);
+//    var array = str.trim().split(" ");
+//    console.log(array);
+//    console.log(array.indexOf('/'));
+//    var array2 = str.trim().split('/');
+//    console.log(array2);
+//    var currentIndex = array.length, temporaryValue, randomIndex;
+//    ///truong hop đưa vào là chuỗi có sẵn '/' nhưng muốn đổi vị trí
+
+//    if (array.indexOf('/') >= 1) {
+//        currentIndex = array2.length;
+//        while (0 !== currentIndex) {
+//            // Pick a remaining element...
+//            randomIndex = Math.floor(Math.random() * currentIndex);
+//            currentIndex -= 1;
+//            // And swap it with the current element.
+//            temporaryValue = array2[currentIndex];
+//            array2[currentIndex] = array2[randomIndex];
+//            array2[randomIndex] = temporaryValue;
+//        }
+//        console.log(array2);
+//        $('#CONTENTQUESTION').val('');
+//        $('#CONTENTQUESTION').val(array2.join('/'));
+//    }
+//    else {
+//        while (0 !== currentIndex) {
+//            // Pick a remaining element...
+//            randomIndex = Math.floor(Math.random() * currentIndex);
+//            currentIndex -= 1;
+
+//            // And swap it with the current element.
+//            temporaryValue = array[currentIndex];
+//            array[currentIndex] = array[randomIndex];
+//            array[randomIndex] = temporaryValue;
+//        }
+//        console.log(array);
+//        $('#CONTENTQUESTION').val('');
+//        $('#CONTENTQUESTION').val(array2.join('/'));
+//    }
+//},

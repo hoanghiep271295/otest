@@ -1,0 +1,77 @@
+﻿
+//hien thi cac o co du lieu de keo tu day di
+//day chinh la cac answer va se duoc lap vao listanswer
+var DragBack = React.createClass({
+    allowDrop: function (event) {
+        if (!!event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+        }
+    },
+    //khi tha con trỏ chuột ra thì chạy vao đây, sử dụng cho chủ yếu trong trường hợp PA
+    drop: function (event) {
+
+        //1712240001_1712270010_PA
+        var targetdrop = event.currentTarget.id;
+        // var idDropTarget = targetdrop.split('_')[1];
+        //1712240001_1712270010_PA_CONTAINER
+        if (!!global) {
+            event.preventDefault();
+            //var type = global.split('_')[3];
+            //var answercode = global.split('_')[1];
+            //lay questiongroup cua vi tri dang duoc drop
+            var targetdraggroupcode = global.split('_')[0];
+            //lay questiongroup cua vi tri dang duoc drag
+            var targetdropgroupcode = targetdrop.split('_')[0];
+            //kiem tra neu hop le có nghĩa là 2 questiongroup === nhau thì chúng cùng 1 group
+            //-> cho phép tranferdata
+            if (targetdropgroupcode === targetdraggroupcode) {
+
+                var el = event.currentTarget.getElementsByTagName("p");
+                var data = event.dataTransfer.getData("text");
+                if (el.length === 0) {
+                    event.currentTarget.appendChild(document.getElementById(data));
+                } else {
+                    var cut = el[0].id.split('_')[1];
+                    document.getElementById(el[0].id.replace("_" + cut, "")).appendChild(el[0]);
+                    event.currentTarget.appendChild(document.getElementById(data));
+                }
+                event.preventDefault();
+            } else {
+                log.show("Không thể thực hiện được thao tác này", false);
+            }
+
+        }
+    },
+    //biến global ở đây là biến toàn cục được khai báo ở bên App nên
+    //ở đây nó có báo là không được tìm thấy cũng k sao
+    dragStart: function (event) {
+        if (!!event) {
+            global = event.target.id;
+            event.dataTransfer.setData("text", event.target.id);
+           // event.dropEffect = "move";
+        }
+    },
+    render() {
+        var code = this.props.id;
+        // var answercode = code.split("_")[1];
+        //từ trên gửi xuống code theo thứ tự QEUESTIONGROUPCODE_ANSWERCODE
+        var questiongroupcode = code.split('_')[0];
+        var answerContent = $('<div />').html(this.props.content).text().trim();
+        return (
+            <li id={questiongroupcode + "_" + this.props.index + "_" + this.props.type}
+                className={questiongroupcode}
+                onDrop={this.drop}
+                onDragOver={this.allowDrop}
+                >
+                <p id={code + "_"+this.props.index+"_" + this.props.type}
+                        draggable="true"
+                        onDragStart={this.dragStart}
+                        onmousedown="return false"
+                   >
+                        {answerContent}
+                </p>
+          </li>);
+}
+});
+//onDrop={this.drop}

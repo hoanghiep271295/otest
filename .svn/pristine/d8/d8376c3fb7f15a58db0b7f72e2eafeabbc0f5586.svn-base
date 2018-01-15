@@ -1,0 +1,150 @@
+﻿using IS.Config;
+using IS.fitframework;
+using IS.Sess;
+using IS.uni;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Web.Mvc;
+
+namespace nerp.Controllers.core
+{
+    public class MarkController : Controller
+    {
+        // GET: Mark
+        private readonly session _ses = new session();
+
+        public ActionResult Index(string id)
+        {
+            dynamic defaultobject = new ExpandoObject();
+            defaultobject.defaulttab = id;
+            defaultobject.thetype = _ses.loginType;
+            ViewBag.defaultvalue = JsonConvert.SerializeObject(defaultobject);
+
+            string[] jsx = {
+                "/Scripts/reactselect/prop-types.js"
+                ,"/Scripts/reactselect/react-input-autosize.js"
+                ,"/Scripts/reactselect/classname.js"
+                ,"/Scripts/reactselect/react-select.js"
+                , "/Jsx/_Shared/ButtonList.jsx"
+                ,"/Jsx/_Shared/PopupSearch.jsx"
+                ,"/Jsx/_Shared/Combobox.jsx"
+                ,"/Jsx/_Shared/DropDownTree.jsx"
+                 ,"/Scripts/Dropdowntree/dropdowntree.js"
+                ,"/Jsx/_Shared/Tree.jsx"
+                ,"/Scripts/Ag-grid/ag-grid.js"
+                ,"/Jsx/_Shared/AgGrid.jsx"
+                ,"/Jsx/_Shared/TabHeader.jsx"
+                //  ,"/jsx/Core/Mark/Coursestudied.jsx"
+                ,"/jsx/Core/Mark/StudentList.jsx"
+                 ,"/jsx/Core/Mark/MarkApp.jsx"
+            };
+            ViewBag.jsx = jsx;
+            return View("Adminindex");//Lấy index mặc định trong share
+        }
+        /// <summary>
+        /// get danh sách tất cả các sinh viên, trừ các sinh viên đã được thêm vào lớp học
+        /// </summary>
+        /// <param name="coursecode">mã lớp học</param>
+        /// <param name="classcode">mã lớp</param>
+        /// <returns></returns>
+        public JsonResult GetAllStudent(string coursecode, string classcode)
+        {
+            // danh sách mã sinh viên đã tham gia vào course
+            List<string> listStudentCode = new List<string>();
+            MARK_BUS bus = new MARK_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            if (!string.IsNullOrEmpty(coursecode))
+            {
+                lipa.Add(new fieldpara("COURSECODE", coursecode, 0));
+            }
+            lipa.Add(new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            lipa.Add(new fieldpara("EDUCATIONLEVELCODE", "DH", 0));
+            List<MARK_OBJ> liStudentCourse = bus.getAllBy2("STUDENTCODE", lipa.ToArray());
+            foreach (var studentcourse in liStudentCourse)
+            {
+                listStudentCode.Add(studentcourse.STUDENTCODE);
+            }
+            // danh sách tất cả các sinh viên
+            STUDENT_BUS busStudent = new STUDENT_BUS();
+            var liStudent = busStudent.getAllBy2("CODE", new fieldpara("CLASSCODE", classcode, 0),
+                new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0),
+                new fieldpara("EDUCATIONLEVELCODE", "DH", 0));
+            var count = 0;
+            if (listStudentCode.Count > 0)
+            {
+                for (int i = 0; i < liStudent.Count; i++)
+                {
+                    if (listStudentCode.Contains(liStudent[i].CODE))
+                    {
+                        liStudent.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            var data = JsonConvert.SerializeObject(liStudent);
+            return Json(new
+            {
+                data,//Danh sách
+                count
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// danh sách tất cả các sinh viên đã được thêm vào lớp học
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="coursecode">Mã lớp môn học</param>
+        /// <returns></returns>
+        public JsonResult GetStudentByCourse(string coursecode)
+        {
+            //khai báo lấy dữ liệu
+            STUDENT_BUS bus = new STUDENT_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            ////mặc định cho phần trang
+            //if (!string.IsNullOrEmpty(coursecode))
+            //{
+            //    lipa.Add(new fieldpara("COURSECODE", coursecode, 0));
+            //}
+            //if (!string.IsNullOrEmpty(code))
+            //{
+            //    lipa.Add(codetype ? new fieldpara("CODEVIEW", code, 0) : new fieldpara("CODEVIEW", code, 1));
+            //}
+            //if (!string.IsNullOrEmpty(name))
+            //{
+            //    lipa.Add(nametype ? new fieldpara("NAME", name, 0) : new fieldpara("NAME", name, 1));
+            //}
+            //if (!string.IsNullOrEmpty(note))
+            //{
+            //    lipa.Add(notetype ? new fieldpara("NOTE", note, 0) : new fieldpara("NOTE", note, 1));
+            //}
+            lipa.Add(new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            List<jointable> lijoin = new List<jointable>();
+            lijoin.Add(new jointable(typeof(MARK_OBJ), "CODE", "STUDENTCODE", new fieldpara("COURSECODE", coursecode, (int)searchType.NONE)));
+            List<STUDENT_OBJ> liStudent = bus.getAllBy2("CODEVIEW", lipa, lijoin);
+            //kiểm tra danh sách trả về có null hay không
+            var ret = liStudent != null ? 1 : -1;
+            return Json(new
+            {
+                ret,
+                lst = liStudent
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// lấy mark theo mã sinh viên và mã khóa học
+        /// </summary>
+        /// <param name="coursecode"></param>
+        /// <returns></returns>
+        public JsonResult GetByStudentCourse(string coursecode)
+        {
+             string studentcode = _ses.loginCode;
+            MARK_BUS bus = new MARK_BUS();
+            var data = bus.GetByKey(new fieldpara("STUDENTCODE", studentcode, 0),
+                                    new fieldpara("COURSECODE", coursecode, 0),
+                                    new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            return Json(new { data }, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

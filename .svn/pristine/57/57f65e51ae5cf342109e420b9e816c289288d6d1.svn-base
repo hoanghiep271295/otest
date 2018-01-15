@@ -1,0 +1,339 @@
+﻿using IS.Config;
+using IS.fitframework;
+using IS.localcomm;
+using IS.Sess;
+using IS.uni;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace nerp.Controllers.core
+{
+    public class CourseController : Controller
+    {
+        // GET: COURSE
+        private readonly session _ses = new session();
+
+        private readonly localcommonlib _com = new localcommonlib();
+
+        /// <summary>
+        /// Lấy toàn bộ danh sách của khóa học theo các biến serach truyền vào hoặc mặc định các biến search là null,
+        /// có 1 biến bắt buộc là subjectcode, nếu không có thì coi như không có course
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="subjectcode"></param>
+        /// <param name="code"></param>
+        /// <param name="codetype"></param>
+        /// <param name="name"></param>
+        /// <param name="nametype"></param>
+        /// <param name="note"></param>
+        /// <param name="notetype"></param>
+        /// <returns></returns>
+        public JsonResult GetAllSearch(int page, int pageSize, string subjectcode, string code, bool codetype, string name, bool nametype,
+                                    string note, bool notetype)
+        {
+            //mặc định cho phần trang
+            if (pageSize == 0)
+            {
+                pageSize = AppConfig.item4page();
+            }
+            if (page < 1)
+            {
+                page = 1;
+            }
+            //Khai báo lấy dữ liệu
+            COURSE_BUS bus = new COURSE_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            if (!string.IsNullOrEmpty(subjectcode))
+            {
+                lipa.Add(new fieldpara("SUBJECTCODE", subjectcode, 0));
+            }
+            if (!string.IsNullOrEmpty(code))
+            {
+                lipa.Add(codetype ? new fieldpara("CODEVIEW", code, 0) : new fieldpara("CODEVIEW", code, 1));
+            }
+            if (!string.IsNullOrEmpty(name))
+            {
+                lipa.Add(nametype ? new fieldpara("NAME", name, 0) : new fieldpara("NAME", name, 1));
+            }
+            if (!string.IsNullOrEmpty(note))
+            {
+                lipa.Add(notetype ? new fieldpara("NOTE", note, 0) : new fieldpara("NOTE", note, 1));
+            }
+            lipa.Add(new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            int countpage;
+            int totalItem;
+            //order by theorder, with pagesize and the page
+            var li = bus.getAllBy2("CODE", pageSize, page, out countpage, out totalItem, lipa);
+            bus.CloseConnection();
+            //Chỉ số đầu tiên của trang hiện tại (đã trừ -1)
+            int startpage = (page - 1) * pageSize;
+            //Trả về client
+            return Json(new
+            {
+                lst = li,//Danh sách
+                totalItem, // số lượng tất cả các bản ghi
+                totalPage = countpage, // số lượng trang
+                startindex = startpage,//bắt đầu số trang
+                ret = 0//ok
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// cập nhật một khóa học, chú ý kiểm tra luôn cả khóa ngoại trước khi cập nhật
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public JsonResult Update(COURSE_OBJ obj)
+        {
+            COURSE_BUS bus = new COURSE_BUS();
+            int ret = 0;
+            int add = 0;
+            //if (_ses.isLogin() < 0)
+            //{
+            //    return Json(new { ret = -1 }, JsonRequestBehavior.AllowGet);
+            //}
+            var objTemp = !string.IsNullOrEmpty(obj.CODE) ? bus.GetByID(new COURSE_OBJ.BusinessObjectID(obj.CODE)) : new COURSE_OBJ();
+            if (ret < 0)
+            {
+                bus.CloseConnection();
+                return Json(new { sussess = ret }, JsonRequestBehavior.AllowGet);
+            }
+            objTemp.EDITTIME = DateTime.Now; // thời điểm sửa bản ghi
+            objTemp.EDITUSER = _ses.loginCode; // người sửa bản ghi
+            objTemp.CODEVIEW = obj.CODEVIEW;
+            objTemp.NAME = obj.NAME;
+            objTemp.NOTE = obj.NOTE;
+            objTemp.LOCK = obj.LOCK;
+            objTemp.UNIVERSITYCODE = _ses.gUNIVERSITYCODE;
+            //begin date
+            var begin = _com.date2String(obj.BEGINDATE);
+            objTemp.BEGINDATE = _com.convert2date(begin);
+            //end date
+            var end = _com.date2String(obj.ENDDATE);
+            objTemp.ENDDATE = _com.convert2date(end);
+            //subject code
+            objTemp.SUBJECTCODE = obj.SUBJECTCODE;
+            objTemp.TERM = obj.TERM;
+            objTemp.YEAR = obj.YEAR;
+            objTemp.STUDENTAMOUNT = obj.STUDENTAMOUNT;
+            objTemp.LANG = _ses.getLang();
+            // kiểm tra tình trạng sửa hay thêm mới
+            if (string.IsNullOrEmpty(obj.CODE))
+            {
+                // thêm mới
+                add = 1;
+                objTemp.CODE = bus.genNextCode(obj);
+                objTemp.LOCKDATE = DateTime.Now;
+            }
+
+            if (add == 1)
+            {
+                ret = bus.insert(objTemp);
+            }
+            else
+            {
+                // gán _ID để xác định bản ghi được cập nhật
+                objTemp._ID.CODE = obj.CODE;
+                ret = bus.update(objTemp);
+            }
+            int pagecount = 0;
+            int currentpage = 0;
+            if (ret >= 0)
+            {
+                List<fieldpara> lipa = new List<fieldpara> { new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0) };
+
+                objTemp._ID.CODE = objTemp.CODE;
+                ret = bus.checkPage(objTemp._ID, " CODE ", AppConfig.item4page(), out pagecount, out currentpage, lipa);
+            }
+            bus.CloseConnection();
+            return Json(new { ret, pagecount, currentpage }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// xóa 1 couse , kiểm tra xem có các bản ghi con phụ thuộc hay không trước khi xóa
+        /// </summary> 
+        /// <param name="code"></param>
+        /// <returns></returns>
+
+        public JsonResult Delete(List<string> code)
+        {
+            //cho phep xoa hay khong
+            //ret= -2 ;//sử dụng trong trường hợp xóa đơn một bản ghi có tham chiếu
+            // ret= 0 : không có gì để xóa
+            //ret = 1: //xóa thành công
+            //ret= -3 : Bản ghi hiện tại không còn trong hệ thống, truy cập trái phép
+            COURSE_BUS busCourse = new COURSE_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            MARK_BUS busMark = new MARK_BUS();
+            var ret = 0;
+            List<COURSE_OBJ.BusinessObjectID> deleteList = new List<COURSE_OBJ.BusinessObjectID>();
+
+            foreach (string item in code)
+            {
+                var course = busCourse.GetByID(new COURSE_OBJ.BusinessObjectID(item));
+                //check xem course co ton tai ban ghi phu thuoc nao khong
+                if (course == null)
+                {
+                    ret = -3;
+                    return Json(new
+                    {
+                        ret
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                lipa.Clear();
+                lipa.Add(new fieldpara("COURSECODE", item, 0));
+                lipa.Add(new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+                //kiểm tra xem có bản ghi con hay không
+                //checkcode sẽ trả về là 0 nếu không có con
+                // nhiều hơn 0 tức là tồn tại bản ghi con
+                // nhỏ hơn 0 tức là lỗi hệ thống
+                var marks = busMark.checkCode(null, lipa.ToArray());
+                //cho phép xóa thì nhét vào list xóa không thì không cho phép xóa nhưng cũng không cần thông báo
+                //vì có trường hợp xóa nhiều bản ghi và chỉ xóa 1 bản ghi nên cần xác định rõ trước khi xóa một bản ghi cha nào đó thì có tồn tại liên kết đến bản ghi con hay không
+                //bad request
+                if (marks < 0)
+                {
+                    ret = -3;
+                    return Json(new
+                    {
+                        ret
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                //add to delete list
+                if (marks == 0)
+                {
+                    deleteList.Add(course._ID);
+                }
+            }
+            //nếu phần tử nằm trong danh sách xóa có thì sẽ phải xóa
+            //xóa 1 bản ghi và trong trường hợp muốn xóa đơn lẻ
+            //mà bản ghi đưa vào không có ràng buộc bản ghi con
+            //có 1 bản ghi và bản ghi đó không được phép xóa
+            if (code.Count == 1 && deleteList.Count < 1)
+            {
+                ret = -2;
+            }
+            //còn đây là trường hợp xóa nhiều, cứ thông báo là xóa thành công là xong
+            //mặc dù còn có các bản ghi không được xóa còn có tham chiếu nhưng không nên thông báo quá chi tiết
+            if (deleteList.Count >= 1)
+            {
+                //mặc định khi vào danh sách này là xóa thành công nên ret= 1;
+                //duyệt toàn bộ danh sách bản ghi để xóa
+                busCourse.BeginTransaction();
+                ret = busCourse.DeletetMultiItems(deleteList);
+                if (ret < 0)
+                {
+                    //Trong trường hợp nhiều thao tác, có một thao tác không thành công,
+                    //hàm này được gọi để quay lại trạng thái trước khi thực hiện (bắt đầu từ khi gọi BeginTransaction()
+                    busCourse.RollbackTransaction();
+                }
+                else
+                {
+                    //Sau khi thao tác dữ liệu thành công, hàm này được gọi để thực hiện ghi vào cơ sở dữ liệu
+                    busCourse.CommitTransaction();
+                }
+            }
+
+            busMark.CloseConnection();
+            busCourse.CloseConnection();
+            return Json(new
+            {
+                ret
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// kiểm tra sự tồn tại của 1 bản ghi đưa vào là thêm hay là sửa
+        /// 1 là
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="codeView"></param>
+        /// <returns></returns>
+        public JsonResult CheckCodeViewExit(string code, string codeView)
+        {
+            int ret;
+            COURSE_BUS bus = new COURSE_BUS();
+            COURSE_OBJ obj;
+            if (!string.IsNullOrEmpty(code))
+            {
+                //check for update
+                obj = bus.GetByKey(new fieldpara("CODEVIEW", codeView, 0),
+                                           new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+
+                if (obj == null)
+                {
+                    //change codeview
+                    ret = 1;
+                }
+                else
+                {
+                    //change other feature,not codeview
+                    ret = code == obj.CODE ? 1 : -1;
+                }
+            }
+            //check for add new
+            else
+            {
+                obj = bus.GetByKey(new fieldpara("CODEVIEW", codeView, 0),
+                                   new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+                ret = obj == null ? 1 : -1;
+            }
+            bus.CloseConnection();
+            return Json(new { ret }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAll(string subjectcode)
+        {
+            var ret = -1;
+            COURSE_BUS bus = new COURSE_BUS();
+            List<fieldpara> lipa = new List<fieldpara>
+            {
+                new fieldpara("SUBJECTCODE", subjectcode, 0),
+                new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0)
+            };
+            //      lipa.Add(new fieldpara("LANG", _ses.getLang(), 0));
+            var li = bus.getAllBy2(lipa.ToArray());
+            if (li != null)
+                ret = 0;
+            bus.CloseConnection();
+            return Json(new { ret, lst = li }, JsonRequestBehavior.AllowGet);
+        }
+
+        public int UpdateStudentAmount(string coursecode)
+        {
+            var ret = 0;
+            COURSE_BUS bus = new COURSE_BUS();
+            var course = bus.GetByID(new COURSE_OBJ.BusinessObjectID(coursecode));
+            if (course == null)
+            {
+                ret = -1;
+                bus.CloseConnection();
+                return ret;
+            }
+            // tính số sinh viên của lớp học
+            MARK_BUS markBus = new MARK_BUS();
+            var liMark = markBus.getAllBy2("CODE", new fieldpara("COURSECODE", coursecode, 0),
+                                                   new fieldpara("UNiVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            if (liMark != null)
+            {
+                course.STUDENTAMOUNT = liMark.Count;
+                ret = bus.Update(course);
+            }
+            markBus.CloseConnection();
+            bus.CloseConnection();
+            return ret;
+        }
+
+        public JsonResult GetById(string code)
+        {
+            var ret = 0;
+            var data = new COURSE_BUS().GetByID(new COURSE_OBJ.BusinessObjectID(code));
+            if (data == null)
+                ret = -1;
+            return Json(new {ret = ret, data = data}, JsonRequestBehavior.AllowGet);
+        }
+
+    }
+}

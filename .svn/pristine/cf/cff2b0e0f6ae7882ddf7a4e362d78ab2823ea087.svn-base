@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CC019228-7F89-4DED-B0FC-C01B6E087604}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IS.uni</RootNamespace>
+    <AssemblyName>IS.uni</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="IS.Base, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\share\IS.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Comm">
+      <HintPath>..\..\share\IS.Comm.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.fitframework, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\share\IS.fitframework.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Pool, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\share\IS.Pool.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Sec">
+      <HintPath>..\..\share\IS.Sec.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CODE\CORE\ACADEMICLEVELHISTORY_BUS.cs" />
+    <Compile Include="CODE\CORE\ACADEMICLEVELHISTORY_OBJ.cs" />
+    <Compile Include="CODE\CORE\ACADEMICLEVEL_BUS.cs" />
+    <Compile Include="CODE\CORE\ACADEMICLEVEL_OBJ.cs" />
+    <Compile Include="CODE\CORE\ACADEMICTITLE_BUS.cs" />
+    <Compile Include="CODE\CORE\ACADEMICTITLE_OBJ.cs" />
+    <Compile Include="CODE\CORE\ACEDEMICTITLEHISTORY_BUS.cs" />
+    <Compile Include="CODE\CORE\ACEDEMICTITLEHISTORY_OBJ.cs" />
+    <Compile Include="CODE\CORE\APPROVEDSTATUS_BUS.cs" />
+    <Compile Include="CODE\CORE\APPROVEDSTATUS_OBJ.cs" />
+    <Compile Include="CODE\CORE\ARMYRANKHISTORY_BUS.cs" />
+    <Compile Include="CODE\CORE\ARMYRANKHISTORY_OBJ.cs" />
+    <Compile Include="CODE\CORE\ARMYRANK_BUS.cs" />
+    <Compile Include="CODE\CORE\ARMYRANK_OBJ.cs" />
+    <Compile Include="CODE\CORE\DEGREEHISTORY_BUS.cs" />
+    <Compile Include="CODE\CORE\DEGREEHISTORY_OBJ.cs" />
+    <Compile Include="CODE\CORE\DEGREE_BUS.cs" />
+    <Compile Include="CODE\CORE\DEGREE_OBJ.cs" />
+    <Compile Include="CODE\CORE\DEPARTMENTADMINGROUP_BUS.cs" />
+    <Compile Include="CODE\CORE\DEPARTMENTADMINGROUP_OBJ.cs" />
+    <Compile Include="CODE\CORE\DEPARTMENTHISTORY_BUS.cs" />
+    <Compile Include="CODE\CORE\DEPARTMENTHISTORY_OBJ.cs" />
+    <Compile Include="CODE\CORE\DEPARTMENT_BUS.cs" />
+    <Compile Include="CODE\CORE\DEPARTMENT_OBJ.cs" />
+    <Compile Include="CODE\CORE\LEVELTITLEADMINGROUP_BUS.cs" />
+    <Compile Include="CODE\CORE\LEVELTITLEADMINGROUP_OBJ.cs" />
+    <Compile Include="CODE\CORE\LEVELTITLEHISTORY_BUS.cs" />
+    <Compile Include="CODE\CORE\LEVELTITLEHISTORY_OBJ.cs" />
+    <Compile Include="CODE\CORE\LEVELTITLE_BUS.cs" />
+    <Compile Include="CODE\CORE\LEVELTITLE_OBJ.cs" />
+    <Compile Include="CODE\CORE\LEVELTITLRPRIORITY_BUS.cs" />
+    <Compile Include="CODE\CORE\LEVELTITLRPRIORITY_OBJ.cs" />
+    <Compile Include="CODE\CORE\MANAGELEVEL_BUS.cs" />
+    <Compile Include="CODE\CORE\MANAGELEVEL_OBJ.cs" />
+    <Compile Include="CODE\CORE\REGION_BUS.cs" />
+    <Compile Include="CODE\CORE\REGION_OBJ.cs" />
+    <Compile Include="CODE\CORE\STAFFINFO_BUS.cs" />
+    <Compile Include="CODE\CORE\STAFFINFO_OBJ.cs" />
+    <Compile Include="CODE\CORE\STAFFPRIORITY_BUS.cs" />
+    <Compile Include="CODE\CORE\STAFFPRIORITY_OBJ.cs" />
+    <Compile Include="CODE\CORE\STAFFSTATUSHISTORY_BUS.cs" />
+    <Compile Include="CODE\CORE\STAFFSTATUSHISTORY_OBJ.cs" />
+    <Compile Include="CODE\CORE\STAFFSTATUS_BUS.cs" />
+    <Compile Include="CODE\CORE\STAFFSTATUS_OBJ.cs" />
+    <Compile Include="CODE\CORE\STAFF_BUS.cs" />
+    <Compile Include="CODE\CORE\STAFF_OBJ.cs" />
+    <Compile Include="CODE\NATION\DISTRICTREFERENCE_BUS.cs" />
+    <Compile Include="CODE\NATION\DISTRICTREFERENCE_OBJ.cs" />
+    <Compile Include="CODE\NATION\DISTRICT_BUS.cs" />
+    <Compile Include="CODE\NATION\DISTRICT_OBJ.cs" />
+    <Compile Include="CODE\NATION\ETHNIC_BUS.cs" />
+    <Compile Include="CODE\NATION\ETHNIC_OBJ.cs" />
+    <Compile Include="CODE\NATION\NATIONREFERENCE_BUS.cs" />
+    <Compile Include="CODE\NATION\NATIONREFERENCE_OBJ.cs" />
+    <Compile Include="CODE\NATION\NATION_BUS.cs" />
+    <Compile Include="CODE\NATION\NATION_OBJ.cs" />
+    <Compile Include="CODE\NATION\PROVINCEREFERENCE_BUS.cs" />
+    <Compile Include="CODE\NATION\PROVINCEREFERENCE_OBJ.cs" />
+    <Compile Include="CODE\NATION\PROVINCE_BUS.cs" />
+    <Compile Include="CODE\NATION\PROVINCE_OBJ.cs" />
+    <Compile Include="CODE\NATION\RELIGION_BUS.cs" />
+    <Compile Include="CODE\NATION\RELIGION_OBJ.cs" />
+    <Compile Include="CODE\NATION\TOWNREFERENCE_BUS.cs" />
+    <Compile Include="CODE\NATION\TOWNREFERENCE_OBJ.cs" />
+    <Compile Include="CODE\NATION\TOWN_BUS.cs" />
+    <Compile Include="CODE\NATION\TOWN_OBJ.cs" />
+    <Compile Include="CODE\PARTY\PARTYLEVELTITLEHISTORY_BUS.cs" />
+    <Compile Include="CODE\PARTY\PARTYLEVELTITLEHISTORY_OBJ.cs" />
+    <Compile Include="CODE\PARTY\PARTYLEVELTITLE_BUS.cs" />
+    <Compile Include="CODE\PARTY\PARTYLEVELTITLE_OBJ.cs" />
+    <Compile Include="CODE\system\ADMINGROUPPRIORITY_BUS.cs" />
+    <Compile Include="CODE\system\ADMINGROUPPRIORITY_OBJ.cs" />
+    <Compile Include="CODE\system\ADMINGROUP_BUS.cs" />
+    <Compile Include="CODE\system\ADMINGROUP_OBJ.cs" />
+    <Compile Include="CODE\system\DAYOFF_BUS.cs" />
+    <Compile Include="CODE\system\DAYOFF_OBJ.cs" />
+    <Compile Include="CODE\system\DEPARTMENTPRIORITY_BUS.cs" />
+    <Compile Include="CODE\system\DEPARTMENTPRIORITY_OBJ.cs" />
+    <Compile Include="CODE\system\GROUPNAME_BUS.cs" />
+    <Compile Include="CODE\system\GROUPNAME_OBJ.cs" />
+    <Compile Include="CODE\system\LOGERROR_BUS.cs" />
+    <Compile Include="CODE\system\LOGERROR_OBJ.cs" />
+    <Compile Include="CODE\system\LOGME_BUS.cs" />
+    <Compile Include="CODE\system\LOGME_OBJ.cs" />
+    <Compile Include="CODE\system\LOGRESETPASSWORD_BUS.cs" />
+    <Compile Include="CODE\system\LOGRESETPASSWORD_OBJ.cs" />
+    <Compile Include="CODE\system\PERSONALPARAMETER_BUS.cs" />
+    <Compile Include="CODE\system\PERSONALPARAMETER_OBJ.cs" />
+    <Compile Include="CODE\system\PRIORITY_BUS.cs" />
+    <Compile Include="CODE\system\PRIORITY_OBJ.cs" />
+    <Compile Include="CODE\system\RESETPASSWORD_BUS.cs" />
+    <Compile Include="CODE\system\RESETPASSWORD_OBJ.cs" />
+    <Compile Include="CODE\system\STAFFADMINGROUP_BUS.cs" />
+    <Compile Include="CODE\system\STAFFADMINGROUP_OBJ.cs" />
+    <Compile Include="CODE\system\STAFFAUTHORIZE_BUS.cs" />
+    <Compile Include="CODE\system\STAFFAUTHORIZE_OBJ.cs" />
+    <Compile Include="CODE\system\SYSCOMPONENT_BUS.cs" />
+    <Compile Include="CODE\system\SYSCOMPONENT_OBJ.cs" />
+    <Compile Include="CODE\system\SYSMENUPRIORITY_BUS.cs" />
+    <Compile Include="CODE\system\SYSMENUPRIORITY_OBJ.cs" />
+    <Compile Include="CODE\system\SYSMENU_BUS.cs" />
+    <Compile Include="CODE\system\SYSMENU_OBJ.cs" />
+    <Compile Include="CODE\system\SYSTEMPARAMETER_BUS.cs" />
+    <Compile Include="CODE\system\SYSTEMPARAMETER_OBJ.cs" />
+    <Compile Include="CODE\system\UNIVERSITY_BUS.cs" />
+    <Compile Include="CODE\system\UNIVERSITY_OBJ.cs" />
+    <Compile Include="CODE\system\WEEKDAY_BUS.cs" />
+    <Compile Include="CODE\system\WEEKDAY_OBJ.cs" />
+    <Compile Include="COMMONTOOL\COMMONTOOL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IS.basetype\IS.basetype.csproj">
+      <Project>{cae5b00b-9822-42c1-b9c8-7b73d4665c48}</Project>
+      <Name>IS.basetype</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IS.Config\IS.Config.csproj">
+      <Project>{68ca99aa-8ef7-41db-9a56-e5f6d45c6546}</Project>
+      <Name>IS.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IS.localcomm\IS.localcomm.csproj">
+      <Project>{e6a06d03-dda3-4db1-b299-673ae177844b}</Project>
+      <Name>IS.localcomm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IS.sess\IS.Sess.csproj">
+      <Project>{4887aad1-5501-4097-8b75-156231d67807}</Project>
+      <Name>IS.Sess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

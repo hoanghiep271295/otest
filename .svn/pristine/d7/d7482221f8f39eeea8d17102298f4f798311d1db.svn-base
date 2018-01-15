@@ -1,0 +1,33 @@
+﻿var QuestionGroupLA = React.createClass({
+    componentDidMount: function () {
+    },
+    getFile:function(id, lst)
+    {
+        if(!!lst)
+        {
+            return '';
+        }
+        var i;
+        for(i=0 ; i< lst.length; i++)
+        {
+            if( id===lst[i].QUESTIONCODE)
+            {
+                return lst[i].ANSWERFILE;
+            }
+        }
+        return '';
+    },
+    render: function () {
+        var index = this.props.id;
+        var ans = this.props.ans;
+        var thefile = this.getFile(index, ans);
+        return (
+            <div className="flex-item" style={{ width:'auto', margin:'auto'}}>
+                <video controls autoPlay>
+                <source src={thefile} type="video/mp4"/>
+                    Chưa có file
+                </video>
+            </div>
+            );
+}
+});

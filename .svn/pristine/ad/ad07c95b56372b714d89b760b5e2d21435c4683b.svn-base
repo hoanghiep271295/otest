@@ -1,0 +1,480 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using IS.Config;
+using IS.fitframework;
+using IS.localcomm;
+using IS.Lang;
+using IS.Sess;
+using IS.uni;
+using Newtonsoft.Json;
+using System.Dynamic;
+using System.Data;
+namespace nerp.Controllers.core
+{
+    public class StudentController : Controller
+    {
+        localcommonlib com = new localcommonlib();
+
+        // GET: Student
+        session ses = new session();
+        public JsonResult CheckCodeViewExit(string code, string codeview)
+        {
+            int ret;
+            SUBJECTCONTENT_BUS bus = new SUBJECTCONTENT_BUS();
+            SUBJECTCONTENT_OBJ obj;
+            if (!string.IsNullOrEmpty(code))
+            {
+                //check for update
+                obj = bus.GetByKey(new fieldpara("CODEVIEW", codeview, 0),
+                                           new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+
+                if (obj == null)
+                {
+                    //change codeview
+                    ret = 1;
+                }
+                else
+                {
+                    //change other feature,not codeview 
+                    ret = (code == obj.CODE) ? 1 : -1;
+                }
+
+            }
+            else
+            {
+
+                obj = bus.GetByKey(new fieldpara("CODEVIEW", codeview, 0),
+                                           new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+                ret = (obj == null) ? 1 : -1;
+            }
+            bus.CloseConnection();
+            return Json(new { sussess = ret }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult delete(List<string> listCode)
+        {
+
+            int ret = 0;
+            STUDENT_BUS bus = new STUDENT_BUS();
+            foreach (var id in listCode)
+            {
+                STUDENT_OBJ obj = bus.GetByID(new STUDENT_OBJ.BusinessObjectID(id));
+                //Kiểm tra đối tượng còn trên srrver hay không
+                if (obj == null)
+                {
+                    ret = -1;
+                }
+                //Kiểm tra thuộc đơn vị triển khai
+                if (obj.UNIVERSITYCODE != ses.gUNIVERSITYCODE)
+                {
+                    ret = -4;
+                }
+                if (ret >= 0)
+                {
+                    MARK_BUS busMark = new MARK_BUS();
+                    //kiểm tra sinh viên có trong lớp môn học nào không
+                    ret = busMark.checkCode(null, new fieldpara("STUDENTCODE", id));
+                    busMark.CloseConnection();
+                    //exist children
+                    if (ret != 0)
+                    {
+                        ret = -2;
+                    }
+                }
+                if (ret >= 0)
+                {
+                    //xóa
+                    ret = bus.delete(obj._ID);
+                }
+            }
+
+            //close connection
+            bus.CloseConnection();
+            return Json(new { ret = ret }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Tìm kiếm tất cả các sinh viên thỏa mãn
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="classcode"></param>
+        /// <param name="name"></param>
+        /// <param name="typeName"></param>
+        /// <param name="codeView"></param>
+        /// <param name="typeCodeView"></param>
+        /// <param name="email"></param>
+        /// <param name="typeEmail"></param>
+        /// <param name="note"></param>
+        /// <param name="typeNote"></param>
+        /// <param name="address"></param>
+        /// <param name="typeAddress"></param>
+        /// <param name="parentcode"></param>
+        /// <returns></returns>
+        public JsonResult getAllSearch(int page, int pageSize, string classcode, string name, bool nametype, string code, bool codetype, string email, bool emailtype, string note, bool notetype,
+            string address, bool addresstype, string parentcode = "DH")
+        {
+            List<STUDENT_OBJ> li = null;
+            if (pageSize == 0)
+            {
+                pageSize = AppConfig.item4page();
+            }
+            
+            if (page < 1)
+            {
+                page = 1;
+            }
+            // khai báo lấy dữ liệu
+            STUDENT_BUS bus = new STUDENT_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            // thêm điều kiện lọc cho phần codeview nếu nhập
+            if (!string.IsNullOrEmpty(code))
+            {
+                if (codetype)
+                    lipa.Add(new fieldpara("CODEVIEW", code, 0));
+                else
+                    lipa.Add(new fieldpara("CODEVIEW", code, 1));
+            }
+            if (!string.IsNullOrEmpty(name))
+            {
+                if (nametype)
+                    lipa.Add(new fieldpara("NAME", name, 0));
+                else
+                    lipa.Add(new fieldpara("NAME", name, 1));
+            }
+            if (!string.IsNullOrEmpty(note))
+            {
+                if (notetype)
+                    lipa.Add(new fieldpara("NOTE", note, 0));
+                else
+                    lipa.Add(new fieldpara("NOTE", note, 1));
+            }
+            if (!string.IsNullOrEmpty(email))
+            {
+                if (emailtype)
+                    lipa.Add(new fieldpara("EMAIL", email, 0));
+                else
+                    lipa.Add(new fieldpara("EMAIL", email, 1));
+            }
+            if (!string.IsNullOrEmpty(address))
+            {
+                if (addresstype)
+                    lipa.Add(new fieldpara("ADDRESS", address, 0));
+                else
+                    lipa.Add(new fieldpara("ADDRESS", address, 1));
+            }
+            //Lọc đơn vị cấp trên; '' sẽ là không co đơn vị cấp trên
+            if (!string.IsNullOrEmpty(parentcode))
+            {
+                lipa.Add(new fieldpara("EDUCATIONLEVELCODE", parentcode, 0));
+            }
+            lipa.Add(new fieldpara("CLASSCODE", classcode, 0));
+            lipa.Add(new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+            int countpage;
+            int totalItem = 0;
+            li = bus.getAllBy2("CODE", pageSize, page, out countpage, out totalItem, lipa);
+            bus.CloseConnection();
+            //Chỉ số đầu tiên của trang hiện tại (đã trừ -1)
+            int startpage = (page - 1) * pageSize;
+            //Trả về client
+            return Json(new
+            {
+                lst = li,//Danh sách
+                totalItem = totalItem, // số lượng tất cả các bản ghi
+                totalPage = countpage, // số lượng trang
+                startindex = startpage,//bắt đầu số trang
+                ret = 0//ok
+            }, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetGrade(string classcode)
+        {
+
+            //Kiểm tra phân quyền
+            List<GRADE_OBJ> li = new List<GRADE_OBJ>();
+            if (ses.isLogin() < 0)
+            {
+                return Json(new { lst = li, ret = -1 }, JsonRequestBehavior.AllowGet);
+            }
+            if (classcode != "")
+            {
+                // tìm đối tượng GRADE_OBJ có code = gradecode
+                var objClass = new CLASS_BUS().GetByID(new CLASS_OBJ.BusinessObjectID(classcode));
+                GRADE_BUS bus = new GRADE_BUS();
+                var objPro = bus.GetByID(new GRADE_OBJ.BusinessObjectID(objClass.GRADECODE));
+                li.Insert(0, objPro);
+                bus.CloseConnection();
+                //Chỉ số đầu tiên của trang hiện tại (đã trừ -1)
+                //Trả về cho client
+                return Json(new { lst = li, ret = 0 }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new { lst = li, ret = 0 }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult Listcombo(string classcode)
+        {
+
+            //Kiểm tra phân quyền
+            List<STUDENT_OBJ> li = new List<STUDENT_OBJ>();
+            if (ses.isLogin() < 0)
+            {
+                return Json(new { lst = li, ret = -1 }, JsonRequestBehavior.AllowGet);
+            }
+            //Lây dữ iệu
+            STUDENT_BUS bus = new STUDENT_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            //Lọc đơn vị cấp trên; '' sẽ là không co đơn vị cấp trên
+            lipa.Add(new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+            if (classcode != "")
+            {
+                lipa.Add(new fieldpara("classcode", classcode, 0));
+            }
+            //order by theorder, with pagesize and the page
+            li = bus.getAllBy2(" CODE ", lipa.ToArray());
+            bus.CloseConnection();
+            //Chỉ số đầu tiên của trang hiện tại (đã trừ -1)
+            //Trả về cho client
+            return Json(new { lst = li, ret = 0 }, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult update(STUDENT_OBJ obj, string classcode)
+        {
+            //List<string> liRef = new List<string>();// danh sach file sẽ được thêm vào
+            //List<string> liRefd = new List<string>();// sanh sách file bị xoá đi
+
+            STUDENT_BUS bus = new STUDENT_BUS();
+            //kiểm tra tồn tại cho trường hợp sửa
+            STUDENT_OBJ objTemp;
+            int ret = 0;
+            int add = 0;
+
+            objTemp = !string.IsNullOrEmpty(obj.CODE)
+                ? bus.GetByID(new STUDENT_OBJ.BusinessObjectID(obj.CODE))
+                : new STUDENT_OBJ();
+
+            if (ret < 0)
+            {
+                //đóng kết nối trước khi trả về
+                bus.CloseConnection();
+                //ban ghi sửa đã bị xóa
+                return Json(new { sussess = ret }, JsonRequestBehavior.AllowGet);
+
+            }
+            objTemp.EDITTIME = DateTime.Now; // thời điểm sửa bản ghi
+            objTemp.EDITUSER = ses.loginCode; // người sửa bản ghi
+            objTemp.CODEVIEW = obj.CODEVIEW;
+            objTemp.NAME = obj.NAME;
+            objTemp.NOTE = obj.NOTE;
+            objTemp.LOCK = obj.LOCK;
+            objTemp.CLASSCODE = obj.CLASSCODE;
+            var date = com.date2String(obj.BIRTHDAY);
+            objTemp.BIRTHDAY = com.convert2date(date);
+            objTemp.STUDENTSTATUS = obj.STUDENTSTATUS;
+            objTemp.ADDRESS = obj.ADDRESS;
+            objTemp.SEX = obj.SEX;
+            objTemp.PHONE = obj.PHONE;
+            objTemp.EMAIL = obj.EMAIL;
+            objTemp.LOCK = obj.LOCK;
+            objTemp.ETHNICCODE = obj.ETHNICCODE;
+            objTemp.RELIGIONCODE = obj.RELIGIONCODE;
+            objTemp.UNIVERSITYCODE = ses.gUNIVERSITYCODE;
+            objTemp.LANGUAGECODE = ses.getLang();
+            // kiểm tra tình trạng sửa hay thêm mới
+
+            //if (objTemp.PHOTO != obj.PHOTO)
+            //{
+            //    liRef.Add(obj.PHOTO);
+            //    liRefd.Add(objTemp.PHOTO);
+            //}
+            //objTemp.PHOTO = obj.PHOTO;
+            if (string.IsNullOrEmpty(obj.CODE))
+            {
+                // thêm mới
+                add = 1;
+                objTemp.CODE = bus.genNextCode(obj);
+                objTemp.LOCKDATE = DateTime.Now;
+            }
+
+            CLASS_BUS busPro = new CLASS_BUS();
+            busPro.GetByID(new CLASS_OBJ.BusinessObjectID(obj.GRADECODE));
+
+            busPro.CloseConnection();
+            if (add == 1)
+            {
+                MAPPING_OBJ objMap = new MAPPING_OBJ();
+
+                objMap.UNIVERSITYCODE = ses.gUNIVERSITYCODE;
+                objMap.TABLENAME = "CLASS";
+                objMap.THECODE = objTemp.CODE;
+                objMap.EDITTIME = objTemp.EDITTIME;
+                objMap.EDITUSER = objTemp.EDITUSER;
+                objMap.LOCKDATE = DateTime.Now;
+
+
+                bus.BeginTransaction();
+                ret = bus.insert(objTemp);
+
+                if (ret < 0)
+                {
+                    bus.RollbackTransaction();
+                }
+                else
+                {
+                    bus.CommitTransaction();
+                }
+            }
+            else
+            {
+                // gán _ID để xác định bản ghi được cập nhật
+                objTemp._ID.CODE = obj.CODE;
+                ret = bus.update(objTemp);
+            }
+            int pagecount = 0;
+            int currentpage = 0;
+            if (ret >= 0)
+            {
+                List<fieldpara> lipa = new List<fieldpara>();
+
+                // lọc theo đơn vị cấp trên
+                lipa.Add(new fieldpara("CLASSCODE", classcode, 0));
+                lipa.Add(new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+                objTemp._ID.CODE = objTemp.CODE;
+                ret = bus.checkPage(objTemp._ID, " CODE ", AppConfig.item4page(), out pagecount, out currentpage, lipa);
+            }
+            bus.CloseConnection();
+            return Json(new { ret = ret, pagecount = pagecount, currentpage = currentpage, obj=objTemp }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult dochangepass(string studentcode, string passwordnew, string passwordnewre)
+        {
+            int ret = 0;
+            STUDENT_BUS bus = new STUDENT_BUS();
+            STUDENT_OBJ obj = bus.GetByID(new STUDENT_OBJ.BusinessObjectID(studentcode));
+            bus.CloseConnection();
+            if (obj == null)
+            {
+                ret = -1;
+            }
+            if (passwordnewre != passwordnew)
+            {
+                ret = -2;
+            }
+            if (ret >= 0)
+            {
+                //obj.USERNAME = obj.CODEVIEW;
+                if (!string.IsNullOrEmpty(passwordnew))
+                {
+                    //Change the pass if input
+                    ret = bus.SetPass(obj, passwordnew);
+
+                }//else keep the old pasword
+                bus.CloseConnection();
+            }
+            return Json(new { ret = ret }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Profile()
+        {
+            if (ses.isLogin() != 0)
+            {
+                ses.gotoPage("/admin/login", "Chưa đăng nhập");
+                return null;
+            }
+            STUDENT_BUS bus = new STUDENT_BUS();
+            STUDENT_OBJ obj = bus.GetByID(new STUDENT_OBJ.BusinessObjectID(ses.loginCode));
+            bus.CloseConnection();
+            if (obj==null)
+            {
+                ses.gotoPage("/admin/login", "Chưa đăng nhập");
+                return null;
+            }
+            DataSet ds = new DataSet();
+            int ret = bus.GetAllCourse(ref ds,"COURSESTUDIED", obj);
+            bus.CloseConnection();
+            List<dynamic> liMark = new List<dynamic>();
+            if(ret>=0)
+            {
+                foreach(DataRow r in ds.Tables["COURSESTUDIED"].Rows)
+                {
+                    dynamic objtemp = new ExpandoObject();
+                    objtemp.SUBJECTCODE = com.string4Row(r, "subjectcode", "");
+                    objtemp.NAME = com.string4Row(r, "name", "");
+                    objtemp.COUNT = com.int4Row(r, "sobai", 0);
+                    objtemp.COUNTLEARNT = com.int4Row(r, "sobaidahoc", 0);
+                    objtemp.COUNTLEARNTYET = com.int4Row(r, "sobaichuahoc", 0);
+                    objtemp.COURSECODE = com.string4Row(r, "coursecode", "");
+                    liMark.Add(objtemp);
+                }
+            }
+
+            ret = bus.GetAllMark(ref ds, "MARKED", obj);
+            bus.CloseConnection();
+            List<dynamic> liMark2 = new List<dynamic>();
+            if (ret >= 0)
+            {
+                foreach (DataRow r in ds.Tables["MARKED"].Rows)
+                {
+                    dynamic objtemp = new ExpandoObject();
+                    objtemp.EXAMTIMECODE = com.string4Row(r, "examtimecode", "");
+                    objtemp.NAME = com.string4Row(r, "name", "");
+                    objtemp.MARKMAX = com.int4Row(r, "sodiem", 0);
+                    objtemp.MARK10 = com.int4Row(r, "mark10", 0);
+                    objtemp.MARKCODE = com.string4Row(r, "code", "");
+                    liMark2.Add(objtemp);
+                }
+            }
+            //MARK_BUS busMark = new MARK_BUS();
+            //List<MARK_OBJ> liMark = busMark.getAllBy2("subjectcode", new fieldpara("STUDENTCODE", ses.loginCode));
+
+            //busMark.CloseConnection();
+            //if (liMark == null)
+            //{
+
+            //    ses.gotoPage("/admin/login", "Chưa đăng nhập");
+            //    return null;
+            //}
+
+            dynamic defaultobject = new ExpandoObject();
+            defaultobject.thetype = ses.loginType;
+            defaultobject.name = ses.loginFullName;
+            defaultobject.code = ses.loginCode;
+            defaultobject.birthday = com.date2String(obj.BIRTHDAY);
+            defaultobject.address = obj.ADDRESS;
+            defaultobject.email = obj.EMAIL;
+            defaultobject.tel = obj.TEL;
+            defaultobject.limark = liMark;
+            defaultobject.codeview = obj.CODEVIEW;
+            defaultobject.khoa = obj.LOCK;
+            defaultobject.note = obj.NOTE;
+            defaultobject.sex = obj.SEX;
+            defaultobject.classcode = obj.CLASSCODE;
+            defaultobject.limark2 = liMark2;
+            //defaultobject.defaulttab = "subject";
+
+            ViewBag.defaultvalue = JsonConvert.SerializeObject(defaultobject);
+
+            string[] jsx = {
+                  "/jsx/Core/Student/StudentPriorityAdd.jsx"
+                , "/jsx/Core/Student/Studentpopup.jsx"
+                , "/jsx/Admin/Changepass/Changepass.jsx"
+                , "/jsx/Core/Student/Studentprofile.jsx"
+                };
+
+            //string[] jsx = {
+            //    "/Jsx/_Shared/ButtonList.jsx"
+            //    ,"/Jsx/_Shared/PopupSearch.jsx"
+            //    ,"/Scripts/Ag-grid/ag-grid.js"
+            //    ,"/Jsx/_Shared/AgGrid.jsx"
+            //    ,"/Jsx/_Shared/TabHeader.jsx"//Phụ trách hiển thị các tab
+            //    ,"/jsx/Profile/List1.jsx"
+            //    ,"/jsx/subject/subject/Subjectpopup.jsx"
+            //    ,"/jsx/subject/course/CourseList.jsx"
+            //    ,"/jsx/subject/course/Coursepopup.jsx"
+            //    ,"/jsx/Profile/ProfileApp.jsx"//Tạo khai báo tab
+            //};
+
+            ViewBag.jsx = jsx;
+            return View("Adminindex");
+        }
+    }
+}

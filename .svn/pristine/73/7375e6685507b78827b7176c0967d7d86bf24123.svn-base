@@ -1,0 +1,381 @@
+﻿/**
+ * Quy tắc đặt tên
+ * QUESTIONGROUP :Câu hỏi hay được hiểu hay hơn chính là đầu bài của câu hỏi
+ * QUESTION : câu hỏi con trong một đề bài
+ * ANSWER : Câu trả lời cho một câu hỏi con 
+ * TRUEANSWER : Nếu là 0 tức là câu trả lời sai và là 1 tức là câu trả lời đúng
+ * các questiontype :Các hình thức câu hỏi thi khác nhau
+    MC: câu hỏi một nhiều - có thể là 1 câu hỏi có nhiều đáp án và chọn một đáp án đúng
+    PA: câu hỏi dạng ghép đôi - hiển thị một danh sách các câu hỏi bên trái, danh sách các câu hỏi bên phải ghép lại thành cặp
+    FI: Câu hỏi điền vào đoạn trống - Có một đoạn các câu hỏi và sau đó có danh sách các đáp án (có thể dư hoặc không dư) để điền vào
+    FG: Câu hỏi điền vào đoạn trống tự gõ từ - Có một đoạn các câu hỏi và sau đó người thi phải tự điền từ thích hợp vào ô trống.
+    CO: Dạng câu hỏi tổng kết - cho một đoạn đọc; sau đó tiến hành đưa ra một câu hỏi và có nhiều đáp án trả lời độc lập - true/false, true/false/not given
+    RW: Viết lại câu; Một câu hỏi có thể có nhiều đáp án đúng (để cho phép so sánh chỉ cần đúng một trong các đáp án đó là tính điểm)
+    LA: Nghe nói - lưu lại một file không có answer
+    WR: Bài viết (tự luận)
+ */
+var PopupAnswer = React.createClass({
+    componentWillMount: function () {component.add('popupanswer', this);},
+    //onsavequestion here is when we change any answer we have to update the question with their answer
+    //update Question follow answer changed
+    //questiontype here post to server to determine what kind of question need to update
+    onSaveQuestion: function (obj,questiontype) {
+        var node = new Object();
+        //mã của câu hỏi 
+        node.QUESTIONGROUPCODE = obj.QUESTIONGROUPCODE;
+        //mã của câu hỏi con
+        node.CODE = obj.CODE;
+        // mã hiển thị của câu hỏi còn
+        node.CODEVIEW = obj.CODEVIEW;
+        //tên của câu hỏi con
+        node.NAME = obj.NAME;
+        //trạng thái hiển thị của câu hỏi con
+        node.LOCK =obj.LOCK;
+        //thứ tự hiển thị
+        node.ORD = obj.ORD;
+        //điểm cho câu hỏi 
+        node.MARK = obj.MARK;
+        //nội dung câu hỏi
+        node.CONTENT = obj.CONTENT;
+        //mã câu trả lời
+        node.ANSWERCODE = obj.ANSWERCODE;
+        $.ajax({
+            url: "/Question/UpdateQuestion",
+            dataType: 'json',
+            data: {
+                QUESTIONGROUPCODE: node.QUESTIONGROUPCODE,
+                CODE: node.CODE,
+                CODEVIEW: node.CODEVIEW,
+                NAME: node.NAME,
+                LOCK: node.LOCK,
+                ORD: node.ORD,
+                MARK: node.MARK,
+                ANSWERCODE : node.ANSWERCODE,
+                CONTENT: node.CONTENT,
+                typeQuestion:questiontype
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    console.log('ok');
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    onSave: function () {
+        var node = new Object();
+        var parent = component.get('listAnswer');
+        var questiontype = parent.state.questiontypeAnswer;
+        switch (questiontype) {
+            case 'FG':
+                node.CONTENT = $('#FG_ANSWER').val();
+                break;
+            case 'CO':
+                node.CONTENT = $('#CO_ANSWER').val();
+                break;
+            case 'RW':
+                node.CONTENT = $('#RW_ANSWER').val();
+                break;
+            default:
+                $('textarea.CONTENTANSWER').html(window.tinymce.get('CONTENTANSWER').getContent());
+                node.CONTENT = $('textarea.CONTENTANSWER').html();
+                break;
+        }
+     
+        node.QUESTIONGROUPCODE = $('#QUESTIONGROUPCODE2').val();
+        node.QUESTIONCODE = $('#QUESTIONCODE2').val();
+        node.CODE = $('#CODEANSWER').val();
+        node.CODEVIEW = $('#CODEVIEWANSWER').val();
+        node.NAME = $('#NAMEANSWER').val();
+        node.THEORDER = $('#THEORDERANSWER').val();     
+        node.TRUEANSWER = $('#TRUEANSWER').val();         
+        $.ajax({
+            url: "/Question/UpdateAnswer",
+            dataType: 'json',
+            type: 'Post',
+            data: {
+                CODE: node.CODE,
+                CODEVIEW: node.CODEVIEW,
+                NAME: node.NAME,
+                THEORDER: node.THEORDER,
+                CONTENT: node.CONTENT,
+                QUESTIONCODE: node.QUESTIONCODE,
+                QUESTIONGROUPCODE: node.QUESTIONGROUPCODE,
+                TRUEANSWER: node.TRUEANSWER
+            },
+            success: function (data) {
+                var that = this;
+                var questionType = parent.state.questiontypeAnswer;
+                if (data.ret >= 0) {
+                    if (!!data.answercode) {
+                        // kiểm tra đối tượng  question được thay đổi câu trả lời
+                        // kiểm tra xem đối tượng này đến từ đâu
+                        // rowselect là từ tab 3 sang tab 4
+                        // ReSharper disable once AssignedValueIsNeverUsed                     
+                        var objQuestion = new Object();
+                        var parentquestion = component.get('listQuestion');
+                        if (!!parentquestion.state.rowSelect) {
+                            objQuestion = parentquestion.state.rowSelect[0];
+                            //cập nhật lại câu hỏi với câu trả lời mới
+                            if (objQuestion.ANSWERCODE !== data.answercode) {                               
+                                objQuestion.ANSWERCODE = data.answercode;
+                                that.onSaveQuestion(objQuestion,questionType);
+                            } else {
+                                console.log('none update answercode for question through rowselect');
+                            }
+                       
+                        } else
+                            //trường hợp này là từ tab 1,2 sang tab 4
+                            //update thong qua input hidden
+                            if (!!$('#hidQUESTIONCODE').val()) {
+                                objQuestion = JSON.parse($('#hidQUESTIONCODE').val());
+                                objQuestion.ANSWERCODE = data.answercode;
+                                if (objQuestion.ANSWERCODE !== data.answercode) {
+                                    objQuestion.ANSWERCODE = data.answercode;
+                                    that.onSaveQuestion(objQuestion,questionType);
+                                } else {
+                                    console.log('none update answercode for question through input hidden');
+                                }
+
+                            } else {
+                                log.show('Can not save the answer without question !',false);
+                            }
+                    }
+                    if (data.quantiti === 0) {
+                        // trường hợp này là chưa có câu trả lời đúng trong danh sách câu trả lời của câu hỏi này
+                        //vẫn tiến hành cập nhật như bình thường
+                        // ReSharper disable once AssignedValueIsNeverUsed
+                        var objQues = new Object();
+                        var parent2 = component.get('listQuestion');
+                        //như thường lệ đây là từ tab 3 sang tab 4,có rowselect 
+                        if (!!parent2.state.rowSelect[0])
+                        {
+                            objQues = parent2.state.rowSelect[0];
+                            objQues.ANSWERCODE = data.answercode;                          
+                            that.onSaveQuestion(objQues,questionType);
+                        } else
+                      // đây là từ các tab khác sang
+                        {
+                            objQues = JSON.parse($('#hidQUESTIONCODE').val());
+                            objQues.ANSWERCODE = data.answercode;
+                            that.onSaveQuestion(objQues,questionType);
+                        }
+                    }
+                    //tải lại danh sách sau khi thêm
+                    var list = component.get('listAnswer');
+                    list.refreshRowData();
+                    log.show("Ghi thành công!", true);
+                }
+                else {
+                    log.show("Ghi lỗi!", false);
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    //check code and codeview before submit
+    handleSubmit: function () {
+        var code =          $('#CODEANSWER').val();
+        var codeview =      $('#CODEVIEWANSWER').val();
+        var questiongroup = $('#QUESTIONGROUPCODE2').val();
+        var question      = $('#QUESTIONCODE2').val();
+        //khong co questiongroup
+        if (!!questiongroup) {
+            if (codeview === "") {
+                //alert("Chưa nhập mã");
+                log.show("Chưa nhập mã!", false);
+                //move to edit interface
+                $("#NewModalAnswer").modal('show');
+
+                return false;
+            } else {
+                //Check trùng codeview
+                $.ajax({
+                    url: "/Question/checkCodeViewExitANSWER",
+                    data: {
+                        questiongroup: questiongroup,
+                        question: question,
+                        code: code,
+                        codeView: codeview
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.sussess >= 0) {
+                            this.onSave();
+
+                        } else {
+                            log.show("Mã đã tồn tại !", false);
+                        }
+                    }.bind(this),
+                    error: function(xhr, status, err) {
+                        console.error(this.props.url, status, err.toString());
+                    }.bind(this)
+                });
+            }
+            return true;
+        } else {
+            log.show('Không thể lưu vì không xác định được câu hỏi',false);
+
+        }
+        return true;
+    },
+    render: function () {
+        var parent = component.get('listAnswer');
+        var questiontype = parent.state.questiontypeAnswer;
+        //nội dung để hiển thị, với mỗi dạng câu hỏi thì nội dung hiển thị sẽ khác nhau
+        var result =null;
+        // ReSharper disable once AssignedValueIsNeverUsed
+        var title = null;
+        switch (questiontype) {
+            //câu hỏi một nhiều 
+            //nội dung câu trả lời đều nằm trong tinyMCE hết : answercontent 
+            //1
+            case 'MC':        
+                title = 'câu hỏi một nhiều : MC';       
+                break;
+                // câu hỏi dạng ghép đôi
+                //nội dung câu trả lời đều nằm trong tinyMCE hết : answercontent 
+                //2
+            case 'PA':          
+                title = 'câu hỏi ghép đôi : PA';
+                break;
+                //Dạng câu hỏi tổng kết 
+                //loại này cũng giống như multichoice không phải gõ từ làm gì mà chỉ cần 
+                //có một ô combobox cho chọn true/false/not given là xong
+                //3
+            case 'CO':
+                result = (<COAnswer/>);
+                title = 'câu hỏi tổng kết : CO';              
+                break;
+                //Câu hỏi điền vào đoạn trống 
+                //dạng này cũng là dạng kéo thả nên nội dung 
+                //câu trả lời có thể cho vào trong tinyMCE được, tương tự như MC hay PA
+                //4
+            case 'FI':
+                title = 'câu hỏi điển từ vào đoạn trống : FI';
+                break;
+                //Câu hỏi điền vào đoạn trống tự gõ từ 
+                //Vì dạng so sánh text khá khó nếu để trong dạng HTML hoặc hiện tại thì tôi chưa làm được
+                //5
+            case 'FG':
+                result = (<FGAnswer/>);
+                title = 'câu hỏi điền vào đoạn trống tự gõ từ : FG';
+                break;      
+                //Viết lại câu; Một câu hỏi có thể có nhiều đáp án đúng
+                //ở đây nhập dạng không thường không cho vào tinyMCE 
+                //vì chưa biết cách bóc tách từ HTML ra để so sánh
+                //6
+            case 'RW':
+                result = (<RWAnswer/>);
+                title = 'viết lại câu : RW';
+                break;
+                //dạng  bài viết thì không cần thiết phải hiển thị nội dung câu trả lời làm gì cả,cũng có thể hiển thị dàn ý
+                //các ý để chấm điểm cũng được
+                //cho nhập dạng 
+                //7
+            case 'WR':
+                title = 'viết bài văn tự luận : WR';          
+                break;
+                //do nothing, trong trường hợp mã dữ 
+                //cũng làm tương tự sẽ có một vài gợi ý để các cô chấm liệu
+                //từ tab 2, 3 sang tab này là null
+                //8
+            case 'LA':
+                title = 'câu hỏi nghe nói : LA';
+                break;
+            default:
+                result = 'do nothing';
+                title = 'chưa xác định';   
+                break;
+        }
+
+        return (
+                <div className="modal fade bounceInRight" id="NewModalAnswer" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div className="modal-dialog" style={{ fontFamily: 'serif'}}>
+                    <div className="modal-content">
+                      <div className="modal-header">
+                            <input type="hidden" id="hidQUANTITIES" />
+                          <input type="hidden" id="hidTOTALITEMANSWER" />
+                        <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                        <h4 className="modal-title" id="myModalLabel" style={{ fontFamily: 'serif'}}>Thêm bản ghi mới câu trả lời của dạng {title}</h4>
+                      </div>
+                      <div className="modal-body">
+                          <form className="form-horizontal" id='myform' role="form" style={{ 'fontFamily': 'serif' }}>
+                              <input type="text" id="CODEANSWER" className="form-control col-md-10 hidden" />
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Nhóm câu hỏi</label>
+                                  <div className="col-sm-10">
+                                        <input type="hidden" className="form-control" id="QUESTIONGROUPCODE2" disabled />
+                                 <div style={{'height':'30px','textAlign':'center',overflowY:'scroll'}} type="text" className="form-control" id="QUESTIONGROUPNAME2" ></div>
+                                  </div>
+                                 </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Câu hỏi</label>
+                                  <div className="col-sm-10">
+                                        <input type="hidden" className="form-control" id="QUESTIONCODE2" disabled />
+                                   <div style={{'height':'30px','textAlign':'center',overflowY:'scroll'}} type="text" className="form-control" id="QUESTIONNAME2" ></div>
+                                  </div>
+                                 </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Mã</label>
+                                  <div className="col-sm-10">
+                                      <input type="text" className="form-control" id="CODEVIEWANSWER" />
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Tên</label>
+                                  <div className="col-sm-10">
+                                      <input type="text" className="form-control" id="NAMEANSWER" />
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Thứ tự trả lời</label>
+                                  <div className="col-sm-10">
+                                      <input type="number" className="form-control" id="THEORDERANSWER" />
+                                  </div>
+                                </div>                           
+                              <div className="form-group" id="content_parent">
+                                  <label className="col-sm-2 control-label">Nội dung câu hỏi</label>
+                                  <div className="col-sm-10">
+                                      <div style={{ 'overflowY': 'scroll', minHeight:'30px',overflow:'scroll',height:'fit-content' }} className="form-control" id='CONTENT_QUESTION_POPUP'></div>
+                                  </div>
+                                </div>
+                              <div>
+                                  {result}
+                                  </div>
+                              <div className="form-group" id="answercontent">
+                                  <label className="col-sm-2 control-label">Nội dung câu trả lời</label>
+                                  <div className="col-sm-10">
+                                      <textarea className="CONTENTANSWER form-control" id='CONTENTANSWER' placeholder="Message"></textarea>
+                                  </div>
+                              </div>
+                              <div className="form-group" id="answertrue">
+                                        <label className="col-sm-2 control-label">Đáp án đúng</label>
+                                        <div className="col-sm-10">
+                                           <select id="TRUEANSWER" name="TRUEANSWER" ref="TRUEANSWER" style={{ 'height': '30px', 'width': '100%', 'textAlign': 'center' }}>
+                                            <option value="0">Không phải câu trả lời đúng</option>
+                                            <option value="1">Là câu trả lời đúng</option>
+                                           </select>
+                                        </div>
+                              </div>
+                          </form>
+                      </div>
+                      <div className="modal-footer">
+                        <button id='btn_PrevAnswer' title="Previous" className="btn btn-default" onClick={this.props.onPre}><i className="fa fa-angle-left fa-lg"></i></button>
+                        <button id='btn_NextAnswer' title="Next" className="btn btn-default" onClick={this.props.onNext}><i className="fa fa-angle-right fa-lg"></i></button>
+                        <button type="button" id="btnAddNewAnswer" className="btn btn-primary" onClick={this.props.clearData}><i className="fa fa-plus" aria-hidden="true"></i> Thêm mới</button>
+                        <button type="button" className="btn btn-primary" onClick={this.handleSubmit}><span className="glyphicon  glyphicon-save-file"></span> Lưu</button>
+                        <button type="button" className="btn btn-danger" data-dismiss="modal"><i className="fa fa-times" aria-hidden="true"></i> Đóng</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            );
+    }
+});
+
+

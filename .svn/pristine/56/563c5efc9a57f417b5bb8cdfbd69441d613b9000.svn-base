@@ -1,0 +1,71 @@
+﻿var BreadCrumbItem = React.createClass({
+    callback: function () {
+        var id = this.props.id;
+        var data_breadcrumb = this.props.app.getBreadCrumb();
+        if (!!data_breadcrumb) {
+            for (var i = 0; i < data_breadcrumb.length; i++) {
+                var length = data_breadcrumb.length;
+                var temp = data_breadcrumb[i];
+                if (id === temp.id) { // nếu click vào 1 item của breadcrumb
+                    if (i === 0) { // click vào course
+                        data_breadcrumb.splice(1, length); // cắt từ phần tử 1 đến hết
+                        this.props.app.setBreadCrumb(data_breadcrumb); 
+                        window.history.pushState({}, '', '/CourseStudent/Index'); // thay đổi url
+                        document.getElementById('listcourse').style.display = 'block';
+                        document.getElementById('listsubject').style.display = 'none';
+                     //   ReactDOM.render(<ListCourse />, document.getElementById('listcourse')); // render danh sách các course
+                    }
+                    else {
+                        this.props.app.setBreadCrumb(data_breadcrumb);
+                        var subjectcode = this.props.app.getKeyValue('subjectcode');
+                        if (i === 1) { // click vào 1 tên của 1 course trên breadcrumb
+                            data_breadcrumb.splice(2, length); // cắt từ phần tử thứ 2 đến hết
+                            window.history.pushState({}, '', '/CourseStudent/Index?id=' + subjectcode); // thay đổi url
+                            document.getElementById('listcourse').style.display = 'none';
+                            document.getElementById('listsubject').style.display = 'block';
+                         //   ReactDOM.render(<ListSubjectContent />, document.getElementById('listsubject')); // render danh sách nội dung bài học
+                        } else {
+                            data_breadcrumb.splice(i+1, length); //từ vị trí thứ 3 trở đi
+                            window.history.pushState({}, '', '/CourseStudent/Index?id=' + subjectcode);
+                            //var content = component.get('content');
+                            //content.getSub(this.props.id); // get các nội dung con
+                            //content.getSubjectContent(this.props.id); // get nội dung bài học
+                        }
+                    }
+                }
+                    
+            }
+        }
+    },
+    render: function () {
+        return (
+            <a onClick={this.callback } className="btn btn-success" id={this.props.id}>{this.props.name}</a>
+        );
+    }
+});
+var BreadCrumb = React.createClass({
+    //getInitialState: function () {
+    //    return {
+    //        breadcrumb: [{name: 'Course', id:'home'}]
+    //    }
+    //},
+    componentWillMount: function () {
+    },
+    render: function () {
+        var list = [];
+        var data = this.props.data;
+        var that = this;
+        if (!!data) {
+            data.forEach(function (item, key) {
+                list.push(<BreadCrumbItem key = {key} id={item.id} name={item.name } app={that.props.parent}/>);
+    });
+        }
+      
+        return (
+            <div className="btn-group btn-breadcrumb" style={{marginTop: '20px'}}>
+                    {list}
+            </div>
+        );
+    }
+});
+//ReactDOM.render(<BreadCrumb />, document.getElementById("_breadcrumb"));

@@ -1,0 +1,307 @@
+﻿var GroupPopup = React.createClass({
+    getInitialState: function () {
+        return {
+            questiontype: []
+            , questionuse: []
+            , first: true
+            , childpopup: null
+            , firstquestiontype: null
+            , currentquestiontypecode: ''
+            , currentdata: null
+            ,questionGroupIndex: 0
+        }
+    },
+    componentWillMount: function () {
+        if (this.state.first) {
+            //Chỉ loa dữ liệu trong lần hiển thị đầu tiên
+            this.setState({ first: false });
+            this.listComboQtype();
+            this.listComboQuse();
+        }
+
+    },
+    /**
+     * Chuẩn bị danh sách các loại câu hỏi
+     * @returns {} 
+     */
+    listComboQtype: function () {
+        $.ajax({
+            url: "/QuestionType/ListcomboQType",
+            dataType: 'json',
+            success: function (data) {
+                if (data.ret >= 0) {
+                    this.setState({ questiontype: data.data });
+                    if (data.data.length > 0) {
+                        this.setState({ firstquestiontype: data.data[0] });
+                    }
+                }
+                else {
+                    log.show("Không lấy được môn học lên combobox", false);
+                }
+            }.bind(this)
+        });
+    },
+    /**
+     * Chuẩn bị loại hình sử dụng
+     * @returns {} 
+     */
+    listComboQuse: function () {
+        $.ajax({
+            url: "/QuestionType/ListcomboQuse",
+            dataType: 'json',
+            success: function (data) {
+
+                if (data.ret >= 0) {
+                    this.setState({ questionuse:data.data});
+
+                }
+                else {
+                    log.show("Không lấy được môn học lên combobox", false);
+                }
+            }.bind(this)
+        });
+    },
+
+    /**
+    *Hiển thị, được gọi bởi component cha
+    */
+    Show: function () {
+        $('#' + this.props.id).modal({ show:true, backdrop: 'static'});
+    },
+    /**
+    *Ẩn form hiện tại
+    */
+    Hide: function () {
+        $('#' + this.props.id).modal('hide');
+    },
+    /**
+    *Tính toán đối chi tiết được thực hiện
+    *
+    */
+    GetDetailObject(questiontypecodeview)
+    {
+        var Com = null;
+        switch(questiontypecodeview)
+        {
+            case 'MS':
+            case 'WR':
+            case 'LA':
+                //MS: câu hỏi một nhiều chỉ dành cho một câu hỏi cho một nhóm; Câu hỏi ỏ nhóm, tự động sinh ra một bản ghi câu hỏi giả để lien kết, sau đó có các đáp án. 
+                //LA: Nghe nói - lưu lại một file không có answer; Chỉ có nhóm câu hỏi – tự động tạo một bản ghi trong question, 
+                //WR:Bài viết (tự luận); Chỉ có câu hỏi ở nhóm;
+           Com = MSPopup;//OK
+                break;
+            //case 'FI':
+            //case 'FG':
+            //case 'FF':
+            //    break;
+            default:
+                //RW: Viết lại câu; (câu hỏi chính ở nhóm), sau đó câu hỏi chi tiết chính là các từ; Một câu hỏi có thể có nhiều đáp án đúng (để cho phép so sánh chỉ cần đúng một trong các đáp án đó là tính điểm)
+                //RA: Nhóm sắp xếp lại các cụm, có 1 câu hỏi bị cắt nhỏ ra, nhiệm vụ là sắp xếp nó lại 
+                //MC: câu hỏi một nhiều – có một nhóm câu hỏi, sau đó có câu hỏi chi tiết và danh sách câu trả lời. 
+                //PA: câu hỏi dạng ghép đôi - hiển thị một danh sách các câu hỏi bên trái, danh sách các câu hỏi bên phải ghép lại thành cặp. Có một câu hỏi chung ở đầu; danh sách câu hỏi, danh sách câu trả lời.
+                ///CO: Dạng câu hỏi tổng kết - cho một đoạn đọc (chính); sau đó tiến hành đưa ra một câu hỏi và có nhiều đáp án trả lời độc lập - true/false, true/false/not given
+                Com = GENPopup;
+                break;
+        }
+        return Com;
+
+    },
+    /**
+    *hàm được gọi để xóa dữ liệu trên form cho phép thêm mới; được gọi bởi component có component này (list)
+    */
+    ClearInput: function (obj) {
+        this.setState({currentdata:null});
+        var id = this.props.id;
+        this.ClearThing();//clear
+        
+        if (this.state.firstquestiontype !== null) {
+
+            if (this.state.currentquestiontypecode !== this.state.firstquestiontype.CODE) {
+                console.log('Default:', this.state.firstquestiontype);
+                //debugger
+                var Com = this.GetDetailObject(this.state.firstquestiontype.CODEVIEW);
+                //Viet ga vit
+                var newindex = this.state.questionGroupIndex + 1;
+                this.setState({ questionGroupIndex: newindex});
+                console.log('Fore gen new in clearInput', id + '_popupdetail' + newindex);
+                var ins = ReactDOM.render(<Com questiontypecode={this.state.firstquestiontype.CODE} id={id + '_popupdetail' + newindex }/>, document.getElementById(id + 'questiondetail'));
+            //    this.setState({ questionGroupIndex: this.state.questionGroupIndex + 1 });
+                //Gán lại mã hiện thời
+                 this.setState({ childpopup: ins, currentquestiontypecode: this.state.firstquestiontype.CODE });
+                ins.ClearInput(obj);
+            }
+            else {
+                this.state.childpopup.ClearInput(obj);
+            }
+        } else {
+            this.setState({ childpopup: null});
+        }
+    },
+
+    /**
+    *thực tế xóa trên form
+    */
+    ClearThing: function () {
+        this.refs[this.props.id + "_CODE"].value = "";
+        this.refs[this.props.id + '_QUESTIONTYPECODE'].setValueString('');
+        this.refs[this.props.id + '_QUESTIONUSECODE'].setValueString('');
+        //Set status
+        this.refs[this.props.id + "_status"].innerHTML = 'new';
+
+    },
+    /**
+    *Hàm gán dữ liệu để sửa, được gọi bởi component cha của component này
+    *para obj: thông tin về dữ liệu được thay đổi
+    */
+    SetInput: function (obj) {
+        this.setState({ currentdata: obj });
+        var id = this.props.id;
+        //        //Sử dụng cú pháp của react để thực hiện tương tác dữ liệu
+        this.refs[this.props.id + "_CODE"].value = obj.CODE;
+        this.refs[id + '_QUESTIONTYPECODE'].setValueString(obj.QUESTIONTYPECODE);
+        this.refs[id + '_QUESTIONUSECODE'].setValueString(obj.QUESTIONUSECODELIST);
+        //For child component 
+        if (obj.QUESTIONTYPECODE !== this.state.currentquestiontypecode) {
+            var Com = this.GetDetailObject(obj._QUESTIONTYPECODE.CODEVIEW);
+            var newindex = this.state.questionGroupIndex + 1;
+            this.setState({ questionGroupIndex: newindex });
+            console.log('Fore gen new in SetInput', id + '_popupdetail' + newindex);
+            var ins = ReactDOM.render(<Com questiontypecode={obj.QUESTIONTYPECODE} id={id + '_popupdetail' + newindex }/>, document.getElementById(id + 'questiondetail'));
+        
+
+            //Ghi nhận trạng thái mới
+            this.setState({ childpopup: ins, currentquestiontypecode: obj.QUESTIONTYPECODE });
+            ins.SetInput(obj);
+        }
+        else {
+            this.state.childpopup.SetInput(obj);
+        }
+        //Set status
+        this.refs[this.props.id + "_status"].innerHTML = 'edit';
+    },
+    /**
+   *Kiểm tra để gọi load lại cho dữ liệu từ component cha (danh sách)
+   *para obj: là mã của bản ghi mới được thao tác
+   */
+    ReloadData: function (obj) {
+        if (isMiss(this.props.ReloadData)) {
+            //console.log('Call load data');
+            return false;
+        }
+        else {
+            //console.log('Call load data!!!!!!!!!!!!!');
+            this.props.ReloadData(obj);
+            return true;
+        }
+    },
+    /**
+    *gọi khi bấm nút ghi
+    */
+    SaveClick: function () {
+//        console.log('Save click');
+        this.SaveData(true);
+    },
+    /**
+    *gọi khi bấm nút ghi và tạo mới
+    */
+    SaveContinueClick: function () {
+        this.SaveData(false);
+    },
+    SaveData: function (isClose) {
+        var obj = { subjectcode: this.props.parent.getKeyValue('subjectcode'), subjectcontentcode: this.props.parent.getKeyValue('subjectcontentcode'), questiontypecode: this.refs[this.props.id + '_QUESTIONTYPECODE'].getValueString(), questionusecodelist: this.refs[this.props.id + '_QUESTIONUSECODE'].getValueString(), code: this.refs[this.props.id + "_CODE"].value };
+        console.log('Save for:', obj);
+        //gọi đối tượng con ghi nhận dữ liệu, với tham số xác định được truyền vào là obj
+        this.state.childpopup.SaveData(obj,function (data) {
+                                if (isClose) {
+                                    this.Hide();
+                                } else {
+                                    this.ClearInput({});
+                                }
+                                this.ReloadData();
+                            }.bind(this)
+             , function (data) { log.show("Ghi lỗi!", false); }
+             , function (err) {log.show("Lỗi thực hiện thao tác!", false); }
+        );
+
+    },
+    /**
+     * Khi thay đổi giá trị combobox cần xác định lại cách hiển thị,bên cạnh đó còn phụ thuộc vào việc khi thay đổi giá trị đấy thì 
+     * @param {} obj 
+     * @returns {} 
+     */
+    changeType: function (obj) {
+        var id = this.props.id;
+        console.log('Change type:', id + '_popupdetail' + this.state.questionGroupIndex);
+//        console.log('Change type to:',obj);
+        if (!isMiss(obj)) {
+            var codeview = obj.label;
+            var ar = codeview.split('-');
+            if (ar.length > 1)
+            {
+                codeview = ar[0];
+            }
+            var code = obj.value;
+            if (code !== this.state.currentquestiontypecode) {
+                var Com = this.GetDetailObject(codeview);
+                console.log('Gen new:', id + '_popupdetail' + this.state.questionGroupIndex);
+                var ins = ReactDOM.render(<Com questiontypecode={code} id={id + '_popupdetail' + this.state.questionGroupIndex }/>, document.getElementById(id + 'questiondetail'));
+                //Ghi nhận trạng thái mới
+                this.setState({ childpopup: ins, currentquestiontypecode: code });
+                if (this.state.currentdata !== null) {
+                    ins.SetInput(this.state.currentdata);
+                } else {
+                    ins.ClearInput(this.state.currentdata);
+                }
+            }
+            else {
+                if (this.state.currentdata !== null) {
+                    this.state.childpopup.SetInput(this.state.currentdata);
+                } else {
+                    this.state.childpopup.ClearInput(this.state.currentdata);
+                }
+            }
+        }
+    },
+    render: function () {
+      ///  debugger
+        var id = this.props.id;
+        return (
+             <div className="modal" id={id} ref={id} role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div className="modal-dialog">
+                    <div className="box box-info">
+                      <div className="modal-header with-border">
+                        <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                        <h4 className="modal-title" id="myModalLabel">Thêm bản ghi mới</h4>
+                      </div>
+                      <div className="modal-body">
+                          <form className="form-horizontal" id='myform' role="form">
+                              <input type="text" ref={id + '_CODE'} id={id + '_CODE'} className="form-control col-md-10 hidden" />
+                                 <div className="form-group">
+                                   <label className="col-sm-2 control-label">Loại câu hỏi</label>
+                                        <div className="col-sm-10">
+                                          <Combobox id={id + '_QUESTIONTYPECODE'} ref={id + '_QUESTIONTYPECODE'} lst={this.state.questiontype} valuefield='CODE' textfield='{CODEVIEW}-{NAME}' tooltip='Chọn loại câu hỏi' callback={this.changeType} />
+                                        </div>
+                                 </div>
+                                 <div className="form-group">
+                                   <label className="col-sm-2 control-label">Mục đích sử dụng </label>
+                                        <div className="col-sm-10">
+                                          <Combobox  id={id + '_QUESTIONUSECODE'} ref={id + '_QUESTIONUSECODE'} lst={this.state.questionuse} valuefield='CODE' textfield='{CODEVIEW}-{NAME}' tooltip='Chọn loại sử dụng' multiple={true}/>
+                                        </div>
+                                 </div>
+                                 <span id={id+'questiondetail'} ></span>                                 
+                          </form>
+                      </div>
+             <div className="box-footer modal-footer">
+                 {/*Phần dành để hiển thị trạng thái - không thay đổi*/}
+                <span className="label label-warning" style={{float:'left'}} id={id+"_status"} ref={id+"_status"}>i</span>
+                <button type="button" className="btn btn-primary" onClick={this.SaveClick}><i className="fa fa-floppy-o"></i> Ghi</button>
+                <button type="button" className="btn btn-primary" onClick={this.SaveContinueClick}><i className="fa fa-plus-circle"></i> Ghi và thêm mới</button>
+                <button type="button" className="btn btn-default " data-dismiss="modal"><i className="fa fa-sign-out"></i>Thoát</button>
+             </div>
+                    </div>
+                  </div>
+                </div>
+            );
+    },
+});

@@ -1,0 +1,243 @@
+﻿using IS.Config;
+using IS.fitframework;
+using IS.Sess;
+using IS.uni;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace nerp.Controllers.core
+{
+    public class MarkController : Controller
+    {
+        // GET: Mark
+        private readonly session _ses = new session();
+
+        /// <summary>
+        /// get danh sách tất cả các sinh viên, trừ các sinh viên đã được thêm vào lớp học
+        /// </summary>
+        /// <param name="coursecode">mã lớp học</param>
+        /// <param name="classcode">mã lớp</param>
+        /// <returns></returns>
+        public JsonResult GetAllStudent(string coursecode, string classcode)
+        {
+            // danh sách mã sinh viên đã tham gia vào course
+            List<string> listStudentCode = new List<string>();
+            MARK_BUS bus = new MARK_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            if (!string.IsNullOrEmpty(coursecode))
+            {
+                lipa.Add(new fieldpara("COURSECODE", coursecode, 0));
+            }
+            lipa.Add(new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            lipa.Add(new fieldpara("EDUCATIONLEVELCODE", "DH", 0));
+            List<MARK_OBJ> liStudentCourse = bus.getAllBy2("STUDENTCODE", lipa.ToArray());
+            foreach (var studentcourse in liStudentCourse)
+            {
+                listStudentCode.Add(studentcourse.STUDENTCODE);
+            }
+            // danh sách tất cả các sinh viên
+            STUDENT_BUS busStudent = new STUDENT_BUS();
+            var liStudent = busStudent.getAllBy2("CODE", new fieldpara("CLASSCODE", classcode, 0),
+                new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0),
+                new fieldpara("EDUCATIONLEVELCODE", "DH", 0));
+            var count = 0;
+            if (listStudentCode.Count > 0)
+            {
+                for (int i = 0; i < liStudent.Count; i++)
+                {
+                    if (listStudentCode.Contains(liStudent[i].CODE))
+                    {
+                        liStudent.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            var data = JsonConvert.SerializeObject(liStudent);
+            return Json(new
+            {
+                data,//Danh sách
+                count
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// danh sách tất cả các sinh viên đã được thêm vào lớp học
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="coursecode">Mã lớp môn học</param>
+        /// <returns></returns>
+        public JsonResult GetListStudent(int page, int pageSize, string coursecode)
+        {
+            //mặc định cho phần trang
+            if (pageSize == 0)
+            {
+                pageSize = AppConfig.item4page();
+            }
+            if (page < 1)
+            {
+                page = 1;
+            }
+            MARK_BUS busMark = new MARK_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            lipa.Add(new fieldpara("COURSECODE", coursecode, 0));
+            lipa.Add(new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            int countpage;
+            int totalItem;
+            var liMark = busMark.getAllBy2("CODE", pageSize, page, out countpage, out totalItem, lipa);
+            List<STUDENT_OBJ> liStudent = new List<STUDENT_OBJ>();
+            if (liMark != null)
+            {
+                foreach (var mark in liMark)
+                {
+                    liStudent.Add(mark._STUDENTCODE);
+                }
+            }
+
+            busMark.CloseConnection();
+            //Chỉ số đầu tiên của trang hiện tại (đã trừ -1)
+            int startpage = (page - 1) * pageSize;
+            //Trả về client
+            var a = JsonConvert.SerializeObject(liStudent);
+            return Json(new
+            {
+                liMark,
+                data = liStudent,//Danh sách
+                data2 = a,
+                totalItem, // số lượng tất cả các bản ghi
+                totalPage = countpage, // số lượng trang
+                startindex = startpage,//bắt đầu số trang
+                ret = 0
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// update danh sách sinh viên lớp môn học
+        /// </summary>
+        /// <param name="listStudentCode">danh sách mã sinh viên</param>
+        /// <param name="coursecode">mã lớp môn học</param>
+        /// <param name="subjectcode">mã môn học</param>
+        /// <returns></returns>
+        //public JsonResult UpdateStudentCourse(List<string> listStudentCode, string coursecode, string subjectcode)
+        //{
+        //    int ret;
+        //    MARK_BUS bus = new MARK_BUS();
+        //    MARK_OBJ obj;
+        //    if (listStudentCode == null)
+        //        ret = -1;
+        //    else
+        //    {
+        //        foreach (var studentCode in listStudentCode)
+        //        {
+        //            List<fieldpara> lipa = new List<fieldpara>();
+        //            lipa.Add(new fieldpara("STUDENTCODE", studentCode, 0));
+        //            lipa.Add(new fieldpara("COURSECODE", coursecode, 0));
+        //            lipa.Add(new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+        //            obj = bus.GetByKey(lipa.ToArray());
+        //            if (obj == null) // sinh viên chưa được thêm trước đó
+        //            {
+        //                ret = 1;
+        //            }
+        //            else // sinh viên đã được thêm
+        //            {
+        //                ret = -2;
+        //                bus.CloseConnection();
+        //                return Json(new
+        //                {
+        //                    ret
+        //                }, JsonRequestBehavior.AllowGet);
+        //            }
+        //            if (ret >= 0) // thêm bản ghi
+        //            {
+        //                obj = new MARK_OBJ();
+        //                obj.CODE = bus.genNextCode(obj);
+        //                obj.LOCKDATE = DateTime.Now;
+        //                obj.CODEVIEW = obj.CODEVIEW;
+        //                obj.COURSECODE = coursecode;
+        //                obj.STUDENTCODE = studentCode;
+        //                obj.SUBJECTCODE = subjectcode;
+        //                obj.LOCK = 0;
+        //                obj.EDITTIME = DateTime.Now; // thời điểm sửa bản ghi
+        //                obj.EDITUSER = _ses.loginCode;
+        //                obj.UNIVERSITYCODE = _ses.gUNIVERSITYCODE;
+        //                ret = bus.insert(obj);
+        //                if (ret < 0)
+        //                {
+        //                    bus.CloseConnection();
+        //                    return Json(new
+        //                    {
+        //                        ret
+        //                    }, JsonRequestBehavior.AllowGet);
+        //                }
+        //            }
+        //        }
+        //        ret = new CourseController().UpdateStudentAmount(coursecode); // update lại số lượng sinh viên của lớp môn học
+        //    }
+        //    bus.CloseConnection();
+        //    return Json(new
+        //    {
+        //        ret
+        //    }, JsonRequestBehavior.AllowGet);
+        //}
+
+        ///// <summary>
+        ///// xóa sinh viên của lớp môn học
+        ///// </summary>
+        ///// <param name="listStudentCode">danh sách mã sinh viên</param>
+        ///// <param name="coursecode">mã lớp môn học</param>
+        ///// <returns></returns>
+        //public JsonResult DeleteStudentCourse(List<string> listStudentCode, string coursecode)
+        //{
+        //    int ret;
+        //    if (listStudentCode == null)
+        //        ret = -1;
+        //    else
+        //    {
+        //        var bus = new MARK_BUS();
+        //        foreach (string studentCode in listStudentCode)
+        //        {
+        //            if (studentCode != null)
+        //            {
+        //                var item = bus.GetByKey(new fieldpara("STUDENTCODE", studentCode, 0),
+        //                    new fieldpara("COURSECODE", coursecode, 0),
+        //                    new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+        //                if (item == null)
+        //                {
+        //                    ret = -2;
+        //                    bus.CloseConnection();
+        //                    return Json(new
+        //                    {
+        //                        ret
+        //                    }, JsonRequestBehavior.AllowGet);
+        //                }
+        //                bus.delete(item._ID);
+        //            }
+        //        }
+        //        ret = new CourseController().UpdateStudentAmount(coursecode); // update lại số lượng sinh viên của lớp môn học
+        //        bus.CloseConnection();
+        //    }
+        //    return Json(new
+        //    {
+        //        ret
+        //    }, JsonRequestBehavior.AllowGet);
+        //}
+
+        /// <summary>
+        /// lấy mark theo mã sinh viên và mã khóa học
+        /// </summary>
+        /// <param name="coursecode"></param>
+        /// <returns></returns>
+        public JsonResult GetByStudentCourse(string coursecode)
+        {
+            //string studentcode = _ses.loginCode;
+            string studentcode = "S067920001";
+            MARK_BUS bus = new MARK_BUS();
+            var data = bus.GetByKey(new fieldpara("STUDENTCODE", studentcode, 0),
+                                    new fieldpara("COURSECODE", coursecode, 0),
+                                    new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            return Json(new { data }, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

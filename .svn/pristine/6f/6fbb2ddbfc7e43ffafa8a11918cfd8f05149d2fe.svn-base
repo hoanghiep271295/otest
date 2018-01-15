@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Online testing system - 2017</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link href="~/Content/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.min.css">*@
+    <!-- Font Awesome -->
+    <link href="~/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../bower_components/font-awesome/css/font-awesome.min.css">*@
+    <!-- Ionicons -->
+    <link href="~/Content/Ionicons/css/ionicons.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../bower_components/Ionicons/css/ionicons.min.css">*@
+    <!-- DataTables -->
+    <link href="~/Content/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">*@
+    <link href="~/Content/jquery/jquery-ui.min.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link href="~/Content/AdminLTE/css/AdminLTE.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">*@
+    <!-- AdminLTE Skins. -->
+    <link href="~/Content/AdminLTE/css/skins/_all-skins.min.css" rel="stylesheet" />
+    @*React select *@
+    <link href="~/Content/reactselect/react-select.css" rel="stylesheet" />
+    <link href="~/Scripts/Dropdowntree/dropdowntree.css" rel="stylesheet" />
+
+    <link href="~/Content/comboxtree/css/default/style.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="~/Content/sysimage/favicon.ico" type="image/x-icon">
+    <link href="~/Content/site.css" rel="stylesheet" />
+    <style>
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            border: none;
+            outline: none;
+            /*background-color: #00A65A;*/
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 50%;
+        }
+            #myBtn:hover {
+                background-color: #555;
+            }
+    </style>
+</head>
+<body class="skin-green sidebar-mini sidebar-collapse ">
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top navbar-fixed-top" style="margin-left:0">
+                <a href="/" class="logo">
+                    <!-- mini logo for sidebar mini 50x50 pixels -->
+                    <span class="logo-mini"><img src="~/Content/sysimage/logo.png" height="auto" width="50px" /></span>
+                    <!-- logo for regular state and mobile devices -->
+                    <span class="logo-lg"><b>m</b>ERP</span>
+                </a>
+                @*Thiết lập tiêu đề, sau này sẽ sử dụng file cấu hình để thiết lập*@
+                @Html.Action("MasterTitle", "Common")
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        @Html.Action("Task", "Common")
+                        @Html.Action("Header", "Common")
+                    </ul>
+                </div>
+
+
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        @Html.Action("Menu", "Common")
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <!-- Main content -->
+            <section class="content" style="padding-top: 0 " >
+                        @RenderBody()
+                
+                <button onclick="topFunction()" id="myBtn" >
+                    <span class="glyphicon glyphicon-chevron-up">
+                     </span>
+                </button>
+                <!-- /.row -->
+            </section>
+            <!-- /.content -->
+            <!-- /.content-wrapper -->
+        </div>
+        <section class="main-footer no-print">
+            <div class="pull-right hidden-xs">
+                <b>Version</b> 2017
+            </div>
+            <strong>Copyright &copy; 2014-2017 <a href="https://fit.mta.edu.vn">Faculty of Information Technology</a>/Military Technical Academy .</strong> All rights
+            reserved.
+        </section>
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Create the tabs -->
+            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+                <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+                <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+            </ul>
+            <!-- Tab panes -->
+        </aside>
+        <!-- /.control-sidebar -->
+        <!-- Add the sidebar's background. This div must be placed
+             immediately after the control sidebar -->
+        <div class="control-sidebar-bg"></div>
+    </div>
+    <!-- ./wrapper -->
+    <!-- jQuery 3 -->
+    <script src="~/Scripts/jquery/jquery.min.js"></script>
+    <script src="~/Scripts/jquery/jquery-ui.min.js"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="~/Scripts/bootstrap/js/bootstrap.min.js"></script>
+   <!-- DataTables -->
+  <!-- SlimScroll -->
+    <script src="~/Scripts/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+    <!-- FastClick -->
+    <script src="~/Scripts/fastclick/fastclick.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/Scripts/AdminLTE/js/adminlte.min.js"></script>
+    <script src="~/Scripts/comboxtree/js/jstree.min.js"></script>
+    <script src="~/Scripts/tree/custom.tree.js"></script>
+    <script src="~/Content/moment/moment.min.js"></script>
+    <script src="~/Content/bootbox/bootbox.min.js"></script>
+    <script src="~/Scripts/react/react.js"></script>
+    <script src="~/Scripts/react/react-dom.js"></script>
+    <script src="~/Scripts/func.js"></script>
+    @RenderSection("scripts", false)
+    <!-- page script -->
+
+    <script>
+        (function() {
+            if (document.domain !== "localhost")
+            {
+                $("body")
+                    .css({
+                        "-webkit-user-select": "none",
+                        "-moz-user-select": "-moz-none",
+                        "-ms-user-select": "none",
+                        "user-select": "none"
+                    });
+            }
+        })();
+    </script>
+    <script>
+        var globalApp;
+        function getApp(ev) {
+            globalApp = ev;
+        }
+
+        function abc(e) {
+            console.log(e);
+        }
+    </script>
+
+    <script>
+        // var ques = {MaCauHoi:mach,MaCauTL:mctl,TYPE:thetype};
+        //function check the to add in to state
+        function onCheck(mach, mctl, thetype) {
+            var obj = new Object();
+            obj.MaCauHoi = mach;
+            obj.MaCauTL = mctl;
+            obj.TYPE = thetype;
+            //check the existence of this obj in db
+            var check = containsObject(obj, globalApp.state.listStudentAnswer);
+            //if update we will update
+            if (check) {
+                updateObject(obj, globalApp.state.listStudentAnswer);
+            } //add new
+            else {
+                console.log('before', globalApp.state.listStudentAnswer);
+                globalApp.state.listStudentAnswer.push(obj);
+                console.log('after', globalApp.state.listStudentAnswer);
+            }
+        }
+        // check extistence of an object
+        function containsObject(obj, list) {
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].MaCauHoi === obj.MaCauHoi) {
+                    //exist
+                    return true;
+                }
+            }
+            //none exist
+            return false;
+        }
+        //update a object answerstudent in List answser
+        function updateObject (obj,arr ) {
+            for (var i in arr) {
+                if (arr.hasOwnProperty(i)) {
+                    if (arr[i].MaCauHoi === obj.MaCauHoi) {
+                        arr[i].MaCauTL = obj.MaCauTL;
+                        arr[i].TYPE = obj.TYPE;
+                        break; //Stop this loop, we found it!
+                    }
+                }
+            }
+        }
+
+    </script>
+    <script>
+        //first of all,we need to get the following input id {id}
+        //then get questiontype{FG,FI} and questiongroup{QG_id_[FG|FI]}
+        function myFunction(id) {
+            var income = id.split("_");
+            var questiongroup = income[0];
+            console.log('funny', questiongroup);
+            // debugger
+            var questiontype = income[income.length - 1];
+            var question = income[income.length - 2];
+            ///the value after onfoucusout the input
+            var value = document.getElementById(id).value;
+            if (!!value) {
+                //oncheck
+                onCheck(question, value, questiontype);
+                //update state
+                console.log(globalApp.state.listStudentAnswer);
+                //ajax put data change here to server
+                onSubmit();
+            }
+
+
+        }
+        function onSubmit() {
+            // debugger
+            var list = JSON.stringify(globalApp.state.listStudentAnswer);
+            var listExamdetail = JSON.stringify(globalApp.state.listExamDetail);
+            var examformcode = JSON.stringify(globalApp.state.objExamForm);
+            $.ajax({
+                url: "/ExamResult/UpdateExamResult",
+                dataType: 'json',
+                type: 'POST',
+                data: {
+                    listobj: list,
+                    examformcode: examformcode,
+                    listexamformdetail: listExamdetail,
+                    examhallstudentcode: globalApp.state.objHalltudent.CODE
+                },
+                success: function (data) {
+                    if (data.ret >= 0) {
+                        log.show('sent ok !!', true);
+                    }
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.log(err.toString());
+                }
+            });
+        }
+    </script>
+
+<script>
+    function drop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        ev.target.appendChild(document.getElementById(data));
+    }
+</script>
+<script>
+
+    // browser window scroll (in pixels) after which the "back to top" link is shown
+    var offset = 300,
+		//browser window scroll (in pixels) after which the "back to top" link opacity is reduced
+		offset_opacity = 1200,
+		//duration of the top scrolling animation (in ms)
+		scroll_top_duration = 700;
+     $back_to_top = $('#myBtn');
+    // When the user scrolls down 20px from the top of the document, show the button
+            window.onscroll = function() {scrollFunction()};
+
+            function scrollFunction() {
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                    document.getElementById("myBtn").style.display = "block";
+                } else {
+                    document.getElementById("myBtn").style.display = "none";
+                }
+            }
+                // When the user clicks on the button, scroll to the top of the document
+                function topFunction() {
+                    event.preventDefault();
+                    $('body,html').animate({
+                       scrollTop: 0
+                    }, scroll_top_duration
+                    );
+                }
+</script>
+
+
+</body>
+</html>

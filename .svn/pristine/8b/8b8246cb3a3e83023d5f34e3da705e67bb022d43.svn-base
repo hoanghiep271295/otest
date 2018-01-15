@@ -1,0 +1,2339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\build\JavaScriptEngineSwitcher.ChakraCore.props" Condition="Exists('..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\build\JavaScriptEngineSwitcher.ChakraCore.props')" />
+  <Import Project="..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props" Condition="Exists('..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{520E4335-CE38-4566-9D4C-45CC04868F7B}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>nerp</RootNamespace>
+    <AssemblyName>IS.otest</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AjaxMin, Version=4.84.4790.14405, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AjaxMin.4.84.4790.14417\lib\net40\AjaxMin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Cassette, Version=2.4.2.13844, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cassette.2.4.2\lib\net40-client\Cassette.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Cassette.Babel, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cassette.Babel.1.1.1\lib\net45\Cassette.Babel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ClearScript, Version=5.4.7.0, Culture=neutral, PublicKeyToken=935d0c957da47c73, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.V8.2.0.0\lib\net40-client\ClearScript.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IS.Comm">
+      <HintPath>..\share\IS.Comm.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Pool">
+      <HintPath>..\share\IS.Pool.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Sec">
+      <HintPath>..\share\IS.Sec.dll</HintPath>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.ChakraCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\lib\net40-client\JavaScriptEngineSwitcher.ChakraCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Core.2.0.0\lib\net40-client\JavaScriptEngineSwitcher.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.Jint">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Jint.1.2.1\lib\net40\JavaScriptEngineSwitcher.Jint.dll</HintPath>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.Msie, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Msie.2.0.0\lib\net40-client\JavaScriptEngineSwitcher.Msie.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.V8, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.V8.2.0.0\lib\net40-client\JavaScriptEngineSwitcher.V8.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Jint">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Jint.1.2.1\lib\net40\Jint.dll</HintPath>
+    </Reference>
+    <Reference Include="JSPool, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc7775f73072640, processorArchitecture=MSIL">
+      <HintPath>..\packages\JSPool.2.0.0\lib\net40-client\JSPool.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.0.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.2.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.Common.v12.12.0.0.1\lib\Microsoft.ReportViewer.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="MsieJavaScriptEngine, Version=2.2.2.0, Culture=neutral, PublicKeyToken=a3a2846a37ac0d3e, processorArchitecture=MSIL">
+      <HintPath>..\packages\MsieJavaScriptEngine.2.2.2\lib\net45\MsieJavaScriptEngine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="React.Core, Version=3.0.0.0, Culture=neutral, PublicKeyToken=9aed67b161f7db78, processorArchitecture=MSIL">
+      <HintPath>..\packages\React.Core.3.0.0\lib\net40\React.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="React.Web, Version=3.0.0.0, Culture=neutral, PublicKeyToken=9aed67b161f7db78, processorArchitecture=MSIL">
+      <HintPath>..\packages\React.Web.3.0.0\lib\net40\React.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="React.Web.Mvc4, Version=3.0.0.0, Culture=neutral, PublicKeyToken=9aed67b161f7db78, processorArchitecture=MSIL">
+      <HintPath>..\packages\React.Web.Mvc4.3.0.0\lib\net40\React.Web.Mvc4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Spire.Common">
+      <HintPath>..\share\FreeSpire.XLS.7.8\lib\net40\Spire.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.License">
+      <HintPath>..\share\FreeSpire.XLS.7.8\lib\net40\Spire.License.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.XLS">
+      <HintPath>..\share\FreeSpire.XLS.7.8\lib\net40\Spire.XLS.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization.React, Version=3.0.0.0, Culture=neutral, PublicKeyToken=9aed67b161f7db78, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Web.Optimization.React.3.0.0\lib\net40\System.Web.Optimization.React.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.0.0\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="VroomJs, Version=1.2.3.0, Culture=neutral, PublicKeyToken=e7c52e67fcb0044f, processorArchitecture=MSIL">
+      <HintPath>..\packages\VroomJs.1.2.3\lib\net45\VroomJs.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="file\image\" />
+    <Folder Include="file\other\" />
+    <Folder Include="images\2017\10\" />
+    <Folder Include="jsx\Mark\" />
+    <Folder Include="log\" />
+    <Folder Include="Models\" />
+    <Folder Include="Scripts\bootstrap\js\" />
+    <Folder Include="Scripts\datatables.net\js\" />
+    <Folder Include="Scripts\moment\" />
+    <Folder Include="Views\Admingroup\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\ReactConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\admin\AdminController.cs" />
+    <Compile Include="Controllers\admin\AdmingroupController.cs" />
+    <Compile Include="Controllers\admin\parameterController.cs" />
+    <Compile Include="Controllers\admin\SysmenuController.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\core\CourseContentController.cs" />
+    <Compile Include="Controllers\core\CourseController.cs" />
+    <Compile Include="Controllers\core\CourseStudentController.cs" />
+    <Compile Include="Controllers\core\CourseStudiedController.cs" />
+    <Compile Include="Controllers\core\CourseTeacherController.cs" />
+    <Compile Include="Controllers\core\detail\academiclevelController.cs" />
+    <Compile Include="Controllers\core\detail\PartyLeveltitleController.cs" />
+    <Compile Include="Controllers\core\DirectoryController.cs" />
+    <Compile Include="Controllers\core\detail\ArmyRankController.cs" />
+    <Compile Include="Controllers\core\ClassController.cs" />
+    <Compile Include="Controllers\core\DepartmentController.cs" />
+    <Compile Include="Controllers\core\DepartmentListController.cs" />
+    <Compile Include="Controllers\core\DistrictController.cs" />
+    <Compile Include="Controllers\core\DownloadController.cs" />
+    <Compile Include="Controllers\core\EthnicController.cs" />
+    <Compile Include="Controllers\core\GradeController.cs" />
+    <Compile Include="Controllers\core\detail\LevelTitleController.cs" />
+    <Compile Include="Controllers\core\MarkController.cs" />
+    <Compile Include="Controllers\core\NationController.cs" />
+    <Compile Include="Controllers\core\ProvinceController.cs" />
+    <Compile Include="Controllers\core\ReligionController.cs" />
+    <Compile Include="Controllers\core\StaffController.cs" />
+    <Compile Include="Controllers\core\StaffListController.cs" />
+    <Compile Include="Controllers\core\StudentController.cs" />
+    <Compile Include="Controllers\core\StudentRegisCourseController.cs" />
+    <Compile Include="Controllers\core\SubjectContentController.cs" />
+    <Compile Include="Controllers\core\SubjectContentTestController.cs" />
+    <Compile Include="Controllers\core\SubjectController.cs" />
+    <Compile Include="Controllers\core\system\PriorityController.cs" />
+    <Compile Include="Controllers\core\TownController.cs" />
+    <Compile Include="Controllers\exam\ExamFormController.cs" />
+    <Compile Include="Controllers\exam\ExamHallController.cs" />
+    <Compile Include="Controllers\exam\ExamHallStudentController.cs" />
+    <Compile Include="Controllers\exam\ExamResultController.cs" />
+    <Compile Include="Controllers\exam\ExamTimeController.cs" />
+    <Compile Include="Controllers\exam\StudentExamController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\question\QuestionController.cs" />
+    <Compile Include="Controllers\question\QuestionTypeController.cs" />
+    <Compile Include="Controllers\question\QuestionUseController.cs" />
+    <Compile Include="Controllers\subject\ContentTypeController.cs" />
+    <Compile Include="Controllers\subject\SkillController.cs" />
+    <Compile Include="Controllers\subject\TagController.cs" />
+    <Compile Include="Controllers\test\TestStructContentController.cs" />
+    <Compile Include="Controllers\test\TestStructController.cs" />
+    <Compile Include="Controllers\test\TestStructDetailController.cs" />
+    <Compile Include="Controllers\TinyMceController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="nerpDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>nerpDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="report\reporting.aspx.cs">
+      <DependentUpon>reporting.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="report\reporting.aspx.designer.cs">
+      <DependentUpon>reporting.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Startup.cs" />
+    <Compile Include="update.cs" />
+    <Compile Include="VotingHub.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ContentQuestion\07122017_102707.jpg" />
+    <Content Include="Content\customcss\arrowPageUp.png" />
+    <Content Include="Content\customcss\custom.css" />
+    <Content Include="Content\Site.css" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="jsx\Core\home\sysmenulist - Copy %282%29.js">
+      <DependentUpon>homewarning.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist - Copy.js">
+      <DependentUpon>homeadmin.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist.js">
+      <DependentUpon>homeindex.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist.min - Copy %282%29.js">
+      <DependentUpon>sysmenulist - Copy %282%29.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist.min - Copy.js">
+      <DependentUpon>sysmenulist - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist.min.js">
+      <DependentUpon>sysmenulist.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\sysmenu\sysmenulist.js">
+      <DependentUpon>sysmenulist.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\sysmenu\sysmenulist.min.js">
+      <DependentUpon>sysmenulist.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\sysmenu\sysmenupopup.js">
+      <DependentUpon>sysmenupopup.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\sysmenu\sysmenupopup.min.js">
+      <DependentUpon>sysmenupopup.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\AgGrid.js">
+      <DependentUpon>AgGrid.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\AgGrid.min.js">
+      <DependentUpon>AgGrid.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\ButtonList - Copy.js">
+      <DependentUpon>TabHeader.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\ButtonList - Copy.min.js">
+      <DependentUpon>ButtonList - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\ButtonList.js">
+      <DependentUpon>ButtonList.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\ButtonList.min.js">
+      <DependentUpon>ButtonList.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox - Copy - Copy.js">
+      <DependentUpon>Combobox.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox - Copy.js">
+      <DependentUpon>Combobox_bootstrap.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox - Copy.min - Copy.js">
+      <DependentUpon>Combobox - Copy - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox - Copy.min.js">
+      <DependentUpon>Combobox - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox.js">
+      <DependentUpon>Comboboxold.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox.min.js">
+      <DependentUpon>Combobox.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox3.js">
+      <DependentUpon>Combobox3.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox3.min.js">
+      <DependentUpon>Combobox3.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Tree - Copy.js">
+      <DependentUpon>DropdownTree.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Tree - Copy.min.js">
+      <DependentUpon>Tree - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\comboxtree\custom.dropdown.js" />
+    <Content Include="Scripts\Dropdowntree\dropdowntree.css" />
+    <Content Include="Scripts\Dropdowntree\dropdowntree.js" />
+    <Content Include="Scripts\inform\Inform.js" />
+    <Content Include="jsx\_shared\SearchDialog.js">
+      <DependentUpon>SearchDialog.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\SearchDialog.min.js">
+      <DependentUpon>SearchDialog.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Tree.js">
+      <DependentUpon>Tree.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Tree.min.js">
+      <DependentUpon>Tree.js</DependentUpon>
+    </Content>
+    <Content Include="report\reporting.aspx" />
+    <Content Include="Scripts\AdminLTE\js\adminlte.js" />
+    <Content Include="Scripts\AdminLTE\js\adminlte.min.js" />
+    <Content Include="Scripts\AdminLTE\js\demo.js" />
+    <Content Include="Scripts\AdminLTE\js\pages\dashboard.js" />
+    <Content Include="Scripts\AdminLTE\js\pages\dashboard2.js" />
+    <Content Include="Scripts\Ag-grid\ag-grid.js" />
+    <Content Include="Scripts\comboxtree\js\data.dropdown.js" />
+    <Content Include="Scripts\comboxtree\js\dungnvl.dropdown.js" />
+    <Content Include="Scripts\comboxtree\js\jstree.min.js" />
+    <Content Include="Scripts\comboxtree\js\underscore.js" />
+    <Content Include="Scripts\d3\d3.js" />
+    <Content Include="Scripts\d3\d3.min.js" />
+    <Content Include="Scripts\d3\LICENSE" />
+    <Content Include="Scripts\datatables.net-bs\js\dataTables.bootstrap.js" />
+    <Content Include="Scripts\datatables.net-bs\js\dataTables.bootstrap.min.js" />
+    <Content Include="Scripts\fastclick\fastclick.js" />
+    <Content Include="Scripts\func.js" />
+    <Content Include="Scripts\IE\html5shiv.min.js" />
+    <Content Include="Scripts\IE\respond.min.js" />
+    <Content Include="Scripts\jquery-slimscroll\jquery.slimscroll.js" />
+    <Content Include="Scripts\jquery-slimscroll\jquery.slimscroll.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.0.1.js" />
+    <Content Include="Scripts\jquery.signalR-2.0.1.min.js" />
+    <Content Include="Scripts\jquery\core.js" />
+    <Content Include="Scripts\jquery\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery\jquery.js" />
+    <Content Include="Scripts\jquery\jquery.min.js" />
+    <Content Include="Scripts\jquery\jquery.slim.js" />
+    <Content Include="Scripts\jquery\jquery.slim.min.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\bundle.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\demo.gif" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\bundle.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\index.css" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\index.html" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\index.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\webpack.config.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\bundle.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\index.css" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\index.html" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\index.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\webpack.config.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\index.css" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\index.html" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\index.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\webpack.config.js" />
+    <Content Include="Scripts\reactselect\classname.js" />
+    <Content Include="Scripts\reactselect\prop-types.js" />
+    <Content Include="Scripts\reactselect\prop-types.min.js" />
+    <Content Include="Scripts\reactselect\react-input-autosize.js" />
+    <Content Include="Scripts\reactselect\react-input-autosize.min.js" />
+    <Content Include="Scripts\reactselect\react-select.css" />
+    <Content Include="Scripts\reactselect\react-select.es.js" />
+    <Content Include="Scripts\reactselect\react-select.js" />
+    <Content Include="Scripts\reactselect\react-select.min.css" />
+    <Content Include="Scripts\reactselect\react-select.min.js" />
+    <Content Include="Scripts\react\browser.js" />
+    <Content Include="Scripts\react\jsx.js" />
+    <Content Include="Scripts\react\JSXTransformer.js" />
+    <Content Include="Scripts\react\react-dom-server.js" />
+    <Content Include="Scripts\react\react-dom-server.min.js" />
+    <Content Include="Scripts\react\react-dom.js" />
+    <Content Include="Scripts\react\react-dom.min.js" />
+    <Content Include="Scripts\react\react-with-addons.js" />
+    <Content Include="Scripts\react\react-with-addons.min.js" />
+    <Content Include="Scripts\react\react.js" />
+    <Content Include="Scripts\react\react.min.js" />
+    <Content Include="Scripts\require\require.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\select2\select2.js" />
+    <Content Include="Scripts\select2\select2.min.js" />
+    <Content Include="Scripts\tinymce\changelog.txt" />
+    <Content Include="Scripts\tinymce\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\config\bolt\prod.plugin.js" />
+    <Content Include="Scripts\tinymce\config\bolt\prod.theme.js" />
+    <Content Include="Scripts\tinymce\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\init-tinymce.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\jquery.tinymce.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\license.txt" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\advlist\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\advlist\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\anchor\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\anchor\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\autolink\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\autolink\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\autoresize\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\autoresize\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\autosave\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\autosave\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\bbcode\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\bbcode\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\charmap\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\charmap\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\codesample\css\prism.css" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\codesample\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\codesample\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\code\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\code\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\colorpicker\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\colorpicker\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\css\dialog.css" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\img\buttons.png" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\img\icons.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\img\items.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\img\menu_arrow.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\img\menu_check.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\img\progress.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\img\tabs.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\tiny_mce_popup.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\utils\editable_selects.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\utils\form_utils.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\utils\mctabs.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\compat3x\utils\validate.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\contextmenu\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\contextmenu\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\directionality\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\directionality\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-cool.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-cry.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-embarassed.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-foot-in-mouth.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-frown.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-innocent.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-kiss.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-laughing.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-money-mouth.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-sealed.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-smile.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-surprised.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-tongue-out.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-undecided.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-wink.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\img\smiley-yell.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\emoticons\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\fullpage\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\fullpage\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\fullscreen\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\fullscreen\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\help\img\logo.png" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\help\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\help\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\hr\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\hr\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\imagetools\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\imagetools\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\image\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\image\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\importcss\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\importcss\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\insertdatetime\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\insertdatetime\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\legacyoutput\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\legacyoutput\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\link\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\link\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\lists\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\lists\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\media\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\media\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\nonbreaking\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\nonbreaking\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\noneditable\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\noneditable\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\pagebreak\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\pagebreak\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\paste\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\paste\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\agpl-3.0.txt" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\css\editorcss.css" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\flash\textboxpaste.swf" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\img\spinner_96.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\js\wordimport.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\ar.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\ca.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\cs.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\da.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\de.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\el.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\es.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\fa.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\fi.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\fr_FR.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\he_IL.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\hr.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\hu_HU.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\it.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\ja.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\kk.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\ko_KR.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\nb_NO.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\nl.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\pl.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\pt_BR.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\pt_PT.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\ro.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\ru.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\sk.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\sl_SI.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\sv_SE.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\th_TH.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\tr.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\uk.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\zh_CN.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\langs\zh_TW.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\LICENSE.TXT" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\preview\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\preview\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\print\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\print\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\save\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\save\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\searchreplace\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\searchreplace\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\spellchecker\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\spellchecker\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\tabfocus\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\tabfocus\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\table\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\table\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\template\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\template\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\textcolor\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\textcolor\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\textpattern\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\textpattern\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\toc\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\toc\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\visualblocks\css\visualblocks.css" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\visualblocks\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\visualblocks\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\visualchars\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\visualchars\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\wordcount\plugin.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\wordcount\plugin.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\content.inline.min.css" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\content.min.css" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\fonts\tinymce-small.svg" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\fonts\tinymce.svg" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\img\anchor.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\img\loader.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\img\object.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\img\trans.gif" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\skin.min.css" />
+    <Content Include="Scripts\tinymce\js\tinymce\themes\inlite\theme.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\themes\inlite\theme.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\themes\modern\theme.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\themes\modern\theme.min.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\tinymce.js" />
+    <Content Include="Scripts\tinymce\js\tinymce\tinymce.min.js" />
+    <Content Include="Scripts\tinymce\LICENSE.TXT" />
+    <Content Include="Scripts\tinymce\src\core\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\core\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\core\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\core\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\core\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\core\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\css\content_editable.css" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\html\commands_demo.html" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\html\content_editable_false_demo.html" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\html\custom_theme_demo.html" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\html\full_demo.html" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\html\jquery_integration.html" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\html\tiny_demo.html" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\js\demo\CommandsDemo.js" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\js\demo\ContentEditableFalseDemo.js" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\js\demo\CustomThemeDemo.js" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\js\demo\FullDemo.js" />
+    <Content Include="Scripts\tinymce\src\core\src\demo\js\demo\TinyMceDemo.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\AddOnManager.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\api\Formatter.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\api\Main.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\api\ResolveGlobal.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\api\Tinymce.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretBookmark.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretCandidate.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretContainer.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretContainerInline.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretContainerInput.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretContainerRemove.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretFinder.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretPosition.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\CaretWalker.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\FakeCaret.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\LineUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\caret\LineWalker.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\content\LinkTargets.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\data\Binding.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\data\ObservableArray.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\data\ObservableObject.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\BlockBoundary.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\BlockBoundaryDelete.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\BlockRangeDelete.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\CefDelete.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\CefDeleteAction.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\DeleteCommands.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\DeleteElement.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\DeleteUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\InlineBoundaryDelete.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\MergeBlocks.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\TableDelete.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\delete\TableDeleteAction.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\BookmarkManager.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\ControlSelection.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\Dimensions.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\DomQuery.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\DOMUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\ElementType.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\ElementUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\Empty.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\EventUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\MousePosition.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\NodePath.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\NodeType.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\PaddingBr.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\Parents.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\Range.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\RangeNormalizer.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\RangePoint.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\RangeUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\ScriptLoader.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\ScrollIntoView.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\Selection.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\Serializer.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\Sizzle.jQuery.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\Sizzle.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\StyleSheetLoader.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\TreeWalker.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\dom\TridentSelection.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\DragDropOverrides.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\Editor.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\EditorCommands.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\EditorManager.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\EditorObservable.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\EditorSettings.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\EditorUpload.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\EditorView.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\Env.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ErrorReporter.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\file\BlobCache.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\file\Conversions.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\file\ImageScanner.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\file\Uploader.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\file\UploadStatus.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\ApplyFormat.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\CaretFormat.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\DefaultFormats.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\ExpandRange.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\FontInfo.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\FormatChanged.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\FormatRegistry.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\FormatUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\Hooks.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\MatchFormat.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\MergeFormats.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\Preview.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\RemoveFormat.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\fmt\ToggleFormat.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\FocusManager.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ForceBlocks.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\geom\ClientRect.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\geom\Rect.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\html\DomParser.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\html\Entities.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\html\Node.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\html\SaxParser.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\html\Schema.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\html\Serializer.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\html\Styles.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\html\Writer.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\init\Init.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\init\InitContentBody.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\init\Render.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\InsertContent.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\InsertList.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\JqueryIntegration.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\ArrowKeys.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\BoundaryCaret.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\BoundaryLocation.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\BoundarySelection.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\CefNavigation.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\CefUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\DeleteBackspaceKeys.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\EnterKey.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\FormatShortcuts.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\InlineUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\InsertNewLine.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\InsertSpace.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\KeyboardOverrides.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\MatchKeys.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\keyboard\SpaceKey.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\LegacyInput.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\Mode.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\NodeChange.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\NotificationManager.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\PluginManager.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\SelectionOverrides.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\selection\FragmentReader.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\selection\SelectionUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\selection\SimpleTableModel.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\Shortcuts.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\text\Bidi.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\text\ExtendingChar.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\text\Zwsp.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ThemeManager.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\AbsoluteLayout.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Api.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\BoxUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\BrowseButton.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Button.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ButtonGroup.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Checkbox.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ClassList.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Collection.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ColorBox.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ColorButton.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ColorPicker.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ComboBox.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Container.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Control.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\DomUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\DragHelper.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\DropZone.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ElementPath.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Factory.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\FieldSet.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\FilePicker.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\FitLayout.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\FlexLayout.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\FloatPanel.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\FlowLayout.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Form.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\FormatControls.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\FormItem.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\GridLayout.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Iframe.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\InfoBox.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\KeyboardNavigation.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Label.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Layout.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ListBox.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Menu.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\MenuBar.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\MenuButton.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\MenuItem.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\MessageBox.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Movable.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Notification.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Panel.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\PanelButton.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Path.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Progress.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Radio.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ReflowQueue.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Resizable.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\ResizeHandle.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Scrollable.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\SelectBox.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Selector.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Sidebar.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Slider.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Spacer.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\SplitButton.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\StackLayout.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\TabPanel.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\TextBox.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Throbber.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Toolbar.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Tooltip.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Widget.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\ui\Window.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\UndoManager.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\undo\Diff.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\undo\Fragments.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\undo\Levels.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Arr.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Class.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Color.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Delay.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\EventDispatcher.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Fun.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\I18n.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\JSON.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\JSONP.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\JSONRequest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\LazyEvaluator.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\LocalStorage.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Observable.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Private.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Promise.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Quirks.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Tools.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\URI.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\Uuid.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\VK.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\util\XHR.js" />
+    <Content Include="Scripts\tinymce\src\core\src\main\js\WindowManager.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\css\ui-overrides.css" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\atomic\keyboard\MatchKeysTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\atomic\text\BidiTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\atomic\text\ExtendingCharTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\atomic\text\ZwspTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\atomic\util\LazyEvaluatorTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\AddOnManagerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\CaretBookmarkTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\CaretCandidateTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\CaretContainerRemoveTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\CaretContainerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\CaretFinderTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\CaretPositionTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\CaretUtilsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\CaretWalkerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\FakeCaretTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\LineUtilsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\caret\LineWalkerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ClickContentEditableFalseTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\content\LinkTargetsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\data\ObservableObjectTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\BlockBoundaryDeleteTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\BlockBoundaryTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\BlockRangeDeleteTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\CefDeleteActionTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\CefDeleteTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\DeleteCommandsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\DeleteElementTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\DeleteUtilsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\InlineBoundaryDeleteTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\MergeBlocksTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\TableDeleteActionTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\delete\TableDeleteTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\ControlSelectionTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\DimensionsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\DomUtilsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\ElementTypeTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\EmptyTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\EventUtilsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\NodePathTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\NodeTypeTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\PaddingBrTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\ParentsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\RangeNormalizerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\RangeUtilsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\ScrollIntoViewTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\SelectionEventsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\SelectionQuirksTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\SelectionTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\SerializerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\dom\TreeWalkerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorCustomThemeTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorForcedSettingsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorInitializationTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorManagerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorRemovedApiTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorRtlTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorSettingsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorUploadTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorViewIframeTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\EditorViewInlineTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\file\BlobCacheTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\file\ConversionsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\file\ImageScannerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\file\UploadStatusTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\fmt\CaretFormatTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\fmt\FontInfoTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\fmt\FontsizeFormatTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\fmt\FormatChangeSelectionTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\fmt\HooksTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\fmt\PreviewTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\fmt\RemoveTrailingWhitespaceFormatTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\FocusManagerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\FontSelectTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ForceBlocksTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\FormatterApplyTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\FormatterCheckTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\FormatterRemoveTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\FormattingCommandsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\geom\ClientRectTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\geom\RectTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\html\DomParserTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\html\EntitiesTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\html\NodeTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\html\SaxParserTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\html\SchemaTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\html\SerializerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\html\StylesTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\html\WriterTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\InitCspIframeScript.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\InitCspTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\init\ContentStylePositionTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\InsertContentCommandTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\InsertContentForcedRootFalseTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\InsertContentTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\InsertContentWebKitBugs.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\InsertListTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\JqueryIntegrationTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\ArrowKeysAnchorTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\ArrowKeysInlineBoundariesTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\BoundaryCaretTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\BoundaryLocationTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\EnterKeyAnchorTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\EnterKeyCeFalseTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\EnterKeyHrTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\EnterKeyListsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\EnterKeyTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\InlineUtilsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\SpaceKeyTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\keyboard\TypeTextAtCefTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\MiscCommandsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\NotificationManagerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\SelectionOverridesTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\selection\FragmentReaderTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\selection\SelectionUtilsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\selection\SimpleTableModelTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ShortcutsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\AbsoluteLayoutTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\ButtonTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\CollectionTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\ColorButtonTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\ControlTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\FilePickerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\FitLayoutTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\FlexLayoutTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\GridLayoutTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\MenuButtonTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\PanelTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\SelectorTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\SplitButtonTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\TabPanelTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\TextBoxTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\ui\WindowTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\UndoManagerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\undo\DiffTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\undo\ForcedRootBlockTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\undo\FragmentsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\undo\LevelsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\ColorTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\DelayTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\EventDispatcherTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\FunTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\I18nTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\JsonRequestTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\JsonTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\LocalStorageTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\ObservableTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\PromiseTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\QuirksWebkitTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\ToolsTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\UriTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\util\XhrTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\browser\WindowManagerTest.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\module\test\CaretAsserts.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\module\test\HtmlUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\module\test\KeyUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\module\test\TypeText.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\module\test\UiUtils.js" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\module\test\ViewBlock.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\src\test\js\browser\AdvlistPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\src\test\js\browser\ChangeListStyleTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\advlist\src\test\js\browser\SplitButtonTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\anchor\src\test\js\browser\AnchorSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\src\test\js\browser\AutoLinkPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\src\test\js\browser\ConsecutiveLinkTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\src\test\js\browser\EnterKeyTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autolink\src\test\js\module\test\KeyUtils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autoresize\src\test\js\browser\AutoresizeSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\autosave\src\test\js\browser\AutoSavePluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\bbcode\src\test\js\browser\BbcodeSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\charmap\src\test\js\browser\CharmapPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\src\main\css\prism.css" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\src\main\js\core\Prism.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\src\main\js\ui\Dialog.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\src\main\js\util\Utils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\codesample\src\test\js\browser\CodeSampleSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\code\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\code\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\code\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\code\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\code\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\code\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\code\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\code\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\code\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\code\src\test\js\browser\CodeSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\colorpicker\src\test\js\browser\ColorPickerSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\css\dialog.css" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\img\buttons.png" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\img\icons.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\img\items.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\img\menu_arrow.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\img\menu_check.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\img\progress.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\img\tabs.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\js\plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\js\tiny_mce_popup.js" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\js\utils\editable_selects.js" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\js\utils\form_utils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\js\utils\mctabs.js" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\main\js\utils\validate.js" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\test\html\dialog.html" />
+    <Content Include="Scripts\tinymce\src\plugins\compat3x\src\test\js\browser\Compat3xPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\src\main\js\RangePoint.js" />
+    <Content Include="Scripts\tinymce\src\plugins\contextmenu\src\test\js\browser\ContextMenuPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\directionality\src\test\js\browser\DirectionalitySanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-cool.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-cry.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-embarassed.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-foot-in-mouth.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-frown.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-innocent.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-kiss.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-laughing.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-money-mouth.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-sealed.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-smile.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-surprised.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-tongue-out.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-undecided.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-wink.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\img\smiley-yell.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\emoticons\src\test\js\browser\EmoticonSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\src\main\js\Protect.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\src\test\js\atomic\ProtectTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullpage\src\test\js\browser\FullPagePluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\fullscreen\src\test\js\browser\FullScreenPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\main\img\logo.png" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\main\js\data\KeyboardShortcuts.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\main\js\data\PluginUrls.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\main\js\ui\ButtonsRow.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\main\js\ui\Dialog.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\main\js\ui\KeyboardShortcutsTab.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\main\js\ui\PluginsTab.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\test\js\browser\IgnoreForcedPluginsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\test\js\browser\MetadataTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\test\js\browser\PluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\test\js\module\test\FakePlugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\help\src\test\js\module\test\NoMetaFakePlugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\hr\src\test\js\browser\HrSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\demo\img\dogleft.jpg" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\main\js\core\Errors.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\main\js\core\ImageSize.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\main\js\core\Proxy.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\main\js\core\UndoStack.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\main\js\core\Utils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\main\js\ui\CropRect.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\main\js\ui\Dialog.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\main\js\ui\ImagePanel.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\test\js\atomic\ErrorsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\test\js\browser\ImageToolsErrorTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\test\js\browser\ImageToolsPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\test\js\browser\SequenceTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\test\js\module\test\ImageOps.js" />
+    <Content Include="Scripts\tinymce\src\plugins\imagetools\src\test\js\module\test\ImageUtils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\image\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\src\main\js\core\Uploader.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\src\main\js\core\Utils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\src\main\js\ui\Dialog.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\src\test\js\browser\ImagePluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\image\src\test\js\browser\UploadTabTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\src\demo\css\rules.css" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\importcss\src\test\js\browser\ImportCssPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\insertdatetime\src\test\js\browser\InsertDatetimeSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\legacyoutput\src\test\js\browser\LegacyOutputPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\main\js\core\Actions.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\main\js\core\OpenUrl.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\main\js\core\Settings.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\main\js\core\Utils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\main\js\ui\Controls.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\main\js\ui\Dialog.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\test\js\browser\AllowUnsafeLinkTargetTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\test\js\browser\AssumeExternalTargetsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\test\js\browser\ContextToolbarTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\test\js\browser\ImageFigureLinkTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\test\js\browser\LinkClassListTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\test\js\browser\LinkPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\test\js\browser\LinkTitleTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\test\js\browser\RelListTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\link\src\test\js\browser\TargetListTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\actions\Indent.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\actions\Outdent.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\actions\ToggleList.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\core\Bookmark.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\core\Delete.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\core\NodeType.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\core\NormalizeLists.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\core\Range.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\core\Selection.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\core\SplitList.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\core\TextBlock.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\ApplyDlTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\ApplyTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\BackspaceDeleteFromBlockIntoLiTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\BackspaceDeleteInlineTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\BackspaceDeleteTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\ChangeListStyleTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\IndentTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\InlineTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\OutdentTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\RemoveTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\test\js\browser\TableInListTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\DataToHtml.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\HtmlToData.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\Mime.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\Nodes.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\Sanitize.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\Service.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\Size.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\UpdateHtml.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\UrlPatterns.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\core\VideoScript.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\ui\Dialog.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\main\js\ui\SizeManager.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\atomic\HtmlToDataTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\ContentFormatsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\DataAttributeTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\DataToHtmlTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\DimensionsControlTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\DimensionsFalseEmbedTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\EphoxEmbedTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\MediaEmbedTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\PlaceholderTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\PluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\ReopenResizeTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\browser\SubmitTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\test\js\module\test\Utils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\src\test\js\browser\NonbreakingForceTabUndoTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\nonbreaking\src\test\js\browser\NonbreakingSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\noneditable\src\test\js\browser\NonEditablePluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\pagebreak\src\test\js\browser\PageBreakSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\api\Events.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\Clipboard.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\CutCopy.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\FragmentParser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\InternalHtml.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\Newlines.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\PasteBin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\ProcessFilters.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\Quirks.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\SmartPaste.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\Utils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\core\WordFilter.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\atomic\FragmentParserTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\atomic\InternalHtmlTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\browser\ImagePasteTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\browser\InternalClipboardTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\browser\NewlinesTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\browser\PasteBinTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\browser\PasteStylesTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\browser\PasteTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\browser\PlainTextPasteTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\browser\ProcessFiltersTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\browser\SmartPasteTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\module\test\MockDataTransfer.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\module\test\Paste.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\module\test\Strings.js" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\js\webdriver\CutTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\preview\src\test\js\browser\PreviewSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\print\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\print\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\print\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\print\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\print\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\print\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\print\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\print\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\print\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\print\src\test\js\browser\PrintSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\save\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\save\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\save\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\save\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\save\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\save\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\save\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\save\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\save\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\save\src\test\js\browser\SaveSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\src\main\js\core\FindReplaceText.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\src\test\js\browser\SearchReplacePluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\searchreplace\src\test\js\module\test\HtmlUtils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\src\main\js\core\DomTextMatcher.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\src\test\js\browser\SpellcheckerManyLanguagesTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\src\test\js\browser\SpellcheckerSingleLanguageTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\spellchecker\src\test\js\browser\SpellcheckerTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\tabfocus\src\test\js\browser\TabfocusSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\main\js\model\SplitCols.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\main\js\model\TableGrid.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\main\js\selection\CellSelection.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\main\js\ui\Dialogs.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\main\js\ui\ResizeBars.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\main\js\util\Quirks.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\main\js\util\Utils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\ClipboardTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\DeleteCommandsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\DeleteInCaptionTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\DeleteKeyTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\GridSelectionTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\IndentListsInTableTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\InsertCommandsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\MergeCellCommandTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\NewCellRowEventsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\CustomTableToolbarTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\DefaultTableToolbarTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\DisabledTableToolbarTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\TableAppearanceOptionsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\TableCellClassListTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\TableClassListTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\TableCloneElementsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\TableDefaultAttributesTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\TableDefaultStylesTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\TableGridFalseTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\TableRowClassListTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\settings\TableTabNavigationDisabledTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\SplitCommandsTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\TabKeyNavigationTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\TableResizeTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\ui\TableCellDialogTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\ui\TableDialogTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\browser\ui\TableRowDialogTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\table\src\test\js\module\test\TableTestUtils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\template\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\src\main\js\core\DateTimeHelper.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\src\main\js\core\Templates.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\src\test\html\test_template.html" />
+    <Content Include="Scripts\tinymce\src\plugins\template\src\test\js\browser\DatesTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\src\test\js\browser\SelectedContentTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\template\src\test\js\browser\TemplateSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textcolor\src\test\js\browser\TextcolorSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\main\js\core\Formatter.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\main\js\core\KeyHandler.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\main\js\core\Patterns.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\main\js\core\Settings.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\test\js\browser\TextPatternPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\test\js\browser\TrailingPunctuationTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\test\js\browser\TriggerInlinePatternBeginningTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\test\js\browser\UndoTextpatternTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\textpattern\src\test\js\module\test\Utils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\src\test\js\browser\TocPluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\toc\src\test\js\module\test\HtmlUtils.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\css\visualblocks.css" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\address.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\article.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\aside.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\blockquote.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\div.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\dl.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\figure.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\h1.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\h2.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\h3.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\h4.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\h5.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\h6.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\hgroup.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\ol.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\p.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\pre.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\section.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\img\ul.gif" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualblocks\src\test\js\browser\VisualBlocksSanityTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\main\js\core\Data.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\main\js\core\Html.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\main\js\core\Nodes.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\main\js\core\VisualChars.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\test\js\atomic\DataTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\test\js\atomic\HtmlTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\test\js\atomic\NodesTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\visualchars\src\test\js\browser\PluginTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\main\js\alien\Arr.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\main\js\Plugin.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\main\js\text\StringMapper.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\main\js\text\UnicodeData.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\main\js\text\WordBoundary.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\main\js\text\WordGetter.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\test\js\atomic\core\IsWordBoundaryTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\test\js\atomic\core\StringMapperTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\test\js\atomic\core\WordGetterTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\test\js\browser\ApiTest.js" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\test\js\browser\core\PluginTest.js" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\demo\html\icons_demo.html" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce-small.svg" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce.svg" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\img\anchor.gif" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\img\loader.gif" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\img\object.gif" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\img\trans.gif" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\demo\css\demo.css" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\alien\Arr.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\alien\Bookmark.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\alien\EditorSettings.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\alien\Type.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\alien\Unlink.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\alien\Uuid.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\Actions.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\Convert.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\ElementMatcher.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\Layout.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\Matcher.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\Measure.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\PredicateId.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\SelectionMatcher.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\SkinLoader.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\core\UrlType.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\file\Conversions.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\file\Picker.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\Theme.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\ui\Buttons.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\ui\Forms.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\ui\Panel.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\main\js\ui\Toolbar.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\atomic\alien\ArrTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\atomic\alien\TypeTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\atomic\alien\UuidTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\atomic\core\ConvertTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\atomic\core\MatcherTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\atomic\core\UrlTypeTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\alien\BookmarkTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\alien\EditorSettingsTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\alien\UnlinkTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\AutoCompleteTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\ClosedDialogScrollTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\core\ActionsTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\core\ElementMatcherTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\core\LayoutTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\core\MeasureTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\core\PredicateIdTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\core\SelectionMatcherTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\file\ConversionsTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\file\SelectionMatcher.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\browser\ThemeTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\js\module\test\Toolbar.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\config\bolt\atomic.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\config\bolt\browser.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\config\bolt\demo.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\config\bolt\prod.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\config\bolt\test.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\Gruntfile.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\demo\html\classic_demo.html" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\demo\html\demo.html" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\demo\html\notification_demo.html" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\demo\js\demo\ClassicDemo.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\demo\js\demo\Demo.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\demo\js\demo\NotificationDemo.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\modes\Iframe.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\modes\Inline.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\Theme.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\ui\A11y.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\ui\Branding.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\ui\ContextToolbars.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\ui\Menubar.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\ui\ProgressState.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\ui\Resize.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\ui\Sidebar.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\ui\SkinLoaded.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\main\js\ui\Toolbar.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\test\js\browser\BrandingDisabledTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\test\js\browser\BrandingEnabledTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\test\js\browser\DimensionsTest.js" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\test\js\browser\SidebarTest.js" />
+    <Content Include="Scripts\tinymce\tools\docs\tinymce.CommandEvent.js" />
+    <Content Include="Scripts\tinymce\tools\docs\tinymce.ContentEvent.js" />
+    <Content Include="Scripts\tinymce\tools\docs\tinymce.Editor.js" />
+    <Content Include="Scripts\tinymce\tools\docs\tinymce.Event.js" />
+    <Content Include="Scripts\tinymce\tools\docs\tinymce.FocusEvent.js" />
+    <Content Include="Scripts\tinymce\tools\docs\tinymce.js" />
+    <Content Include="Scripts\tinymce\tools\docs\tinymce.ProgressStateEvent.js" />
+    <Content Include="Scripts\tinymce\tools\docs\tinymce.ResizeEvent.js" />
+    <Content Include="Scripts\tinymce\tools\modules\zip-helper.js" />
+    <Content Include="Scripts\tinymce\tools\tasks\bundle.js" />
+    <Content Include="Scripts\tinymce\tools\tasks\globals.js" />
+    <Content Include="Scripts\tinymce\tools\tasks\moxiezip.js" />
+    <Content Include="Scripts\tinymce\tools\tasks\subgrunt.js" />
+    <Content Include="Scripts\tinymce\tools\tasks\validateVersion.js" />
+    <Content Include="Scripts\tree\custom.tree.js" />
+    <Content Include="Scripts\t\abc.js" />
+    <Content Include="Scripts\t\react-dropdown-tree-select.css" />
+    <Content Include="Scripts\t\react-dropdown-tree-select.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="sqlupdate\20171114_ver16.sql" />
+    <Content Include="sqlupdate\20171107_ver15.sql" />
+    <Content Include="sqlupdate\20171107_ver14.sql" />
+    <Content Include="sqlupdate\20171107_ver13.sql" />
+    <Content Include="sqlupdate\20171107_ver12.sql" />
+    <Content Include="sqlupdate\20171128_ver19.sql" />
+    <Content Include="sqlupdate\20171116_ver18.sql" />
+    <Content Include="sqlupdate\20171116_ver17.sql" />
+    <Content Include="sqlupdate\20171206_ver30.sql" />
+    <Content Include="sqlupdate\20171206_ver29.sql" />
+    <Content Include="sqlupdate\20171206_ver28.sql" />
+    <Content Include="sqlupdate\20171206_ver27.sql" />
+    <Content Include="sqlupdate\20171206_ver26.sql" />
+    <Content Include="sqlupdate\20171206_ver25.sql" />
+    <Content Include="sqlupdate\20171205_ver24.sql" />
+    <Content Include="sqlupdate\20171205_ver23.sql" />
+    <Content Include="sqlupdate\20171130_ver22.sql" />
+    <Content Include="sqlupdate\20171129_ver21.sql" />
+    <Content Include="sqlupdate\20171128_ver20.sql" />
+    <Content Include="sqlupdate\20171208_ver31.sql" />
+    <Content Include="sqlupdate\20180105_ver48.sql" />
+    <Content Include="sqlupdate\20180103_ver47.sql" />
+    <Content Include="sqlupdate\20180102_ver46.sql" />
+    <Content Include="sqlupdate\20180102_ver45.sql" />
+    <Content Include="sqlupdate\20180102_ver44.sql" />
+    <Content Include="sqlupdate\20180102_ver43.sql" />
+    <Content Include="sqlupdate\20171226_ver42.sql" />
+    <Content Include="sqlupdate\20171226_ver41.sql" />
+    <Content Include="sqlupdate\20171225_ver40.sql" />
+    <Content Include="sqlupdate\20171224_ver39.sql" />
+    <Content Include="sqlupdate\20171221_ver38.sql" />
+    <Content Include="sqlupdate\20171221_ver37.sql" />
+    <Content Include="sqlupdate\20171218_ver36.sql" />
+    <Content Include="sqlupdate\20171218_ver35.sql" />
+    <Content Include="sqlupdate\20171218_ver34.sql" />
+    <Content Include="sqlupdate\20171212_ver33.sql" />
+    <Content Include="sqlupdate\20171209_ver32.sql" />
+    <Content Include="sqlupdate\20180105_ver49.sql" />
+    <Content Include="sqlupdate\ver11.sql" />
+    <Content Include="Scripts\t\bundle.js" />
+    <Content Include="Scripts\t\index.css" />
+    <Content Include="Scripts\t\index.html" />
+    <Content Include="Scripts\t\index.js" />
+    <Content Include="Scripts\t\webpack.config.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="jsx\form.jsx" />
+    <Content Include="jsx\piechart.jsx" />
+    <Content Include="jsx\dashboard.jsx" />
+    <Content Include="Views\Home\Dashboard.cshtml" />
+    <Content Include="Scripts\jquery\jquery.min.map" />
+    <Content Include="Scripts\jquery\jquery.slim.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\baseprojects2\IS.Base\IS.Base.csproj">
+      <Project>{07c077fb-5aff-4bfa-914f-efddc4989438}</Project>
+      <Name>IS.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\baseprojects2\IS.framework2\IS.fitframework.csproj">
+      <Project>{05b233c0-2594-4e62-a2f9-da754539ac36}</Project>
+      <Name>IS.fitframework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.basetype\IS.basetype.csproj">
+      <Project>{cae5b00b-9822-42c1-b9c8-7b73d4665c48}</Project>
+      <Name>IS.basetype</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.Config\IS.Config.csproj">
+      <Project>{68ca99aa-8ef7-41db-9a56-e5f6d45c6546}</Project>
+      <Name>IS.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.Lang\IS.Lang.csproj">
+      <Project>{445aa2a1-2632-48e2-a980-ed431cbc95d0}</Project>
+      <Name>IS.Lang</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.localcomm\IS.localcomm.csproj">
+      <Project>{e6a06d03-dda3-4db1-b299-673ae177844b}</Project>
+      <Name>IS.localcomm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.nerplib\IS.nerp.csproj">
+      <Project>{cc019228-7f89-4ded-b0fc-c01b6e087604}</Project>
+      <Name>IS.nerp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.report\IS.report.csproj">
+      <Project>{30d30cb0-cd78-4a52-8a8b-502620bbab19}</Project>
+      <Name>IS.report</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.sess\IS.Sess.csproj">
+      <Project>{4887aad1-5501-4097-8b75-156231d67807}</Project>
+      <Name>IS.Sess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="packages.config" />
+    <Content Include="jsx\_shared\Tree.jsx" />
+    <Content Include="jsx\sysmenu\sysmenulist.jsx" />
+    <Content Include="jsx\_shared\AgGrid.jsx" />
+    <Content Include="jsx\sysmenu\sysmenupopup.jsx" />
+    <Content Include="jsx\_shared\Comboboxold.jsx" />
+    <Content Include="jsx\_shared\Combobox3.jsx" />
+    <Content Include="jsx\_shared\ButtonList.jsx" />
+    <Content Include="jsx\_shared\SearchDialog.jsx" />
+    <Content Include="jsx\Core\Department\Departmentlist.jsx" />
+    <Content Include="jsx\Core\Department\Departmentpopup.jsx" />
+    <Content Include="jsx\Core\sysmenu\sysmenulist.jsx" />
+    <Content Include="jsx\Core\sysmenu\sysmenupopup.jsx" />
+    <Content Include="nerpDataSet.xsc">
+      <DependentUpon>nerpDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\homeindex.jsx" />
+    <Content Include="jsx\Core\home\homeadmin.jsx" />
+    <Content Include="jsx\Admin\Changepass\App.jsx" />
+    <Content Include="jsx\Admin\Changepass\Changepass.jsx" />
+    <Content Include="jsx\_shared\TabHeader.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupApp.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupList.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupPopup.jsx" />
+    <Content Include="jsx\_shared\PopupSearch.jsx" />
+    <Content Include="jsx\_shared\PopupSearchSQL.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupStaff.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupPriority.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupPriorityAdd.jsx" />
+    <Content Include="jsx\Core\Armyrank\Armyranklist.jsx" />
+    <Content Include="jsx\Core\Armyrank\Armyrankpopup.jsx" />
+    <Content Include="jsx\Core\CountLevelTitle\Countleveltitlelist.jsx" />
+    <Content Include="jsx\Core\CountLevelTitle\Countleveltitlepopup.jsx" />
+    <Content Include="jsx\Core\DepartmentList\Departmentlist.jsx" />
+    <Content Include="jsx\Core\Ethnic\Ethniclist.jsx" />
+    <Content Include="jsx\Core\Ethnic\Ethnicpopup.jsx" />
+    <Content Include="jsx\Core\Leveltitle\Leveltitlelist.jsx" />
+    <Content Include="jsx\Core\Leveltitle\Leveltitlepopup.jsx" />
+    <Content Include="jsx\Core\Nation\Nationlist.jsx" />
+    <Content Include="jsx\Core\Nation\Nationpopup.jsx" />
+    <Content Include="jsx\Core\Province\Provincelist.jsx" />
+    <Content Include="jsx\Core\Province\Provincepopup.jsx" />
+    <Content Include="jsx\Core\Religion\Religionlist.jsx" />
+    <Content Include="jsx\Core\Religion\Religionpopup.jsx" />
+    <Content Include="jsx\Core\Staff\Stafflist.jsx" />
+    <Content Include="jsx\Core\Staff\Stafflist2.jsx" />
+    <Content Include="jsx\Core\Staff\Staffpopup.jsx" />
+    <Content Include="jsx\sysmenu\ListSubCon.jsx" />
+    <Content Include="jsx\Warehouse\Warehouselevel\Warehouselevellist.jsx" />
+    <Content Include="jsx\Warehouse\Warehouselevel\Warehouselevelpopup.jsx" />
+    <Content Include="jsx\Warehouse\Warehouse\WarehouseApp.jsx" />
+    <Content Include="jsx\Warehouse\Warehouse\WarehouseList.jsx" />
+    <Content Include="jsx\Warehouse\Warehouse\WarehousePopup.jsx" />
+    <Content Include="jsx\Core\Staff\StaffPriorityAdd.jsx" />
+    <Content Include="jsx\_shared\Combobox_bootstrap.jsx" />
+    <Content Include="jsx\_shared\Combobox.jsx" />
+    <Content Include="jsx\_shared\DropdownTree.jsx" />
+    <Content Include="jsx\Core\Ethnic\EthniclistOld.jsx" />
+    <Content Include="jsx\Core\Ethnic\EthnicpopupOld.jsx" />
+    <Content Include="jsx\Core\Ethnic\EthnicApp.jsx" />
+    <Content Include="jsx\Core\Religion\ReligionlistOld.jsx" />
+    <Content Include="jsx\Core\Religion\ReligionpopupOld.jsx" />
+    <Content Include="jsx\Core\directory\DirectoryApp.jsx" />
+    <Content Include="jsx\Core\PartyLeveltitle\PartyLeveltitlelist.jsx" />
+    <Content Include="jsx\Core\PartyLeveltitle\PartyLeveltitlepopup.jsx" />
+    <Content Include="jsx\subject\SubjectDirectoryApp.jsx" />
+    <Content Include="jsx\subject\skill\Skilllist.jsx" />
+    <Content Include="jsx\subject\skill\Skillpopup.jsx" />
+    <Content Include="jsx\subject\tag\Taglist.jsx" />
+    <Content Include="jsx\subject\tag\Tagpopup.jsx" />
+    <Content Include="jsx\subject\contenttype\Contenttypelist.jsx" />
+    <Content Include="jsx\subject\contenttype\Contenttypepopup.jsx" />
+    <Content Include="jsx\Core\home\homeindexTest.jsx" />
+    <Content Include="jsx\Core\Class\Classlist.jsx" />
+    <Content Include="jsx\Core\Class\Classpopup.jsx" />
+    <Content Include="jsx\Core\Grade\GradeApp.jsx" />
+    <Content Include="jsx\Core\Grade\Gradelist.jsx" />
+    <Content Include="jsx\Core\Grade\Gradepopup.jsx" />
+    <Content Include="jsx\Core\Student\Studentlist.jsx" />
+    <Content Include="jsx\Core\Student\Studentpopup.jsx" />
+    <Content Include="jsx\Core\SubjectContent\Subjectcontentlist.jsx" />
+    <Content Include="jsx\Core\SubjectContent\Subjectcontentpopup.jsx" />
+    <Content Include="jsx\question\QuestionDirectoryApp.jsx" />
+    <Content Include="jsx\question\questiontype\QuestiontypeList.jsx" />
+    <Content Include="jsx\question\questiontype\questiontypepopup.jsx" />
+    <Content Include="jsx\question\questionuse\QuestionuseList.jsx" />
+    <Content Include="jsx\question\questionuse\Questionusepopup.jsx" />
+    <Content Include="jsx\Core\home\homewarning.jsx" />
+    <Content Include="jsx\question\QTypeAnswer\COAnswer.jsx" />
+    <Content Include="jsx\question\QTypeAnswer\FGAnswer.jsx" />
+    <Content Include="jsx\question\QTypeAnswer\RWAnswer.jsx" />
+    <Content Include="jsx\question\QType\COQuestion.jsx" />
+    <Content Include="jsx\question\QType\FGQuestion.jsx" />
+    <Content Include="jsx\question\QType\FIQuestion.jsx" />
+    <Content Include="jsx\question\QType\LAQuestion.jsx" />
+    <Content Include="jsx\question\QType\MC.jsx" />
+    <Content Include="jsx\question\QType\MCQuestion.jsx" />
+    <Content Include="jsx\question\QType\PAQuestion.jsx" />
+    <Content Include="jsx\question\QType\RWQuestion.jsx" />
+    <Content Include="jsx\question\QType\WRQuestion.jsx" />
+    <Content Include="jsx\question\questionlist\DetailQGROUP.jsx" />
+    <Content Include="jsx\question\questionlist\ListAnswer.jsx" />
+    <Content Include="jsx\question\questionlist\ListQGROUP.jsx" />
+    <Content Include="jsx\question\questionlist\ListQuestion.jsx" />
+    <Content Include="jsx\question\questionlist\PopupAnswer.jsx" />
+    <Content Include="jsx\question\questionlist\PopupQGROUP.jsx" />
+    <Content Include="jsx\question\questionlist\PopupQuestion.jsx" />
+    <Content Include="jsx\Core\TestStruct\TeststructApp.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructdetaillist.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructdetailpopup.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructlist.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructpopup.jsx" />
+    <Content Include="jsx\question\App\QuestionApplist.jsx" />
+    <Content Include="jsx\question\App\QuestionApppopup.jsx" />
+    <Content Include="jsx\question\App\QuestionChildApp.jsx" />
+    <Content Include="jsx\Core\Student\StudentPriorityAdd.jsx" />
+    <Content Include="jsx\Core\Student\Studentprofile.jsx" />
+    <Content Include="jsx\subject\course\CourseList.jsx" />
+    <Content Include="jsx\subject\course\CoursePopup.jsx" />
+    <Content Include="jsx\subject\subject\SubjectList.jsx" />
+    <Content Include="jsx\subject\subject\SubjectPopup.jsx" />
+    <Content Include="jsx\subject\SubjectApp.jsx" />
+    <Content Include="jsx\subject\courseregisterstudent\CourseRegisterPopup.jsx" />
+    <Content Include="jsx\subject\courseregisterstudent\CourseRegisterStudent.jsx" />
+    <Content Include="jsx\Core\CourseContent\CoursecontentApp.jsx" />
+    <Content Include="jsx\Core\CourseContent\Coursecontentlist.jsx" />
+    <Content Include="jsx\Core\CourseStudent\CoursestudentApp.jsx" />
+    <Content Include="jsx\Core\CourseStudent\PopupMark.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructcontentpopup.jsx" />
+    <Content Include="jsx\exam\studentexam\App.jsx" />
+    <Content Include="jsx\subject\Coursestudied.jsx" />
+    <Content Include="jsx\Core\CourseStudent\Coursestudied.jsx" />
+    <Content Include="jsx\Core\Examtime\Examhalllist.jsx" />
+    <Content Include="jsx\Core\Examtime\Examhallpopup.jsx" />
+    <Content Include="jsx\Core\Examtime\Examhallstudentlist.jsx" />
+    <Content Include="jsx\Core\Examtime\Examhallstudentpopup.jsx" />
+    <Content Include="jsx\Core\Examtime\ExamtimeApp.jsx" />
+    <Content Include="jsx\Core\Examtime\Examtimelist.jsx" />
+    <Content Include="jsx\Core\Examtime\Examtimepopup.jsx" />
+    <Content Include="jsx\Core\Examtime\Examtimestudentlist.jsx" />
+    <Content Include="jsx\Core\Examtime\Examtimestudentpopup.jsx" />
+    <Content Include="jsx\exam\examResult\ExamResult.jsx" />
+    <Content Include="jsx\exam\studentexam\DragandDrop.jsx" />
+    <Content Include="jsx\exam\studentexam\DragandDrop2.jsx" />
+    <Content Include="jsx\Admin\uploadcontent\UploadcontentApp.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\Examhalllist.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\Examhallpopup.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\Examhallstudentlist.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\Examhallstudentpopup.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\ExamtimeApp.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\Examtimelist.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\Examtimestudentlist.jsx" />
+    <Content Include="Content\recordExam\demo.less" />
+    <Content Include="jsx\exam\studentexam\Drag.jsx" />
+    <Content Include="jsx\exam\studentexam\DragBack.jsx" />
+    <Content Include="jsx\exam\studentexam\FIQuestion.jsx" />
+    <Content Include="jsx\exam\studentexam\PAQuestion.jsx" />
+    <Content Include="jsx\exam\examResult\MSAnswer.jsx" />
+    <Content Include="jsx\exam\examResult\WritingAnswer.jsx" />
+    <Content Include="jsx\Core\CourseStudied\CoursestudiedApp.jsx" />
+    <Content Include="jsx\Core\CourseStudied\Coursestudiedlist.jsx" />
+    <Content Include="jsx\question\questiontype\MSPopup.jsx" />
+    <Content Include="jsx\question\questiontype\GroupPopup.jsx" />
+    <Content Include="jsx\question\questionlist\ListQGROUP_backup.jsx" />
+    <Content Include="jsx\question\questiontype\GENPopup.jsx" />
+    <Content Include="jsx\question\questionlist\ListFIQuestion.jsx" />
+    <Content Include="jsx\question\ManageQuestion\App.jsx" />
+    <Content Include="jsx\question\ManageQuestion\Drag.jsx" />
+    <Content Include="jsx\question\ManageQuestion\DragBack.jsx" />
+    <Content Include="jsx\question\ManageQuestion\FIQuestion.jsx" />
+    <Content Include="jsx\question\ManageQuestion\PAQuestion.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\Examformlist.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\PreviewExamForm\App.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\PreviewExamForm\Drag.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\PreviewExamForm\DragBack.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\PreviewExamForm\FIQuestion.jsx" />
+    <Content Include="jsx\Core\ManageExamtime\PreviewExamForm\PAQuestion.jsx" />
+    <Content Include="jsx\Core\Mark\MarkApp.jsx" />
+    <Content Include="jsx\Core\Mark\StudentList.jsx" />
+    <None Include="nerpDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>nerpDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="nerpDataSet.xss">
+      <DependentUpon>nerpDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="Project_Readme.html" />
+    <Content Include="Views\Common\Menu.cshtml" />
+    <Content Include="Views\Common\Mastertitle.cshtml" />
+    <Content Include="Views\Shared\AdminIndex.cshtml" />
+    <Content Include="Views\Admin\Login.cshtml" />
+    <Content Include="Views\Admin\Warning.cshtml" />
+    <Content Include="Views\Common\Header.cshtml" />
+    <Content Include="Views\Common\Task.cshtml" />
+    <Content Include="report\danhsachdonvi.rdlc">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Scripts\t\demo-data.json" />
+    <Content Include="Scripts\t\readme.md" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\demo-data.json" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\demo-data.json" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\readme.md" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\demo-data.json" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\readme.md" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\mock-data.json" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\_config.yml" />
+    <None Include="Properties\PublishProfiles\publishe.pubxml" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Views\Admin\Pool.cshtml" />
+    <Content Include="Views\Shared\StudentIndex.cshtml" />
+    <Content Include="Views\Shared\_LayoutStudent.cshtml" />
+    <Content Include="Scripts\tinymce\.eslintrc" />
+    <Content Include="Scripts\tinymce\js\tinymce\langs\readme.md" />
+    <Content Include="Scripts\tinymce\js\tinymce\plugins\powerpaste\plugin.min" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\fonts\tinymce-small.ttf" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\fonts\tinymce-small.woff" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\fonts\tinymce.eot" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\fonts\tinymce.ttf" />
+    <Content Include="Scripts\tinymce\js\tinymce\skins\lightgray\fonts\tinymce.woff" />
+    <Content Include="Scripts\tinymce\package.json" />
+    <Content Include="Scripts\tinymce\readme.md" />
+    <Content Include="Scripts\tinymce\src\core\config\globals.json" />
+    <Content Include="Scripts\tinymce\src\core\src\main\text\readme_lang.md" />
+    <Content Include="Scripts\tinymce\src\core\src\test\json\routes.json" />
+    <Content Include="Scripts\tinymce\src\core\src\test\js\.eslintrc" />
+    <Content Include="Scripts\tinymce\src\plugins\lists\src\.eslintrc" />
+    <Content Include="Scripts\tinymce\src\plugins\media\src\.eslintrc" />
+    <Content Include="Scripts\tinymce\src\plugins\paste\src\test\.eslintrc" />
+    <Content Include="Scripts\tinymce\src\plugins\wordcount\src\test\.eslintrc" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\readme.md" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce-small.eot" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce-small.json" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce-small.ttf" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce-small.woff" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce.eot" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce.json" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce.ttf" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\fonts\tinymce.woff" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\AbsoluteLayout.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Animations.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Arrows.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\BrowseButton.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Button.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\ButtonGroup.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Checkbox.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\ColorBox.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\ColorButton.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\ColorPicker.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\ComboBox.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Container.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Content.Inline.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Content.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Content.Objects.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\CropRect.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\DropZone.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\FieldSet.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\FitLayout.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\FloatPanel.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\FlowLayout.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Icons.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Iframe.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\ImagePanel.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\InfoBox.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Label.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\ListBox.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Menu.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\MenuBar.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\MenuButton.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\MenuItem.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Mixins.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Notification.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Panel.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Path.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Progress.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Radio.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Reset.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\ResizeHandle.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Scrollable.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\SelectBox.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Sidebar.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Skin.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Slider.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Spacer.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\SplitButton.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\StackLayout.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\TabPanel.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\TextBox.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Throbber.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\TinyMCE.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\ToolTip.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Variables.less" />
+    <Content Include="Scripts\tinymce\src\skins\lightgray\src\main\less\Window.less" />
+    <Content Include="Scripts\tinymce\src\themes\inlite\src\test\.eslintrc" />
+    <Content Include="Scripts\tinymce\src\themes\modern\src\test\.eslintrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="report\Armyrank\Danhmuccapbac.rdlc" />
+    <EmbeddedResource Include="report\danhsach.rdlc" />
+    <EmbeddedResource Include="report\danhsachcbnv.rdlc" />
+    <EmbeddedResource Include="report\demo.rdlc" />
+    <EmbeddedResource Include="report\District\Danhmuchuyen.rdlc" />
+    <EmbeddedResource Include="report\Leveltitle\Danhmucchucvu.rdlc" />
+    <EmbeddedResource Include="report\Province\Danhmuctinh.rdlc" />
+    <EmbeddedResource Include="report\Religion\Danhmuctongiao.rdlc" />
+    <EmbeddedResource Include="report\Town\Danhmucxa.rdlc" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>45461</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:45461/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props'))" />
+    <Error Condition="!Exists('..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\build\JavaScriptEngineSwitcher.ChakraCore.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\build\JavaScriptEngineSwitcher.ChakraCore.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

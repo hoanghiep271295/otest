@@ -1,0 +1,93 @@
+﻿  var RWQuestion = React.createClass({
+      getInitialState: function () {
+          return {
+              listAnswer: [],
+                page:1
+          };
+
+      },
+      componentWillMount: function () {
+          component.add('RWQuestion', this);
+      },
+      loadData: function () {
+          var ret;
+          var parent = component.get('listQuestion');
+          window.NProgress.start();
+          var questioncode;
+          var questiongroupcode;
+          //nếu mà rowselect  của cha mà chính thằng này
+          //thì ta sẽ đẩy nó vào lấy danh sách kết quả theo rowselect của nó
+
+          if (!!parent.state.rowSelect)
+          {
+              $('#hidQUESTIONCODE').val('');
+              questioncode = parent.state.rowSelect[0].CODE;
+              questiongroupcode = parent.state.rowSelect[0].QUESTIONGROUPCODE;
+              var income = JSON.stringify(parent.state.rowSelect[0]);
+              $('#hidQUESTIONCODE').val(income);
+          }  else {
+              questioncode = "";
+              questiongroupcode = "";
+          }
+          var pageSize = $('#pageSizeAnswer').val();
+          if (isNaN(pageSize))
+          {
+              pageSize = 0;
+          }
+          let page = this.state.page;
+          $.ajax({
+              url: "/Question/getListAnswer",
+              dataType: 'json',
+              data: {
+                  questioncode: questioncode,
+                  questiongroupcode:questiongroupcode,
+                  page: page,
+                  pageSize: pageSize
+              },
+              success: function (data) {
+                  this.setState({ listAnswer: data.data});
+                  console.log('success');
+                  ret = data.data;
+              }.bind(this),
+              error: function(xhr, status, err) {
+                  console.log(err.toString());
+              }
+          });
+          window.NProgress.done();
+
+          return ret;
+      },   
+     
+      render: function () {
+          var listRow = [];
+          var index = 1;
+          this.state.listAnswer.forEach(function (rowitem) {
+              listRow.push(
+              <tr key={index}>
+                     <td style={{'textAlign':'center'}}>{index}</td>                                          
+                    <td style={{'textAlign':'center'}}>
+                        {rowitem.CONTENT}
+                    </td>
+                    </tr>);
+                     index++;
+  });
+  return (
+         <div>
+                                 
+            <div className="form-group">
+              <label className="col-sm-2 control-label">Các câu trả lời đúng</label>
+              <div className="col-sm-10">
+                      <table id="example2" className="table table-bordered table-hover">
+                    <thead>
+              <tr>
+              <th style={{'textAlign':'center'}}>STT</th>
+              <th style={{'textAlign':'center'}}>Câu trả lời</th>
+              </tr>
+                     </thead>
+                            <tbody>{listRow}</tbody>
+                      </table>
+              </div>
+            </div>       
+  </div>
+  ); }
+  });

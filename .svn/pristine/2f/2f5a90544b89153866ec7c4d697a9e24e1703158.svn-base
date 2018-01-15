@@ -1,0 +1,809 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\build\JavaScriptEngineSwitcher.ChakraCore.props" Condition="Exists('..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\build\JavaScriptEngineSwitcher.ChakraCore.props')" />
+  <Import Project="..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props" Condition="Exists('..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{520E4335-CE38-4566-9D4C-45CC04868F7B}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>nerp</RootNamespace>
+    <AssemblyName>nerp</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AjaxMin, Version=4.84.4790.14405, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AjaxMin.4.84.4790.14417\lib\net40\AjaxMin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Cassette, Version=2.4.2.13844, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cassette.2.4.2\lib\net40-client\Cassette.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Cassette.Babel, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cassette.Babel.1.1.1\lib\net45\Cassette.Babel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ClearScript, Version=5.4.7.0, Culture=neutral, PublicKeyToken=935d0c957da47c73, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.V8.2.0.0\lib\net40-client\ClearScript.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IS.Comm">
+      <HintPath>..\share\IS.Comm.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Pool">
+      <HintPath>..\share\IS.Pool.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Sec">
+      <HintPath>..\share\IS.Sec.dll</HintPath>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.ChakraCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\lib\net40-client\JavaScriptEngineSwitcher.ChakraCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Core.2.0.0\lib\net40-client\JavaScriptEngineSwitcher.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.Jint">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Jint.1.2.1\lib\net40\JavaScriptEngineSwitcher.Jint.dll</HintPath>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.Msie, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Msie.2.0.0\lib\net40-client\JavaScriptEngineSwitcher.Msie.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="JavaScriptEngineSwitcher.V8, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.V8.2.0.0\lib\net40-client\JavaScriptEngineSwitcher.V8.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Jint">
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Jint.1.2.1\lib\net40\Jint.dll</HintPath>
+    </Reference>
+    <Reference Include="JSPool, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc7775f73072640, processorArchitecture=MSIL">
+      <HintPath>..\packages\JSPool.2.0.0\lib\net40-client\JSPool.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.0.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.2.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.Common.v12.12.0.0.1\lib\Microsoft.ReportViewer.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="MsieJavaScriptEngine, Version=2.2.2.0, Culture=neutral, PublicKeyToken=a3a2846a37ac0d3e, processorArchitecture=MSIL">
+      <HintPath>..\packages\MsieJavaScriptEngine.2.2.2\lib\net45\MsieJavaScriptEngine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="React.Core, Version=3.0.0.0, Culture=neutral, PublicKeyToken=9aed67b161f7db78, processorArchitecture=MSIL">
+      <HintPath>..\packages\React.Core.3.0.0\lib\net40\React.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="React.Web, Version=3.0.0.0, Culture=neutral, PublicKeyToken=9aed67b161f7db78, processorArchitecture=MSIL">
+      <HintPath>..\packages\React.Web.3.0.0\lib\net40\React.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="React.Web.Mvc4, Version=3.0.0.0, Culture=neutral, PublicKeyToken=9aed67b161f7db78, processorArchitecture=MSIL">
+      <HintPath>..\packages\React.Web.Mvc4.3.0.0\lib\net40\React.Web.Mvc4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization.React, Version=3.0.0.0, Culture=neutral, PublicKeyToken=9aed67b161f7db78, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Web.Optimization.React.3.0.0\lib\net40\System.Web.Optimization.React.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.0.0\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="VroomJs, Version=1.2.3.0, Culture=neutral, PublicKeyToken=e7c52e67fcb0044f, processorArchitecture=MSIL">
+      <HintPath>..\packages\VroomJs.1.2.3\lib\net45\VroomJs.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="file\image\" />
+    <Folder Include="file\other\" />
+    <Folder Include="images\2017\10\" />
+    <Folder Include="log\" />
+    <Folder Include="Models\" />
+    <Folder Include="Scripts\bootstrap\js\" />
+    <Folder Include="Scripts\datatables.net\js\" />
+    <Folder Include="Scripts\moment\" />
+    <Folder Include="Views\Admingroup\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\ReactConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\admin\AdminController.cs" />
+    <Compile Include="Controllers\admin\AdmingroupController.cs" />
+    <Compile Include="Controllers\admin\parameterController.cs" />
+    <Compile Include="Controllers\admin\SysmenuController.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\core\CourseContentController.cs" />
+    <Compile Include="Controllers\core\CourseController.cs" />
+    <Compile Include="Controllers\core\CourseStudentController.cs" />
+    <Compile Include="Controllers\core\CourseStudiedController.cs" />
+    <Compile Include="Controllers\core\CourseTeacherController.cs" />
+    <Compile Include="Controllers\core\detail\academiclevelController.cs" />
+    <Compile Include="Controllers\core\detail\PartyLeveltitleController.cs" />
+    <Compile Include="Controllers\core\DirectoryController.cs" />
+    <Compile Include="Controllers\core\detail\ArmyRankController.cs" />
+    <Compile Include="Controllers\core\ClassController.cs" />
+    <Compile Include="Controllers\core\DepartmentController.cs" />
+    <Compile Include="Controllers\core\DepartmentListController.cs" />
+    <Compile Include="Controllers\core\DistrictController.cs" />
+    <Compile Include="Controllers\core\DownloadController.cs" />
+    <Compile Include="Controllers\core\EthnicController.cs" />
+    <Compile Include="Controllers\core\GradeController.cs" />
+    <Compile Include="Controllers\core\detail\LevelTitleController.cs" />
+    <Compile Include="Controllers\core\MarkController.cs" />
+    <Compile Include="Controllers\core\NationController.cs" />
+    <Compile Include="Controllers\core\ProvinceController.cs" />
+    <Compile Include="Controllers\core\ReligionController.cs" />
+    <Compile Include="Controllers\core\StaffController.cs" />
+    <Compile Include="Controllers\core\StaffListController.cs" />
+    <Compile Include="Controllers\core\StudentController.cs" />
+    <Compile Include="Controllers\core\StudentRegisCourseController.cs" />
+    <Compile Include="Controllers\core\SubjectContentController.cs" />
+    <Compile Include="Controllers\core\SubjectContentTestController.cs" />
+    <Compile Include="Controllers\core\SubjectController.cs" />
+    <Compile Include="Controllers\core\system\PriorityController.cs" />
+    <Compile Include="Controllers\core\TownController.cs" />
+    <Compile Include="Controllers\exam\ExamFormController.cs" />
+    <Compile Include="Controllers\exam\ExamHallController.cs" />
+    <Compile Include="Controllers\exam\ExamHallStudentController.cs" />
+    <Compile Include="Controllers\exam\ExamResultController.cs" />
+    <Compile Include="Controllers\exam\ExamTimeController.cs" />
+    <Compile Include="Controllers\exam\StudentExamController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\question\QuestionController.cs" />
+    <Compile Include="Controllers\question\QuestionTypeController.cs" />
+    <Compile Include="Controllers\question\QuestionUseController.cs" />
+    <Compile Include="Controllers\subject\ContentTypeController.cs" />
+    <Compile Include="Controllers\subject\SkillController.cs" />
+    <Compile Include="Controllers\subject\TagController.cs" />
+    <Compile Include="Controllers\test\ExamTimeController.cs" />
+    <Compile Include="Controllers\test\TestStructContentController.cs" />
+    <Compile Include="Controllers\test\TestStructController.cs" />
+    <Compile Include="Controllers\test\TestStructDetailController.cs" />
+    <Compile Include="Controllers\TinyMceController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="nerpDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>nerpDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="report\reporting.aspx.cs">
+      <DependentUpon>reporting.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="report\reporting.aspx.designer.cs">
+      <DependentUpon>reporting.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Startup.cs" />
+    <Compile Include="update.cs" />
+    <Compile Include="VotingHub.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="jsx\Core\home\sysmenulist - Copy %282%29.js">
+      <DependentUpon>homewarning.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist - Copy.js">
+      <DependentUpon>homeadmin.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist.js">
+      <DependentUpon>homeindex.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist.min - Copy %282%29.js">
+      <DependentUpon>sysmenulist - Copy %282%29.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist.min - Copy.js">
+      <DependentUpon>sysmenulist - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\sysmenulist.min.js">
+      <DependentUpon>sysmenulist.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\sysmenu\sysmenulist.js">
+      <DependentUpon>sysmenulist.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\sysmenu\sysmenulist.min.js">
+      <DependentUpon>sysmenulist.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\sysmenu\sysmenupopup.js">
+      <DependentUpon>sysmenupopup.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\sysmenu\sysmenupopup.min.js">
+      <DependentUpon>sysmenupopup.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\AgGrid.js">
+      <DependentUpon>AgGrid.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\AgGrid.min.js">
+      <DependentUpon>AgGrid.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\ButtonList - Copy.js">
+      <DependentUpon>TabHeader.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\ButtonList - Copy.min.js">
+      <DependentUpon>ButtonList - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\ButtonList.js">
+      <DependentUpon>ButtonList.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\ButtonList.min.js">
+      <DependentUpon>ButtonList.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox - Copy - Copy.js">
+      <DependentUpon>Combobox.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox - Copy.js">
+      <DependentUpon>Combobox_bootstrap.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox - Copy.min - Copy.js">
+      <DependentUpon>Combobox - Copy - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox - Copy.min.js">
+      <DependentUpon>Combobox - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox.js">
+      <DependentUpon>Comboboxold.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox.min.js">
+      <DependentUpon>Combobox.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox3.js">
+      <DependentUpon>Combobox3.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Combobox3.min.js">
+      <DependentUpon>Combobox3.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Tree - Copy.js">
+      <DependentUpon>DropdownTree.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Tree - Copy.min.js">
+      <DependentUpon>Tree - Copy.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\comboxtree\custom.dropdown.js" />
+    <Content Include="Scripts\Dropdowntree\dropdowntree.css" />
+    <Content Include="Scripts\Dropdowntree\dropdowntree.js" />
+    <Content Include="Scripts\inform\Inform.js" />
+    <Content Include="jsx\_shared\SearchDialog.js">
+      <DependentUpon>SearchDialog.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\SearchDialog.min.js">
+      <DependentUpon>SearchDialog.js</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Tree.js">
+      <DependentUpon>Tree.jsx</DependentUpon>
+    </Content>
+    <Content Include="jsx\_shared\Tree.min.js">
+      <DependentUpon>Tree.js</DependentUpon>
+    </Content>
+    <Content Include="report\reporting.aspx" />
+    <Content Include="Scripts\AdminLTE\js\adminlte.js" />
+    <Content Include="Scripts\AdminLTE\js\adminlte.min.js" />
+    <Content Include="Scripts\AdminLTE\js\demo.js" />
+    <Content Include="Scripts\AdminLTE\js\pages\dashboard.js" />
+    <Content Include="Scripts\AdminLTE\js\pages\dashboard2.js" />
+    <Content Include="Scripts\Ag-grid\ag-grid.js" />
+    <Content Include="Scripts\comboxtree\js\data.dropdown.js" />
+    <Content Include="Scripts\comboxtree\js\dungnvl.dropdown.js" />
+    <Content Include="Scripts\comboxtree\js\jstree.min.js" />
+    <Content Include="Scripts\comboxtree\js\underscore.js" />
+    <Content Include="Scripts\d3\d3.js" />
+    <Content Include="Scripts\d3\d3.min.js" />
+    <Content Include="Scripts\d3\LICENSE" />
+    <Content Include="Scripts\datatables.net-bs\js\dataTables.bootstrap.js" />
+    <Content Include="Scripts\datatables.net-bs\js\dataTables.bootstrap.min.js" />
+    <Content Include="Scripts\fastclick\fastclick.js" />
+    <Content Include="Scripts\func.js" />
+    <Content Include="Scripts\IE\html5shiv.min.js" />
+    <Content Include="Scripts\IE\respond.min.js" />
+    <Content Include="Scripts\jquery-slimscroll\jquery.slimscroll.js" />
+    <Content Include="Scripts\jquery-slimscroll\jquery.slimscroll.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.0.1.js" />
+    <Content Include="Scripts\jquery.signalR-2.0.1.min.js" />
+    <Content Include="Scripts\jquery\core.js" />
+    <Content Include="Scripts\jquery\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery\jquery.js" />
+    <Content Include="Scripts\jquery\jquery.min.js" />
+    <Content Include="Scripts\jquery\jquery.slim.js" />
+    <Content Include="Scripts\jquery\jquery.slim.min.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\bundle.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\demo.gif" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\bundle.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\index.css" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\index.html" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\index.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\webpack.config.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\bundle.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\index.css" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\index.html" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\index.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\webpack.config.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\index.css" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\index.html" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\index.js" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\webpack.config.js" />
+    <Content Include="Scripts\reactselect\classname.js" />
+    <Content Include="Scripts\reactselect\prop-types.js" />
+    <Content Include="Scripts\reactselect\prop-types.min.js" />
+    <Content Include="Scripts\reactselect\react-input-autosize.js" />
+    <Content Include="Scripts\reactselect\react-input-autosize.min.js" />
+    <Content Include="Scripts\reactselect\react-select.css" />
+    <Content Include="Scripts\reactselect\react-select.es.js" />
+    <Content Include="Scripts\reactselect\react-select.js" />
+    <Content Include="Scripts\reactselect\react-select.min.css" />
+    <Content Include="Scripts\reactselect\react-select.min.js" />
+    <Content Include="Scripts\react\browser.js" />
+    <Content Include="Scripts\react\jsx.js" />
+    <Content Include="Scripts\react\JSXTransformer.js" />
+    <Content Include="Scripts\react\react-dom-server.js" />
+    <Content Include="Scripts\react\react-dom-server.min.js" />
+    <Content Include="Scripts\react\react-dom.js" />
+    <Content Include="Scripts\react\react-dom.min.js" />
+    <Content Include="Scripts\react\react-with-addons.js" />
+    <Content Include="Scripts\react\react-with-addons.min.js" />
+    <Content Include="Scripts\react\react.js" />
+    <Content Include="Scripts\react\react.min.js" />
+    <Content Include="Scripts\require\require.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\select2\select2.js" />
+    <Content Include="Scripts\select2\select2.min.js" />
+    <Content Include="Scripts\tree\custom.tree.js" />
+    <Content Include="Scripts\t\abc.js" />
+    <Content Include="Scripts\t\react-dropdown-tree-select.css" />
+    <Content Include="Scripts\t\react-dropdown-tree-select.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="sqlupdate\20171114_ver16.sql" />
+    <Content Include="sqlupdate\20171107_ver15.sql" />
+    <Content Include="sqlupdate\20171107_ver14.sql" />
+    <Content Include="sqlupdate\20171107_ver13.sql" />
+    <Content Include="sqlupdate\20171107_ver12.sql" />
+    <Content Include="sqlupdate\20171128_ver19.sql" />
+    <Content Include="sqlupdate\20171116_ver18.sql" />
+    <Content Include="sqlupdate\20171116_ver17.sql" />
+    <Content Include="sqlupdate\20171206_ver30.sql" />
+    <Content Include="sqlupdate\20171206_ver29.sql" />
+    <Content Include="sqlupdate\20171206_ver28.sql" />
+    <Content Include="sqlupdate\20171206_ver27.sql" />
+    <Content Include="sqlupdate\20171206_ver26.sql" />
+    <Content Include="sqlupdate\20171206_ver25.sql" />
+    <Content Include="sqlupdate\20171205_ver24.sql" />
+    <Content Include="sqlupdate\20171205_ver23.sql" />
+    <Content Include="sqlupdate\20171130_ver22.sql" />
+    <Content Include="sqlupdate\20171129_ver21.sql" />
+    <Content Include="sqlupdate\20171128_ver20.sql" />
+    <Content Include="sqlupdate\20171208_ver31.sql" />
+    <Content Include="sqlupdate\20171224_ver39.sql" />
+    <Content Include="sqlupdate\20171221_ver38.sql" />
+    <Content Include="sqlupdate\20171221_ver37.sql" />
+    <Content Include="sqlupdate\20171218_ver36.sql" />
+    <Content Include="sqlupdate\20171218_ver35.sql" />
+    <Content Include="sqlupdate\20171218_ver34.sql" />
+    <Content Include="sqlupdate\20171212_ver33.sql" />
+    <Content Include="sqlupdate\20171209_ver32.sql" />
+    <Content Include="sqlupdate\ver11.sql" />
+    <Content Include="Scripts\t\bundle.js" />
+    <Content Include="Scripts\t\index.css" />
+    <Content Include="Scripts\t\index.html" />
+    <Content Include="Scripts\t\index.js" />
+    <Content Include="Scripts\t\webpack.config.js" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="jsx\form.jsx" />
+    <Content Include="jsx\piechart.jsx" />
+    <Content Include="jsx\dashboard.jsx" />
+    <Content Include="Views\Home\Dashboard.cshtml" />
+    <Content Include="Scripts\jquery\jquery.min.map" />
+    <Content Include="Scripts\jquery\jquery.slim.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\baseprojects2\IS.Base\IS.Base.csproj">
+      <Project>{07c077fb-5aff-4bfa-914f-efddc4989438}</Project>
+      <Name>IS.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\baseprojects2\IS.framework2\IS.fitframework.csproj">
+      <Project>{05b233c0-2594-4e62-a2f9-da754539ac36}</Project>
+      <Name>IS.fitframework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.basetype\IS.basetype.csproj">
+      <Project>{cae5b00b-9822-42c1-b9c8-7b73d4665c48}</Project>
+      <Name>IS.basetype</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.Config\IS.Config.csproj">
+      <Project>{68ca99aa-8ef7-41db-9a56-e5f6d45c6546}</Project>
+      <Name>IS.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.Lang\IS.Lang.csproj">
+      <Project>{445aa2a1-2632-48e2-a980-ed431cbc95d0}</Project>
+      <Name>IS.Lang</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.localcomm\IS.localcomm.csproj">
+      <Project>{e6a06d03-dda3-4db1-b299-673ae177844b}</Project>
+      <Name>IS.localcomm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.nerplib\IS.nerp.csproj">
+      <Project>{cc019228-7f89-4ded-b0fc-c01b6e087604}</Project>
+      <Name>IS.nerp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.report\IS.report.csproj">
+      <Project>{30d30cb0-cd78-4a52-8a8b-502620bbab19}</Project>
+      <Name>IS.report</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\project\IS.sess\IS.Sess.csproj">
+      <Project>{4887aad1-5501-4097-8b75-156231d67807}</Project>
+      <Name>IS.Sess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="packages.config" />
+    <Content Include="jsx\_shared\Tree.jsx" />
+    <Content Include="jsx\sysmenu\sysmenulist.jsx" />
+    <Content Include="jsx\_shared\AgGrid.jsx" />
+    <Content Include="jsx\sysmenu\sysmenupopup.jsx" />
+    <Content Include="jsx\_shared\Comboboxold.jsx" />
+    <Content Include="jsx\_shared\Combobox3.jsx" />
+    <Content Include="jsx\_shared\ButtonList.jsx" />
+    <Content Include="jsx\_shared\SearchDialog.jsx" />
+    <Content Include="jsx\Core\Department\Departmentlist.jsx" />
+    <Content Include="jsx\Core\Department\Departmentpopup.jsx" />
+    <Content Include="jsx\Core\sysmenu\sysmenulist.jsx" />
+    <Content Include="jsx\Core\sysmenu\sysmenupopup.jsx" />
+    <Content Include="nerpDataSet.xsc">
+      <DependentUpon>nerpDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="jsx\Core\home\homeindex.jsx" />
+    <Content Include="jsx\Core\home\homeadmin.jsx" />
+    <Content Include="jsx\Admin\Changepass\App.jsx" />
+    <Content Include="jsx\Admin\Changepass\Changepass.jsx" />
+    <Content Include="jsx\_shared\TabHeader.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupApp.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupList.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupPopup.jsx" />
+    <Content Include="jsx\_shared\PopupSearch.jsx" />
+    <Content Include="jsx\_shared\PopupSearchSQL.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupStaff.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupPriority.jsx" />
+    <Content Include="jsx\Admin\admingroup\AdmingroupPriorityAdd.jsx" />
+    <Content Include="jsx\Core\Armyrank\Armyranklist.jsx" />
+    <Content Include="jsx\Core\Armyrank\Armyrankpopup.jsx" />
+    <Content Include="jsx\Core\CountLevelTitle\Countleveltitlelist.jsx" />
+    <Content Include="jsx\Core\CountLevelTitle\Countleveltitlepopup.jsx" />
+    <Content Include="jsx\Core\DepartmentList\Departmentlist.jsx" />
+    <Content Include="jsx\Core\Ethnic\Ethniclist.jsx" />
+    <Content Include="jsx\Core\Ethnic\Ethnicpopup.jsx" />
+    <Content Include="jsx\Core\Leveltitle\Leveltitlelist.jsx" />
+    <Content Include="jsx\Core\Leveltitle\Leveltitlepopup.jsx" />
+    <Content Include="jsx\Core\Nation\Nationlist.jsx" />
+    <Content Include="jsx\Core\Nation\Nationpopup.jsx" />
+    <Content Include="jsx\Core\Province\Provincelist.jsx" />
+    <Content Include="jsx\Core\Province\Provincepopup.jsx" />
+    <Content Include="jsx\Core\Religion\Religionlist.jsx" />
+    <Content Include="jsx\Core\Religion\Religionpopup.jsx" />
+    <Content Include="jsx\Core\Staff\Stafflist.jsx" />
+    <Content Include="jsx\Core\Staff\Stafflist2.jsx" />
+    <Content Include="jsx\Core\Staff\Staffpopup.jsx" />
+    <Content Include="jsx\sysmenu\ListSubCon.jsx" />
+    <Content Include="jsx\Warehouse\Warehouselevel\Warehouselevellist.jsx" />
+    <Content Include="jsx\Warehouse\Warehouselevel\Warehouselevelpopup.jsx" />
+    <Content Include="jsx\Warehouse\Warehouse\WarehouseApp.jsx" />
+    <Content Include="jsx\Warehouse\Warehouse\WarehouseList.jsx" />
+    <Content Include="jsx\Warehouse\Warehouse\WarehousePopup.jsx" />
+    <Content Include="jsx\Core\Staff\StaffPriorityAdd.jsx" />
+    <Content Include="jsx\_shared\Combobox_bootstrap.jsx" />
+    <Content Include="jsx\_shared\Combobox.jsx" />
+    <Content Include="jsx\_shared\DropdownTree.jsx" />
+    <Content Include="jsx\Core\Ethnic\EthniclistOld.jsx" />
+    <Content Include="jsx\Core\Ethnic\EthnicpopupOld.jsx" />
+    <Content Include="jsx\Core\Ethnic\EthnicApp.jsx" />
+    <Content Include="jsx\Core\Religion\ReligionlistOld.jsx" />
+    <Content Include="jsx\Core\Religion\ReligionpopupOld.jsx" />
+    <Content Include="jsx\Core\directory\DirectoryApp.jsx" />
+    <Content Include="jsx\Core\PartyLeveltitle\PartyLeveltitlelist.jsx" />
+    <Content Include="jsx\Core\PartyLeveltitle\PartyLeveltitlepopup.jsx" />
+    <Content Include="jsx\subject\SubjectDirectoryApp.jsx" />
+    <Content Include="jsx\subject\skill\Skilllist.jsx" />
+    <Content Include="jsx\subject\skill\Skillpopup.jsx" />
+    <Content Include="jsx\subject\tag\Taglist.jsx" />
+    <Content Include="jsx\subject\tag\Tagpopup.jsx" />
+    <Content Include="jsx\subject\contenttype\Contenttypelist.jsx" />
+    <Content Include="jsx\subject\contenttype\Contenttypepopup.jsx" />
+    <Content Include="jsx\Core\home\homeindexTest.jsx" />
+    <Content Include="jsx\Core\Class\Classlist.jsx" />
+    <Content Include="jsx\Core\Class\Classpopup.jsx" />
+    <Content Include="jsx\Core\Grade\GradeApp.jsx" />
+    <Content Include="jsx\Core\Grade\Gradelist.jsx" />
+    <Content Include="jsx\Core\Grade\Gradepopup.jsx" />
+    <Content Include="jsx\Core\Student\Studentlist.jsx" />
+    <Content Include="jsx\Core\Student\Studentpopup.jsx" />
+    <Content Include="jsx\Core\SubjectContent\Subjectcontentlist.jsx" />
+    <Content Include="jsx\Core\SubjectContent\Subjectcontentpopup.jsx" />
+    <Content Include="jsx\question\QuestionDirectoryApp.jsx" />
+    <Content Include="jsx\question\questiontype\QuestiontypeList.jsx" />
+    <Content Include="jsx\question\questiontype\questiontypepopup.jsx" />
+    <Content Include="jsx\question\questionuse\QuestionuseList.jsx" />
+    <Content Include="jsx\question\questionuse\Questionusepopup.jsx" />
+    <Content Include="jsx\Core\home\homewarning.jsx" />
+    <Content Include="jsx\question\QTypeAnswer\COAnswer.jsx" />
+    <Content Include="jsx\question\QTypeAnswer\FGAnswer.jsx" />
+    <Content Include="jsx\question\QTypeAnswer\RWAnswer.jsx" />
+    <Content Include="jsx\question\QType\COQuestion.jsx" />
+    <Content Include="jsx\question\QType\FGQuestion.jsx" />
+    <Content Include="jsx\question\QType\FIQuestion.jsx" />
+    <Content Include="jsx\question\QType\LAQuestion.jsx" />
+    <Content Include="jsx\question\QType\MC.jsx" />
+    <Content Include="jsx\question\QType\MCQuestion.jsx" />
+    <Content Include="jsx\question\QType\PAQuestion.jsx" />
+    <Content Include="jsx\question\QType\RWQuestion.jsx" />
+    <Content Include="jsx\question\QType\WRQuestion.jsx" />
+    <Content Include="jsx\question\questionlist\DetailQGROUP.jsx" />
+    <Content Include="jsx\question\questionlist\ListAnswer.jsx" />
+    <Content Include="jsx\question\questionlist\ListQGROUP.jsx" />
+    <Content Include="jsx\question\questionlist\ListQuestion.jsx" />
+    <Content Include="jsx\question\questionlist\PopupAnswer.jsx" />
+    <Content Include="jsx\question\questionlist\PopupQGROUP.jsx" />
+    <Content Include="jsx\question\questionlist\PopupQuestion.jsx" />
+    <Content Include="jsx\Core\TestStruct\TeststructApp.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructdetaillist.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructdetailpopup.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructlist.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructpopup.jsx" />
+    <Content Include="jsx\question\App\QuestionApplist.jsx" />
+    <Content Include="jsx\question\App\QuestionApppopup.jsx" />
+    <Content Include="jsx\question\App\QuestionChildApp.jsx" />
+    <Content Include="jsx\Core\Student\StudentPriorityAdd.jsx" />
+    <Content Include="jsx\Core\Student\Studentprofile.jsx" />
+    <Content Include="jsx\subject\course\CourseList.jsx" />
+    <Content Include="jsx\subject\course\CoursePopup.jsx" />
+    <Content Include="jsx\subject\subject\SubjectList.jsx" />
+    <Content Include="jsx\subject\subject\SubjectPopup.jsx" />
+    <Content Include="jsx\subject\SubjectApp.jsx" />
+    <Content Include="jsx\subject\courseregisterstudent\CourseRegisterPopup.jsx" />
+    <Content Include="jsx\subject\courseregisterstudent\CourseRegisterStudent.jsx" />
+    <Content Include="jsx\Core\CourseContent\CoursecontentApp.jsx" />
+    <Content Include="jsx\Core\CourseContent\Coursecontentlist.jsx" />
+    <Content Include="jsx\Core\CourseStudent\BreadCrumb.jsx" />
+    <Content Include="jsx\Core\CourseStudent\Content.jsx" />
+    <Content Include="jsx\Core\CourseStudent\Course.jsx" />
+    <Content Include="jsx\Core\CourseStudent\CoursestudentApp.jsx" />
+    <Content Include="jsx\Core\CourseStudent\ListCourse.jsx" />
+    <Content Include="jsx\Core\CourseStudent\ListSubjectContent.jsx" />
+    <Content Include="jsx\Core\CourseStudent\PopupMark.jsx" />
+    <Content Include="jsx\Core\CourseStudent\SubjectContent.jsx" />
+    <Content Include="jsx\Core\TestStruct\Teststructcontentpopup.jsx" />
+    <Content Include="jsx\exam\studentexam\App.jsx" />
+    <Content Include="jsx\subject\Coursestudied.jsx" />
+    <Content Include="jsx\Core\CourseStudent\Coursestudied.jsx" />
+    <None Include="nerpDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>nerpDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="nerpDataSet.xss">
+      <DependentUpon>nerpDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="Project_Readme.html" />
+    <Content Include="Views\Common\Menu.cshtml" />
+    <Content Include="Views\Common\Mastertitle.cshtml" />
+    <Content Include="Views\Shared\AdminIndex.cshtml" />
+    <Content Include="Views\Admin\Login.cshtml" />
+    <Content Include="Views\Admin\Warning.cshtml" />
+    <Content Include="Views\Common\Header.cshtml" />
+    <Content Include="Views\Common\Task.cshtml" />
+    <Content Include="report\danhsachdonvi.rdlc">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Scripts\t\demo-data.json" />
+    <Content Include="Scripts\t\readme.md" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\demo-data.json" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\demo-data.json" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\bootstrap\readme.md" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\demo-data.json" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\examples\material\readme.md" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\mock-data.json" />
+    <Content Include="Scripts\react-dropdown-tree-select-master\docs\_config.yml" />
+    <None Include="Properties\PublishProfiles\publishe.pubxml" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="report\Armyrank\Danhmuccapbac.rdlc" />
+    <EmbeddedResource Include="report\danhsach.rdlc" />
+    <EmbeddedResource Include="report\danhsachcbnv.rdlc" />
+    <EmbeddedResource Include="report\demo.rdlc" />
+    <EmbeddedResource Include="report\District\Danhmuchuyen.rdlc" />
+    <EmbeddedResource Include="report\Leveltitle\Danhmucchucvu.rdlc" />
+    <EmbeddedResource Include="report\Province\Danhmuctinh.rdlc" />
+    <EmbeddedResource Include="report\Religion\Danhmuctongiao.rdlc" />
+    <EmbeddedResource Include="report\Town\Danhmucxa.rdlc" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>45461</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:45461/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props'))" />
+    <Error Condition="!Exists('..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\build\JavaScriptEngineSwitcher.ChakraCore.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\JavaScriptEngineSwitcher.ChakraCore.2.0.0\build\JavaScriptEngineSwitcher.ChakraCore.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

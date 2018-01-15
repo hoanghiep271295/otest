@@ -1,0 +1,117 @@
+﻿var CourseStudentApp = React.createClass({
+    getInitialState: function() {
+        return {
+            coursecode:null,
+            subjectcode: null,
+            lstSubjectContent: [],
+            keyvalue: []
+        }
+    },
+    componentWillMount: function () {
+        console.log('coursecode', this.state.coursecode);
+        
+    },
+
+
+    componentDidMount: function() {
+        this.getCourse();
+        
+    },
+    setKeyValue: function (key, keyvalue) {
+        keyvalue = this.state.keyvalue;
+        keyvalue[key] = value;
+        this.state.keyvalue = keyvalue;
+    },
+    /**
+    * Lấy một giá trị theo key, nếu chưa có thì trả về null - dành cho các trường hợp cần truyền tham số từ các tab
+    */
+    getKeyValue: function () {
+        var keyvalue = this.state.keyvalue;
+        if (!isMiss(keyvalue[key])) return keyvalue[key];
+        else return null;
+    },
+    // get parameter in url
+    gup: function (name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regexS = "[\\?&]" + name + "=([^&#]*)";
+        var regex = new RegExp(regexS);
+        var results = regex.exec(window.location.href);
+        if (results == null)
+            return "";
+        else
+            return results[1];
+    },
+    getCourse: function(id) {
+        var coursecode = this.gup('id');
+        $.ajax({
+            url: '/Course/GetById',
+            dataType: 'json',
+            data: {
+                code: coursecode
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    console.log('update coursecode', data.data.CODE);
+                    var id = data.data.CODE;
+                    var name = data.data.NAME;
+                    setTitle('sys_title', data.data.NAME);
+                    this.setState({ subjectcode: data.data.SUBJECTCODE });
+                    this.setState({ coursecode: data.data.CODE });
+                    console.log('update coursecode', this.state.coursecode);
+                    this.loadData(data.data.SUBJECTCODE);
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }.bind(this)
+        });
+    },
+    loadData: function (subjectcode) {;
+        $.ajax({
+            url: "/SubjectContent/getAll",
+            dataType: 'json',
+            data: {
+                subjectcode: subjectcode
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    this.setState({ lstSubjectContent: data.lst });
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    clickShow: function() {
+        var value = $('#thetree').css('display');
+        if (value === 'block')
+            document.getElementById('thetree').style.display = 'none';
+        else
+            document.getElementById('thetree').style.display = 'block';
+    },
+    render: function () {
+        var self = this;
+        return (
+
+        <div className="box">
+            <div className="row" style={{marginLeft: '5px'}}>
+                <button className="button-list" onClick={this.clickShow}></button>
+                <div id='listsubject' className="content" style={{width: '100%' , height:'500px'}}>
+                            <CourseStudied app={this} coursecode={this.state.coursecode} subjectcode={this.state.subjectcode} lstSubjectContent={this.state.lstSubjectContent} />
+                        
+                </div>
+            </div>
+
+        </div>
+
+        );
+    }
+
+});
+
+//----------------
+ReactDOM.render(
+    <CourseStudentApp />,
+    document.getElementById('container')
+);

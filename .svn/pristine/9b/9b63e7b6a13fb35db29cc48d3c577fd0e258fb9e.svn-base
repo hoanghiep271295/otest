@@ -1,0 +1,38 @@
+﻿var QuestionGroupWR = React.createClass({
+    render: function () {
+        var listAnswer = [];
+        var that = this;
+        var index = 0;
+        var indexQgroup = this.props.ident;
+        this.props.listAnswerStudent.forEach(function(rowitem) {
+            if (rowitem.QUESTIONGROUPCODE === that.props.ident) {
+                index++;
+                listAnswer.push(
+                    <div key={index}>
+                    <textarea  className="flex-item textareawriting" value={rowitem.ANSWERTEXT} disabled>
+                    </textarea>
+                        <div className="container questiongroup">
+                      <b> Mark :</b> <input type="number" id={indexQgroup+"_WR_MARK"} className="flex-item" />
+                    </div>
+                        </div>
+                    );
+            }
+        });
+        var questiongroup = $('<div />').html(this.props.objQuestionGroup.CONTENT).text().trim();
+        
+        return (
+                     <div>
+        <div className="container questiongroup">
+                <b>{this.props.number}.</b>
+            </div>
+                <div className="fieldsetGroup">
+                     <div className="col-sm-10 fitContent" >
+                       <span key={'error_' + indexQgroup} 
+                             dangerouslySetInnerHTML={{ __html: questiongroup }}></span>
+                </div>
+                {listAnswer}
+                </div>
+            </div>
+                  );
+}
+});

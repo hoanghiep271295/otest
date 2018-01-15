@@ -1,0 +1,80 @@
+﻿
+var QuestionGroupRW = React.createClass({
+    /**
+     * kiem tra xem 1 cau hoi da duoc tra loi hay chua
+     * @param {} item : cau hoi
+     * @param {} arr : mang danh sach cac cau tra loi cua sinh vien
+     * @returns{object}  - arr[i]- Đây chính là câu trả lời của sinh viên
+     *                     -null- Câu ỏi này chưa được trả lời - render null 
+     */
+    CheckItemInArray: function (questioncode, arr) {
+        debugger
+        var count = 0;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].QUESTIONCODE === questioncode) {
+                return arr[i];
+            }
+            count++;
+            if (count === arr.length) {
+                return null;
+            }
+        }
+    },
+    render: function () {
+        var listQuestion = [];
+        var listStudentAnswer = [];
+        var dataQuestion = this.props.dataQuestion;
+        var dataStudentAnswer = this.props.listAnswerStudent;
+        var questiongroupCode = this.props.ident;
+        var that = this;
+        var index = 0;
+        dataQuestion.forEach(function(rowitem) {
+            if (rowitem.QUESTIONGROUPCODE === questiongroupCode) {
+                index++;
+                var contentQuestion = $('<div />').html(rowitem.CONTENT).text().trim();
+                listQuestion.push(
+                    <div key={index}>
+                        <div className="container" style={{width:'100%',margin:'20px'}}>
+                           <div className="col-sm-1" ><b>{index}.</b></div>
+                        <div className="col-sm-11">
+                            <span key={'error_' + index} dangerouslySetInnerHTML={{ __html: contentQuestion }}></span>
+                    </div>
+                    </div>
+                    </div>
+                        );
+                var questionAnswer = that.CheckItemInArray(rowitem.CODE, dataStudentAnswer);
+                if (!!questionAnswer) {
+                    listStudentAnswer.push(<div style={{ 'marginLeft': '15%' }}>
+                                               <label> <b><i className="fa fa-arrow-right" aria-hidden="true"></i></b></label>
+                                               <input type="text" value={questionAnswer.ANSWERTEXT} className="inputRW" disabled/>
+                                           </div>);
+                } else {
+                    listStudentAnswer.push(<div style={{ 'marginLeft': '15%' }}>
+                                            <label> <b><i className="fa fa-arrow-right" aria-hidden="true"></i></b></label>
+                                            <input type="text" value="NULL" className="inputRW" disabled/>
+                                        </div>);
+                }
+}
+
+        });
+        var questiongroup = $('<div />').html(this.props.objQuestionGroup.CONTENT).text();
+return(
+    <div>
+           <div className="container questiongroup">
+          <h4 style={{fontWeight:'bold'}}>{this.props.number}.</h4>
+           </div>
+        <div className="fieldsetGroup">
+                 <div>
+          <span key={'error_' + questiongroupCode}
+                dangerouslySetInnerHTML={{ __html: questiongroup}}>
+          </span>
+                 </div>
+         <div>{listQuestion}</div>
+        <div> {listStudentAnswer}</div>
+        </div>
+
+   </div>
+    );
+}
+
+});

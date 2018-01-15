@@ -1,0 +1,46 @@
+﻿var ListCourse = React.createClass({
+    getInitialState: function () {
+        return {
+            ListCourse: []
+        }
+    },
+    loadData: function () {
+        $.ajax({
+            url: '/CourseStudent/GetByStudent',
+            dataType: 'json',
+            success: function (data) {
+                if (data.ret >= 0)
+                    this.setState({ ListCourse: data.data });
+                else
+                {
+                    if (data.ret === -1)
+                        log.show("Không có quyền truy cập!", false);
+                    else
+                        log.show('Lỗi lấy dữ liệu!', false);
+                }
+                    
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    componentWillMount: function () {
+        
+    },
+    componentDidMount: function () {
+        this.loadData();
+    },
+    render: function () {
+        var liCourse = [];
+        that = this;
+        this.state.ListCourse.forEach(function (item, key) {
+            liCourse.push(<Course key={key} code={item.CODE} subjectcode={item.SUBJECTCODE} codeview={item.CODEVIEW} name={item.NAME} key={key } app={that.props.parent} />);
+        });
+        return (
+            <div>
+                         <div>{liCourse}</div>
+            </div>
+        );
+    }
+});

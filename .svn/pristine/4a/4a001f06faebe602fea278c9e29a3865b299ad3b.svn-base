@@ -1,0 +1,76 @@
+﻿
+var DragandDrop = React.createClass({
+    preventDefault: function(event) {
+        event.preventDefault();
+    },
+
+    drop: function(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        ev.target.appendChild(document.getElementById(data));
+        //debugger
+        //event.preventDefault();
+
+        //var data;
+
+        //try {
+        //    data = JSON.parse(event.dataTransfer.getData('text'));
+        //} catch (e) {
+        //    // If the text data isn't parsable we'll just ignore it.
+        //    return;
+        //}
+
+        //// Do something with the data
+        //log.show(data, true);
+        //console.log(data);
+
+    },
+    dragStart: function(event) {
+        //var data = {
+        //    name: 'foobar',
+        //    age: 15
+        //};
+        //  event.dataTransfer.setData('text', JSON.stringify(data));
+        event.dataTransfer.setData("text", event.target.id);
+    },
+    dragEnter: function(event) {
+        if (event.target.className === "droptarget") {
+        event.target.style.border = "3px dotted red";
+        event.target.style.background = "#3CE9FF";
+    }
+    },
+    dragLeave: function (event) {
+        if (event.target.className === "droptarget") {
+        event.target.style.border = "";
+        event.target.style.background = "#F5EDB2";
+
+    }
+},
+    render : function() {
+
+        return(
+            
+            <div>
+            <div id="div1" className="droptarget" onDrop={this.drop} 
+                 onDragOver={this.preventDefault} 
+                 onDragLeave={this.dragLeave} 
+                 onDragEnter={this.dragEnter}
+                 >
+              <img src="/Content/1.jpg" draggable="true"  onDragStart={this.dragStart}  id="dragtarget" width="88" height="31"/>
+            </div>
+
+            <div id="div2" className="droptarget" onDrop={this.drop} 
+                           onDragOver={this.preventDefault}
+                           onDragLeave={this.dragLeave} 
+                           onDragEnter={this.dragEnter}
+                 ></div>
+
+                </div>
+            );
+
+    }
+
+});
+
+
+ReactDOM.render(<DragandDrop />, document.getElementById('container'));

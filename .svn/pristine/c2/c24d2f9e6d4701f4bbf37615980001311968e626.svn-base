@@ -1,0 +1,952 @@
+﻿/**
+ * Quy tắc đặt tên
+ * QUESTIONGROUP :Câu hỏi hay được hiểu hay hơn chính là đầu bài của câu hỏi
+ * QUESTION : câu hỏi con trong một đề bài
+ * ANSWER : Câu trả lời cho một câu hỏi con 
+ */
+var ListQuestion = React.createClass({
+    getInitialState: function () {
+        this.mylist = [];
+        return {
+            agGrid: { setRowData: null, getDataChange: null, setNextRow: null, setPrevRow: null },
+            rowSelect: null,
+            columnDefs: [
+//                { headerName: "Mã hiển thị", field: "CODEVIEW", width: 220, editable: false },
+                { headerName: "Tên", field: "NAME", width: 380, editable: false },
+               { headerName: "Hiển thị", field: "LOCK", width: 120, editable: false, type: 'invcheckbox' }
+            ],
+            currentQuestiongroupcode:'',
+            tab: null,
+            countQuestion: 0,
+            quesGroupcode: null,
+            questionGroupfull: null,
+            page: 1,
+            questiontypeQuestion: null,
+            textSelected: '',
+            questionactive: -1,
+            hidDataSearch: { code: null, typeCode: false, name: null, typeName: false, note: null, typeNote: false, year: null, typeYear: false },
+            buts:[{ ref: 'cmdAdd', callback: this.onNewClick }
+//             , { ref: 'cmdSearchSQL', callback: this.onSearchSQL }
+                 , { ref: 'cmdPrint', callback: this.onReport }
+                 , { ref: 'cmdSearch', callback: this.onSearch }
+                 , { ref: 'cmdEdit', callback: this.onEditClick }
+                 , { ref: 'cmdDelete', callback: this.onDeleteClick }
+                 , { ref: 'cmdRefresh', callback: this.Refresh }
+            ]
+
+        };
+    },
+    componentWillMount: function () {
+        //var tab = new Tab(false, 'listQuestion', 'Chi tiết câu hỏi', this.onNewClick, null, this.onDeleteClick, this.onNextClick, this.onPrevClick, this.onReport, this.onActive, this.onSearch, this.onSearchSQL);
+        //tab.pushToList();
+        //this.setState({ tab: tab });
+        //component.add('listQuestion', this);
+
+    },
+    componentDidMount: function () {
+        this.setState({ popup: this.refs[this.props.id + '_Popup'] });
+        //        this.loadData();
+
+    },
+
+    initAgGrid: function (setRowData, getDataChange, setNextRow, setPrevRow) {
+        var agGrid = {
+            setRowData: setRowData,
+            getDataChange: getDataChange,
+            setNextRow: setNextRow,
+            setPrevRow: setPrevRow
+        };
+        this.setState({ agGrid: agGrid });
+    },
+    onActive: function () {
+        var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+        var that = this;
+        if (isMiss(questiongroupcode)) {
+            bootbox.alert("Chưa chọn nhóm câu hỏi", function () { that.props.parent.ChooseTab('questiongroup') });
+            return;
+        }
+        //tab 3
+        ////khi chuyển đến tab 3 thì sẽ chuyển trạng thái của nó là Active: tức là 1 
+        //this.setState({
+        //    questionactive: 1
+        //});
+        //// đồng thời sẽ chuyển trạng thái của tab 2 về none-active:-1
+        //var questiongroup = component.get('listQGROUP');
+        //if (questiongroup.state.statusQGroup === 1) {
+        //    questiongroup.setState({ statusQGroup: -1 });
+        //}
+        //var questiontypeQuestion = "";
+        //if (!!questiongroup.state.rowSelect) {
+        //    questiontypeQuestion = questiongroup.state.questiontypeQGroup;
+        //    this.setState({ questiontypeQuestion: questiontypeQuestion });
+        //} else {
+        //    if (!!$('#hidQUESTIONGROUPCODE').val()) {
+        //        var obj = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+        //        questiontypeQuestion = obj._QUESTIONTYPECODE.CODEVIEW;
+        //        this.setState({ questiontypeQuestion: questiontypeQuestion });
+        //    }
+        //}
+        //switch (questiontypeQuestion) {
+        //    case 'FG':
+        //        document.getElementById('addQues').style.display = 'block';
+        //        break;
+        //    default:
+        //        document.getElementById('addQues').style.display = 'none';
+        //}
+        //var dataSearch = [
+        //{ title: 'Mã', id: 'CODESEARCH', type: 'text' },
+        //{ title: 'Tên', id: 'NAMESEARCH', type: 'text' },
+        //{ title: 'Ghi chú', id: 'NOTESEARCH', type: 'text' }
+        //];
+        //setTimeout(function () {
+        //    $("#PARENTCODE").parent().show();
+        //    setTimeout(function () {
+        //        $("#PARENTCODE").prop("disabled", true);
+        //    }, 100);
+        //    $("#PARENTCODE3").parent().hide();
+        //}, 200);
+        //var app = component.get('app');
+        //app.setState({ dataSearch: dataSearch });
+        //this.loadQuestionroup();
+        this.loadData();
+    },
+    /**
+*Lấy lại toàn bộ dữ liệu 
+*/
+    Refresh: function () {
+        this.loadData(this.state.searchstatus, this.state.rowSelect[0]);
+    },
+    /**
+    *Lấy lại toàn bộ dữ liệu được gọi bởi popup - với đối tượng vào để xử lý phù hợp
+    */
+    ReloadList: function (obj) {
+        //Mặc định theo giá trị tìm kiếm hiện tại, thiết lập theo bản ghi hiện tại
+        this.loadData(this.state.searchstatus, obj);
+
+    }
+    ,
+    /**
+    * Cập nhật lại thông tin sau khi gọi xóa dữ liệu thành công
+    */
+    ReloadListDelete: function () {
+        //cập nhật lại danh sách
+        this.loadData();//(this.state.currentcode);
+    },
+
+    /**
+     * replace all encode text  by html tag
+     * @param {string} text - parameter
+     * @returns {html tag} html
+     */
+    replacetextByHtml(text) {
+        var html = text.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+        return html;
+    },
+    /**
+     * load question group
+     * @returns {} 
+     */
+    loadQuestionroup:function() {
+        //document.getElementById('content_group').innerHTML = '';
+        //document.getElementById('content_group').className = '';
+        //var parent = component.get('listQGROUP');
+        //window.NProgress.start();
+        //var questiongroup;
+        ////check value of questiongroup from row or from hidden input
+        //if (!!parent.state.rowSelect.length) {
+        //    var questiongroup1 = parent.state.rowSelect[0];
+        //    this.setState({ questionGroupfull: questiongroup1 });
+        //    //convert object to string
+        //    var income = JSON.stringify(parent.state.rowSelect[0]);
+        //    //clear data tin hidden
+        //    $('#hidQUESTIONGROUPCODE').val('');
+        //    //put data into hidden
+        //    $('#hidQUESTIONGROUPCODE').val(income);
+        //    //show content group on the left of list question
+        //    questiongroup1.CONTENT = this.replacetextByHtml(questiongroup1.CONTENT);
+        //    //show
+        //    document.getElementById('content_group').innerHTML = questiongroup1.CONTENT;
+        //} else
+        //    //here is from hidden input
+        //    if (!!$('#hidQUESTIONGROUPCODE').val()) {
+        //        questiongroup = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+        //        this.setState({ questionGroupfull: questiongroup });
+        //        //show content group on the left of list question
+        //        questiongroup.CONTENT = this.replacetextByHtml(questiongroup.CONTENT);
+        //        document.getElementById('content_group').innerHTML = questiongroup.CONTENT;
+        //    }
+        //    else {
+        //        //set hien thi is null
+        //        document.getElementById('content_group').innerHTML = "No data questiongroup here !!!";
+        //        document.getElementById('content_group').className = "content_questionClass";
+        //    }
+    },
+    loadData: function () {
+        //document.getElementById('content_group').innerHTML = '';
+        //document.getElementById('content_group').className = '';
+        var ret;
+        //var parent = this.props.parent.getKeyValue('questiongroupcode');//  component.get('listQGROUP');
+//        window.NProgress.start();
+        var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+//        var questiongroup;
+             //check value of questiongroup from row or from hidden input
+        //if (!!parent.state.rowSelect.length) {
+        //     //  $('#hidQUESTIONGROUPCODE').val('');
+        //     //  var questiongroup1 = parent.state.rowSelect[0];
+        //    questiongroupcode = parent.state.rowSelect[0].CODE;
+        //    //update state
+        //    this.setState({ quesGroupcode: questiongroupcode });
+        //    //var income = JSON.stringify(parent.state.rowSelect[0]);
+        //    //$('#hidQUESTIONGROUPCODE').val('');
+        //    //$('#hidQUESTIONGROUPCODE').val(income);
+        //    //show content group on the left of list question
+        //    // questiongroup1.CONTENT = this.replacetextByHtml(questiongroup.CONTENT);
+        //    //document.getElementById('content_group').innerHTML = questiongroup1.CONTENT;
+        //} else
+        //    //here is from hidden input
+        //    if (!!$('#hidQUESTIONGROUPCODE').val())
+        //    {
+        //        questiongroup = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+        //        questiongroupcode = questiongroup.CODE;
+        //        this.setState({ quesGroupcode: questiongroupcode });
+        //        //show content group on the left of list question
+        //        // questiongroup.CONTENT = this.replacetextByHtml(questiongroup.CONTENT);
+        //        //document.getElementById('content_group').innerHTML = questiongroup.CONTENT;
+        //    }
+        //    else {
+        //        //set hien thi is null
+        //        questiongroupcode = "";
+        //        //document.getElementById('content_group').innerHTML = "No data questiongroup here !!!";
+        //        //document.getElementById('content_group').className = "content_questionClass";
+        //    }
+        var pageSize = 0;//$('#pageSizeQuestion').val();
+        //if (isNaN(pageSize)) {
+        //    pageSize = 0;
+        //}
+        var page = 1;//this.state.page;
+        $.ajax({
+            url: "/Question/getListQuestion",
+            dataType: 'json',
+            data: {
+                groupcode: questiongroupcode,
+                page: page,
+                pageSize: pageSize
+            },
+            success: function (data) {
+                //no need to stringify one more because datafirst already parse on server 
+//                $('#hidQUESTIONCODE').val(data.firstquestion);
+                //ret = data.data;
+                //this.setState({ countQuestion: data.data.length });
+                //if (data.data.length === 0) {
+                //    this.setState({ rowSelect: null });
+                //}
+                this.state.agGrid.setRowData(data.data);
+//                this.setDisplay(page, pageSize, data);
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+  //      window.NProgress.done();
+        return ret;
+    },
+    //load dữ liệu lấy bản ghi đầu tiên theo dữ liệu từ tab 2 gửi sang tab 4 
+    //nhưng thông qua tab 4 để truyền về đây lấy
+    //trong TH này thì hiden input questiongroup đã lưu dữ liệu của onrowselect rồi nên không cần
+    // set Rowselect nữa tốn thơi gian
+    loadDataBackup: function () {
+        var questiongroupcode ;
+        //check null hidden input group code
+            if (!!$('#hidQUESTIONGROUPCODE').val()) {
+                var questiongroup = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+                questiongroupcode = questiongroup.CODE;
+                var listanswer = component.get('listAnswer');
+                listanswer.setState({ questiontypeAnswer: questiongroup._QUESTIONTYPECODE.CODEVIEW });
+            } else { questiongroupcode = ""; }
+        var pageSize = $('#pageSizeQuestion').val();
+        if (isNaN(pageSize)) { pageSize = 0; }
+        var page = this.state.page;
+        $.ajax({
+            url: "/Question/getListQuestion",
+            dataType: 'json',
+            data: {
+                groupcode: questiongroupcode,
+                page: page,
+                pageSize: pageSize
+            },
+            //trên server đã sử lý sẵn rồi,
+            //nên chỉ cần lấy đổ vào hidden input question thôi
+            //không cần Json.stringify nữa
+            success: function (data) {
+                document.getElementById('content_question').innerHTML = '';
+                if (data.ret >= 0) {
+                    this.setState({ rowSelect: null });
+                    $('#hidQUESTIONCODE').val('');
+                    $('#hidQUESTIONCODE').val(data.firstquestion);
+                    //set dữ liệu cho tab 4 ,nghe có vẻ không khả thi,cứ thử rồi biết
+                    if (!!data.firstquestion) {
+                        var parser = new DOMParser;
+                        var dom = parser.parseFromString('<!doctype html><body>' + data.data[0].CONTENT,'text/html');
+                        var decodedString = dom.body.textContent;
+                        document.getElementById('content_question').className = '';
+                        document.getElementById('content_question').innerHTML = decodedString;
+                    }
+                }
+                else
+                    //không có dữ liệu của question theo bản ghi questiongroup này
+                    //đây là trường hợp cả 2 tab question và tab questiongroup đều khôNo data questiongroup hereng có dữ liệu
+                {
+                    console.log("there are no items of question left");      
+                    if (!!$('#hidQUESTIONGROUPCODE').val()) {
+                        var questiongroup = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+                        questiongroupcode = questiongroup.CODE;
+                        var parsergroup = new DOMParser;
+                        var domgroup = parsergroup.parseFromString('<!doctype html><body>' + questiongroup.CONTENT, 'text/html');
+                        var decodedgroup = domgroup.body.textContent;
+                        document.getElementById('content_question').className = '';
+                        document.getElementById('content_question').innerHTML = decodedgroup;
+                    }                                
+                    else
+                    {
+                        document.getElementById('content_question').innerHTML = "No data from list questiongroup and question !!!";
+                        document.getElementById('content_question').className = "content_questionClass";
+                    }
+                }          
+                var listAnswer = component.get('listAnswer');
+                listAnswer.loadData();           
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+   
+    },
+    // set hiển thị số bản ghi và disable nút
+    setDisplay: function (page, pageSize, data) {
+        //// set phần hiển thị số bản ghi
+        //$("#startIndexQuestion").text((page - 1) * pageSize + 1);
+        //if (page === data.totalPage) {
+        //    $("#endIndexQuestion").text(data.totalItem);
+        //} else
+        //    $("#endIndexQuestion").text(page * pageSize);
+        //$("#totalItemQuestion").text(data.totalItem);
+        //// disable nút
+        //if (page === 1)
+        //    $("#prePageQuestion").prop('disabled', true);
+        //else
+        //    $("#prePageQuestion").prop('disabled', false);
+        //if (page === data.totalPage)
+        //    $("#nextPageQuestion").prop('disabled', true);
+        //else
+        //    $("#nextPageQuestion").prop('disabled', false);
+    },
+    //set data lây từ 1 row để hiển thị lên dialog hoặc lấy từ các hidden input
+    setData: function (data) {
+       // //nếu không null
+       // if (!!data) {
+       //     //xác định loại hình câu hỏi để hiển thị cách nhập chi tiết 1 câu hỏi con cho đúng
+       //     var questionQ = this.state.questiontypeQuestion;
+       //     switch (questionQ) {
+       //         // câu hỏi một nhiều - có thể là 1 câu hỏi có nhiều đáp án và 
+       //         //chọn một đáp án đúng
+       //         //1
+       //case 'MC':
+       //             console.log('câu hỏi dạng một nhiều');
+       //             $('#contentques').show();
+       //             var listanswerMc = component.get('MCQuestion');   
+       //             listanswerMc.loadData();
+       //             break;
+       //         // câu hỏi dạng ghép đôi - hiển thị một danh sách các câu hỏi bên trái, 
+       //         // danh sách các câu hỏi bên phải ghép lại thành cặp
+       //    // nên hiển thị câu trả lời đúng ở đây 
+       //    //2
+       // case 'PA':
+       //     console.log('câu hỏi dạng ghép đôi');
+       //             $('#hidPAANSWERCODE').val(data.ANSWERCODE);
+       //             $('#contentques').show();
+       //             $('#PAANSWER').html($("<div/>").html(data._ANSWERCODE.CONTENT).text());
+       //             break;
+       //     //Câu hỏi điền vào đoạn trống - Có một đoạn các câu hỏi
+       //     //và sau đó có danh sách các đáp án (có thể dư hoặc không dư) để điền vào
+       //     //3
+       // case 'FI':
+       //     console.log('câu hỏi dạng FI');
+       //     $('#ficontentques').show();
+       //     setTimeout(function() {  $('#contentques').hide();  },30);
+       //     $('#hidFIANSWERCODE').val(data.ANSWERCODE);           
+       //     $('#FICONTENTQUESTION').val(data.CONTENT);
+       //     $('#FIANSWER').html($("<div/>").html(data._ANSWERCODE.CONTENT).text());
+       //             break;
+       //      // Câu hỏi điền vào đoạn trống tự gõ từ , nếu là câu hỏi đã có câu trả lời thì hiển thị cho nó nội dung câu trả lời không thì 
+       //     //nếu là thêm mới thì ẩn nó đi không cho hiển thị lên làm gì
+       //     //câu trả lời của nó là dạng input thường
+       //     //4
+       // case 'FG':
+       //             console.log('câu hỏi dạng FG');
+       //       setTimeout(function () {   $('#contentques').hide(); }, 30);                 
+       //       $('#hidFGANSWERCODE').val(data.ANSWERCODE);
+       //       $('#FGCONTENTQUESTION').val(data.CONTENT);
+       //       $('#FGANSWER').text(data._ANSWERCODE.CONTENT).text();
+       //             break;
+       //         // Dạng câu hỏi tổng kết - cho một đoạn đọc; 
+       //         //sau đó tiến hành đưa ra một câu hỏi và
+       //     // có nhiều đáp án trả lời độc lập - true/false, true/false/not given
+       //     //5
+       //  case 'CO':
+       //      console.log('câu hỏi dạng tổng kết');
+       //      //setTimeout(function () {
+       //      //    $('#contentques').show();
+       //      //}, 50);
+       //      //$('#hidCOANSWERCODE').val(data.ANSWERCODE);
+       //      //$('#COANSWER').html($("<div/>").html(data._ANSWERCODE.CONTENT).text());         
+       //      //$('#COANSWER').addClass('content_questionClass');
+       //      //break;
+       //      console.log('câu hỏi dạng một nhiều');
+       //      $('#contentques').show();
+       //      var listanswerCo = component.get('COQuestion');
+       //      listanswerCo.loadData();
+       //      break;
+
+       //      //Nghe nói - lưu lại một file không có answer
+       //      //nên có gợi ý
+       //      //6
+       //case 'LA':
+       //       console.log('câu hỏi dạng nghe nói');
+       //       setTimeout(function () {
+       //           $('#contentques').show();
+       //           $('#hidLAANSWERCODE').val(data.ANSWERCODE);
+       //           $('#laques').show();
+       //           $('#LAANSWER').html($("<div/>").html(data._ANSWERCODE.CONTENT).text());
+       //           $('#LAANSWER').addClass('content_questionClass'); }, 30);
+       //             break;
+       //    //Viết lại câu
+       //    //cũng nên có gợi ý
+       //    //7
+       // case 'RW':
+       //          setTimeout(function ()
+       //          { $('#contentques').show(); }, 30);
+       //             var listanswerRw = component.get('RWQuestion');
+       //             listanswerRw.loadData();
+       //             break;
+       //     //bài viết 
+       //     //8 setdata
+       // case 'WR':
+       //             setTimeout(function () { $('#contentques').show(); }, 30);
+       //             $('#hidWRANSWERCODE').val(data.ANSWERCODE);
+       //             $('#WRANSWER').html($("<div/>").html(data._ANSWERCODE.CONTENT).text());
+       //             $('#WRANSWER').addClass('content_questionClass');
+                    
+       //             break;
+       //         //mặc định, để cho có chứ không cần quan tâm coi như try catch
+       //   default:
+       //             console.log('do nothing');
+       //           break;
+       //     }
+       //     //mã câu hỏi 
+       //     $('#QUESTIONGROUPCODE').val(data.QUESTIONGROUPCODE);
+       //     //tên câu hỏi 
+       //     $('#QUESTIONGROUPNAME').text(data._QUESTIONGROUPCODE.NAME);
+       //     //mã câu hỏi
+       //     $('#CODEQUESTION').val(data.CODE);
+       //     //mã hiển thị
+       //     $('#CODEVIEWQUESTION').val(data.CODEVIEW);
+       //     //tên hiển thị của chi tiết câu hỏi
+       //     $('#NAMEQUESTION').val(data.NAME);
+       //     //trạng thái hiển thị
+       //     $('#LOCKQUESTION').val(data.LOCK);
+       //     //thứ tự hiển thị
+       //     $('#ORDQUESTION').val(data.ORD);
+       //     // điểm cho câu hỏi
+       //     $('#MARKQUESTION').val(data.MARK);
+       //     // nội dung câu trả lời nếu có , 
+       //     //chỉ nên xuất hiện với câu  hỏi chỉ có 1 đáp án đúng đi kèm đó là dạng ghép đôi PA,các dạng khác nên ẩn đi
+       //     $('#ANSWERCODE').val(data._ANSWERCODE.NAME);
+       //     //hiển thị nội dung câu hỏi lên tinyMCE
+       //     var a = data.CONTENT;
+       //     $('textarea.CONTENTQUESTION').html(a);
+       //     window.tinymce.get('CONTENTQUESTION').setContent($('textarea.CONTENTQUESTION').val());
+        //}
+        //else {
+        //    this.clearData();
+        //    $('#ANSWERCODE').val(null);
+        //    var obj = $('#hidQUESTIONGROUPCODE').val();
+        //    var questiongroup = JSON.parse(obj);
+        //    $('#QUESTIONGROUPCODE').val(questiongroup.CODE);
+        //    $('#QUESTIONGROUPNAME').text(questiongroup.NAME);
+        //}
+    },
+    clearData: function () {
+       // //contentques nội dung câu hỏi nhập dạng tinMCE
+       // var that = this;
+       // var questiontypeQ = this.state.questiontypeQuestion;
+       // switch (questiontypeQ) {
+       //     //multichoice
+       //     //1 cleardata
+       //     case 'MC':
+       //         $('#contentques').show();
+       //         setTimeout(function() {
+       //             that.setState({ rowSelect: null });
+       //             var popupMCanswer = component.get('MCQuestion');
+       //             popupMCanswer.loadData();
+       //         }, 30);
+              
+             
+                
+       //         break;
+       //         //câu hỏi dạng ghép đôi 
+       //         //2 PA cleardata
+       //     case 'PA':
+       //              $('#contentques').show();
+       //              $('#hidPAANSWERCODE').val('');
+       //              $('#PAANSWER').text('');
+       //         break;
+       //         //case FG : Câu hỏi điền vào đoạn trống tự gõ từ .
+       //         //dạng nhập câu hỏi là dạng input không có tinyMCE
+       //         //3 FI cleardata
+       //     case 'FI':
+       //             $('#contentques').hide();
+       //             $('#hidFIANSWERCODE').val('');
+       //             $('#FICONTENTQUESTION').val('');
+       //             $('#FIANSWER').text('');
+       //         break;
+       //         //reset to add new
+       //         //dạng nhập câu hỏi là dạng input không có tinyMCE
+       //         //4 FG cleardata
+       //     case 'FG':         
+       //             $('#contentques').hide();
+       //             $('#hidFGANSWERCODE').val('');
+       //             $('#FGCONTENTQUESTION').val('');
+       //             $('#FGANSWER').text('');
+       //             break;
+       //     //Viết lại câu; Một câu hỏi có thể có nhiều đáp án đúng    
+       //     //5 RW cleardata
+       //     case 'LA':
+       //         $('#contentques').show();
+       //         $('#laques').show();
+       //         $('#LAANSWER').text('');
+       //         break;
+       //         //Viết lại câu; Một câu hỏi có thể có nhiều đáp án đúng    
+       //         //6 RW cleardata
+       //     case 'RW':
+       //         $('#contentques').show();
+       //         setTimeout(function() {
+       //             that.setState({ rowSelect: null });
+       //             var popupRWanswer = component.get('RWQuestion');
+       //             popupRWanswer.loadData();
+       //         }, 30);
+               
+       //         break;
+       //         //Dạng câu hỏi tổng kết - cho một đoạn đọc; sau đó tiến hành đưa ra một câu hỏi và có nhiều đáp án trả lời độc lập - true/false, true/false/not given
+       //         //7 CO cleardata
+       //     case 'CO':
+       //     //    $('#contentques').show();
+       //     //    $('#hidCOANSWERCODE').val('');
+       //     //    $('#COANSWER').text('');
+       //         //    break;
+       //         $('#contentques').show();
+       //         setTimeout(function () {
+       //             that.setState({ rowSelect: null });
+       //             var popupCOanswer = component.get('COQuestion');
+       //             popupCOanswer.loadData();
+       //         }, 30);
+       //         //dạng bài viết
+       //         //8 WR cleardata, have tin
+       //     case 'WR':
+       //         $('#contentques').show();
+       //         $('#hidWRANSWERCODE').val('');
+       //         $('#WRANSWER').text('');
+               
+       //         break;
+       //         //default, do nothing
+
+       //     default:
+       //         $('#contentques').hide();
+       //         console.log('do nothing');
+       //         break;
+       // }
+       // $('#CODEQUESTION').val("");
+       // $('#CODEVIEWQUESTION').val("");
+       // $('#NAMEQUESTION').val("");
+       // $('#ORDQUESTION').val(0);
+       // $('#LOCKQUESTION').prop('checked', false);
+       // $('#MARKQUESTION').val("");
+       // $('#ANSWERCODE').val("");
+       // $('#CONTENTQUESTION').val("");
+       ////set contentquestion
+       // window.tinymce.get('CONTENTQUESTION').setContent("");
+    },
+    onNewClick: function () {
+        var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+        var questiontypecode = this.props.parent.getKeyValue('questiontypecode');
+        var questiontypecodeview = this.props.parent.getKeyValue('questiontypecodeview');
+        var obj = { QUESTIONGROUPCODE: questiongroupcode, QUESTIONTYPECODE: questiontypecode, QUESTIONTYPECODEVIEW: questiontypecodeview, QUESTIONGROUPNAME: 'Chưa có' };
+        this.state.popup.ClearInput(obj);
+        this.state.popup.Show();
+        //$('#NewModalQuestion').modal('show');
+        //var rowSelect = this.state.rowSelect;
+        //if (!!rowSelect && !!rowSelect[0]) {
+        //    this.setData(rowSelect[0]);
+        //}
+        //else
+        //{
+        //    this.setData();
+        //}
+    },
+    onEditClick: function () {
+        if (this.state.rowSelect.length != 1) {
+            bootbox.alert('Chưa chọn bản ghi hoặc nhiều hơn một bản ghi');
+        } else {
+            var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+            var questiontypecode = this.props.parent.getKeyValue('questiontypecode');
+            var questiontypecodeview = this.props.parent.getKeyValue('questiontypecodeview');
+            var obj = this.state.rowSelect[0];
+            obj.QUESTIONGROUPCODE = questiongroupcode;
+            obj.QUESTIONTYPECODE = questiontypecode;
+            obj.QUESTIONTYPECODEVIEW = questiontypecodeview;
+            obj.QUESTIONGROUPNAME = 'Chưa có';
+            this.state.popup.SetInput(obj);
+            this.state.popup.Show();
+        }
+    },
+    handDelete: function () {
+        if (!!this.state.rowSelect) {
+            var data = [];
+            this.state.rowSelect.forEach(function (item) {
+                data.push(item.CODE);
+            });
+            var postData = { code: data };
+            $.ajax({
+                url: "/Question/DeleteQuestion",
+                type: "POST",
+                dataType: "json",
+                traditional: true,
+                data: postData,
+                success: function (data) {
+                    if (data.ret >= 0) {
+                        this.refreshRowData();
+                        log.show("Done !", true);
+                    }
+                    else {
+                        log.show("Can not delete", false);
+                    }
+
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.log(err.toString());
+                }
+            });
+        }
+        else {
+            log.show("No items have been deleted !", false);
+        }
+    },
+    onDeleteClick: function () {
+        var that = this;
+        //  confirm.show(null, this.handDelete, null);
+        bootbox.confirm({
+            message: "Do you want to delete these items ?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    that.handDelete();
+                }
+                else {
+                    log.show("No items have been deleted !", true);
+                }
+            }
+        });
+    },
+  
+    onKeyUp: function (event) {
+        var keypressed = event.keyCode || event.which;
+        if (keypressed === 13) {
+            this.setState({ page: 1 });
+            setTimeout(function () {
+                this.loadData();
+            }.bind(this), 200);
+        }
+    },
+    onReport: function () {
+        console.log("onReport");
+    },
+    onSearch: function () {
+        //$('#ModalSearchSkill').modal('show');
+        //console.log('Search skill');
+        var dataSearch = [
+                           { title: 'Mã', id: 'CODESEARCH', type: 'text' }
+                           , { title: 'Tên', id: 'NAMESEARCH', type: 'text' }
+                           , { title: 'Ghi chú', id: 'NOTESEARCH', type: 'text' }
+        ];
+        var obj = this.state.searchstatus;//Dữ liệu mặc định
+        this.props.parent.ShowSearch(this.props.id + '_search', dataSearch, obj, this.doSearch);
+        //        console.log('Gọi tìm kiếm');
+    },
+    handleSearch: function () {
+        var hidDataSearch = {
+            code: $('#CODESEARCHCOURSE').val(),
+            typeCode: $('#typeCODESEARCHCOURSE').val() ? $('#typeCODESEARCHCOURSE').val() : false,
+            name: $('#NAMESEARCHCOURSE').val(),
+            typeName: $('#typeNAMESEARCHCOURSE').val() ? $('#typeNAMESEARCHCOURSE').val() : false,
+            note: $('#NOTESEARCHCOURSE').val(),
+            typeNote: $('#typeNOTESEARCHCOURSE').val() ? $('#typeNOTESEARCHCOURSE').val() : false,
+            year: $('#YEARSEARCHCOURSE').val(),
+            typeYear: $('#typeYEARSEARCHCOURSE').val() ? $('#typeYEARSEARCHCOURSE').val() : false
+        };
+        this.setState({ hidDataSearch: hidDataSearch });
+        this.loadData();
+        $('#ModalSearch').modal('hide');
+    },
+    onSearchSQL: function () {
+        console.log("search SQL GRADE");
+    },
+    refreshRowData: function () {
+        this.loadData();
+    },
+    onRowSelect: function (itemSelect) {
+        this.setState({ rowSelect: itemSelect });
+        if (itemSelect.length > 0) {
+            this.props.parent.setKeyValue('questioncode', itemSelect[0].CODE);
+            this.props.parent.setKeyValue('questionname', itemSelect[0].NAME);
+            this.props.parent.setKeyValue('questioncontent', itemSelect[0].CONTENT);
+        } else {
+            this.props.parent.setKeyValue('questioncode', '');
+            this.props.parent.setKeyValue('questionname', '');
+            this.props.parent.setKeyValue('questioncontent', '');
+        }
+    },
+    /**
+    * khi co bat cu viec dien tra tren noi dung nhom cau hoi thì sẽ chạy vào phương thức này
+    * @returns {} 
+    */
+    onMouseup: function () {
+        var selected = this.getSelectionText();
+        if (!!selected) {
+            console.log('text selected :', selected);
+            this.setState({ textSelected: selected });
+        }
+    },
+    /**
+    * lay doan text duoc boi den
+    * @returns {} 
+    */
+    getSelectionText: function () {
+        var text = "";
+        console.log(window.getSelection());
+        if (window.getSelection) {
+            text = window.getSelection().toString();
+
+        } else if (! document.selection && document.selection.type !== "Control") {
+            text = document.selection.createRange().text;
+        }
+        return text;
+    },
+    myfunction: function () {
+        console.log('aa');
+    },
+    /**
+     * replace 1 doan text bang 1 the html hoac 1 doan text khac
+     * @param {string or html} - htmltag 
+     * @param {string} - id of question we recieved from server for a question 
+     * @param {string}- type : type of question 
+     * @returns {} 
+     */
+    replaceSelectedText: function (htmltag,idInput,type)
+    {
+        var sel, range;
+        if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.rangeCount)
+            {
+                range = sel.getRangeAt(0);
+                range.deleteContents();
+                //create an element
+                var markerEl = document.createElement(htmltag);
+                //code question format : questiongroupcode_idquestion_type
+                markerEl.id = this.state.quesGroupcode.toString() + '_' + idInput.toString() + '_' + type.toString();
+                range.insertNode(markerEl);
+                 //add function focusout for input type FG
+                $("#" + markerEl.id).attr("onfocusout", "myFunction('" + markerEl.id + "')");
+                //add class inputFG
+                $("#" + markerEl.id).attr("class", "inputFG");
+
+            }
+        }
+        else
+            if (document.selection && document.selection.createRange)
+          {
+            range = document.selection.createRange();
+            range.text = htmltag;
+          }
+    },
+    /**
+    * replace all specail html by symboys,use the return to save in database
+    * @param {html} html 
+    * @returns {} 
+    */
+    replaceAllHtml: function (html) {
+        var text = html.replace(/</g , '&lt;').replace(/>/g, '&gt;');
+        return text;
+    },
+    //add question for dạng câu hỏi điền từ vào ô trống
+    //ở đây thực hiện việc update lại dữ liệu khi select luôn
+    addQuestion: function () {
+        if (!!this.state.textSelected) {
+            //get question group from hid is correct way
+            var questiongroup = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+            var questiongroupcode = questiongroup.CODE;
+            ///number of question
+            var number = parseInt(this.state.countQuestion) + 1;
+            var questiontype = this.state.questiontypeQuestion;
+            $.ajax({
+                url: "/Question/UpdateQuestion",
+                dataType: 'json',
+                data: {
+                    CODEVIEW: ' Question ' + questiontype + number,
+                    NAME: 'New Question ' + questiontype + number,
+                    QUESTIONGROUPCODE: questiongroupcode
+                },
+                success: function (data) {
+                    if (data.ret >= 0) {
+                        var list = component.get('listQuestion');                      
+                        list.refreshRowData();
+                        this.addAnswer(data.code, questiongroupcode);
+                        log.show("Ghi thành công!", true);
+                        ///replace by input
+                        //we have 2 kind of quuestion using this medthod(FG,FI)
+                        var questiontype = this.state.questiontypeQuestion;
+                        switch (questiontype) {
+                            case 'FG':
+                                this.replaceSelectedText("input", data.code,"FG");
+                                break;
+                            case 'FI':
+                                this.replaceSelectedText("input", data.code,"FI");
+                                break;
+                            default:
+                                console.log("something wrong here !!");
+                        }
+                  
+                        //update questiongroup 
+                        var contentQuestiongroup = $("#content_group").html();
+                        var text = this.replaceAllHtml(contentQuestiongroup);
+                        // console.log(text);
+                        var obj = this.state.questionGroupfull;
+                        //change context of questiongroup from html by specail symbol to save in database
+                        obj.CONTENT = text;
+                        this.updateQuestiongroup(obj);
+                    } else {
+                        log.show("Ghi lỗi!", false);
+                    }
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.log(err.toString());
+                }
+            });
+        } else
+            log.show("Không có nội dung được chọn!", false);
+    },
+    addAnswer: function (questioncode, questiongroupcode) {
+        var number = parseInt(this.state.countQuestion) + 1;
+        $.ajax({
+            url: "/Question/UpdateAnswer",
+            dataType: 'json',
+            data: {
+                CODEVIEW : 'FG Answer '+ number,
+                NAME: 'New Answer ' + number,
+                QUESTIONCODE: questioncode,
+                QUESTIONGROUPCODE: questiongroupcode,
+                CONTENT: this.state.textSelected,
+                TRUEANSWER: 1
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    log.show('Thêm câu trả lời thành công!', true);
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    /**
+     * update questiongroup after select
+     * @param {object} obj 
+     * @returns {obj questiongroup} 
+     */
+    updateQuestiongroup(obj) {
+        var currentquestion = obj;
+        console.log(currentquestion);
+        var node = new Object();
+        //hình thức câu hỏi
+        node.QUESTIONTYPECODE = obj.QUESTIONTYPECODE;
+        // mục đích sử dụng câu hỏi này cho
+        node.QUESTIONUSECODELIST = obj.QUESTIONUSECODELIST;
+        // mã câu hỏi 
+        node.CODE = obj.CODE;
+        //mã hiển thị câu hỏi
+        node.CODEVIEW = obj.CODEVIEW;
+        ///tên câu hỏi
+        node.NAME = obj.NAME;
+        //trạng thái hiển thị câu hỏi
+        node.LOCK = obj.LOCK;
+        //ghi chú
+        node.NOTE = obj.NOTE;
+        node.SUBJECTCONTENTCODE = obj.SUBJECTCONTENTCODE;
+        node.SUBJECTCODE = obj.SUBJECTCODE;
+        node.CONTENT = obj.CONTENT;
+
+        $.ajax({
+            url: "/Question/UpdateQgroup",
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                CODE: node.CODE,
+                CODEVIEW: node.CODEVIEW,
+                NAME: node.NAME,
+                LOCK: node.LOCK,
+                NOTE: node.NOTE,
+                CONTENT: node.CONTENT,
+                SUBJECTCONTENTCODE: node.SUBJECTCONTENTCODE,
+                SUBJECTCODE: node.SUBJECTCODE,
+                QUESTIONTYPECODE: node.QUESTIONTYPECODE,
+                QUESTIONUSECODELIST: node.QUESTIONUSECODELIST
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    console.log("updated content_question successfully");
+                }
+                else {
+                    console.log(" update content_question fail");
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    render: function () {
+        return (
+            <div id={this.props.id+'_list'} className="tab-pane fade in active">
+              <PopupQuestion ReloadData={this.ReloadList} ref ={this.props.id + '_Popup'} id ={this.props.id + '_Popup'} parent={this.props.parent}  />
+                <div id={this.props.id+'_grid'} className="ag-fresh customgrid">
+                </div>
+                    <AgGrid container={this.props.id+'_grid'}
+                            initAgGrid={this.initAgGrid}
+                            loadData={this.loadData}
+                            onRowSelect={this.onRowSelect}
+                            columnDefs={this.state.columnDefs}
+                            headerCheckBox={true}>
+                    </AgGrid>
+            </div>
+            );
+    }
+});
+

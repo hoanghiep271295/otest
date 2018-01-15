@@ -1,0 +1,32 @@
+﻿
+//FG question
+var QuestionTypeFG = React.createClass({
+    componentDidMount: function() {
+        document.getElementById(this.props.id + '_questiontypeFG').innerHTML = this.props.objQuestionGroup;
+    },
+    sent:function() {
+        $("#btnSendFG").removeClass("btn-default");
+        $("#btnSendFG").addClass("btn-success");
+        $("#btnSendFG").html("Sent");
+    },
+    render:function() {
+        var questiongroupcontent = $("<div />").html(this.props.objQuestionGroup.CONTENT).text();
+        return (
+            <div>
+        <div className="container questiongroup">
+     <b>{this.props.number}.</b>
+        </div>
+        <div>
+    <div style={{position:'relative'}}>
+   <fieldset className="fieldsetGroup" style={{lineHeight: '2.3em'}}>
+         <span key={'error_'+ this.props.objQuestionGroup.CODE}
+                dangerouslySetInnerHTML={{ __html: questiongroupcontent}}>
+
+         </span>
+</fieldset>
+ </div>
+     </div>
+         </div>
+);
+}
+});

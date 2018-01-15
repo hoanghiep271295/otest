@@ -1,0 +1,58 @@
+﻿
+///câu hỏi dạng 1 câu hỏi lớn có nhiều câu trả lời
+var QuestionTypeMS = React.createClass({
+    onChangeMS: function(e) {
+        var mch = e.target.name;
+        var mctl = e.target.id;
+        this.props.onCheck(mch, mctl,"MS");
+    },
+    componentDidMount: function () {
+        //var id = this.props.ident;
+        document.getElementById(this.props.ident + '_questiontypeMS').innerHTML = this.props.objQuestionGroup;
+    },
+    render: function () {
+        var index = 0;
+        var that = this;
+        var listanswer = [];
+        this.props.dataAnswer.forEach(function (rowitem)
+        {
+            index++;
+            if (rowitem.QUESTIONGROUPCODE === that.props.ident) {
+                var answer = $("<div />").html(rowitem.CONTENT).text().trim();
+                listanswer.push(
+                    <li key={index} className='flex-item' name={rowitem.QUESTIONCODE}>
+                     <input type="radio"
+                        id={rowitem.CODE}
+                   name={rowitem.QUESTIONCODE}
+                   onClick={that.onChangeMS} />
+             &nbsp; &nbsp;&nbsp; &nbsp;
+            <label id={index} htmlFor={rowitem.CODE}>
+         <span style={{ textAlign:'left' }}
+                           key={'error_' + index}
+                           dangerouslySetInnerHTML={{__html: answer}}>
+                     </span>
+                        </label>
+                    </li>
+                );
+            }
+        });
+return (
+    <div>
+ <div className="container questiongroup">
+    <b>{this.props.number}.</b>
+ </div>
+    <div className="fieldsetGroup">
+    <li style={{ 'listStyle':'none'}}>
+                   <div className="container" style={{width:'100%',margin:'20px'}}>
+                            <div className="col-sm-10" style={{ width :'fit-content' }}>
+                                <span id={this.props.ident + '_questiontypeMS'}></span>            
+</div>
+</div>
+<ul className="list-unstyled flex-container marginBottom">{listanswer}
+</ul>
+</li>
+</div>
+</div>
+        );
+}
+});

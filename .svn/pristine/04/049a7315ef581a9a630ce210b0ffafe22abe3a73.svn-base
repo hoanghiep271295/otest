@@ -1,0 +1,168 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Web.Mvc;
+using IS.Config;
+using IS.fitframework;
+using IS.localcomm;
+using IS.Lang;
+using IS.Sess;
+using IS.uni;
+using Newtonsoft.Json;
+using System.Dynamic;
+
+namespace nerp.Controllers.test
+{
+    public class CourseContentController : Controller
+    {
+        session ses = new session();
+        // GET: CourseStudent
+        public ActionResult Index(string id, string subid)
+        {
+            dynamic defaultobject = new ExpandoObject();
+            defaultobject.defaulttab = id;
+            defaultobject.thetype = ses.loginType;
+            ViewBag.defaultvalue = JsonConvert.SerializeObject(defaultobject);
+
+
+            string[] jsx = {
+                "/Scripts/reactselect/prop-types.js"
+                ,"/Scripts/reactselect/react-input-autosize.js"
+                ,"/Scripts/reactselect/classname.js"
+                ,"/Scripts/reactselect/react-select.js"
+                , "/Jsx/_Shared/ButtonList.jsx"
+                ,"/Jsx/_Shared/PopupSearch.jsx"
+                ,"/Jsx/_Shared/Combobox.jsx"
+                ,"/Jsx/_Shared/Tree.jsx"
+                ,"/Scripts/Ag-grid/ag-grid.js"
+                ,"/Jsx/_Shared/AgGrid.jsx"
+                ,"/Jsx/_Shared/TabHeader.jsx"
+                , "/jsx/Core/CourseContent/Coursecontentlist.jsx"
+                , "/jsx/Core/CourseContent/CoursecontentApp.jsx"
+            };
+            ViewBag.jsx = jsx;
+            return View("Adminindex");//Lấy index mặc định trong share
+        }
+        public JsonResult GetList(string coursecode)
+        {
+            var ret = -1;
+            List<COURSECONTENT_OBJ> li;
+            COURSECONTENT_BUS bus = new COURSECONTENT_BUS();
+            List<fieldpara> lipa = new List<fieldpara>(); 
+            lipa.Add(new fieldpara("COURSECODE", coursecode, 0));
+            lipa.Add(new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+            li = bus.getAllBy2("THEORDER", lipa.ToArray());
+            bus.CloseConnection();
+            List<SUBJECTCONTENT_OBJ> listSubjectContent = null; // list subjectcontent tương ứng
+            if (li != null)
+                ret = 0;
+            if (ret >= 0)
+            {
+                listSubjectContent = new List<SUBJECTCONTENT_OBJ>();
+                SUBJECTCONTENT_BUS subjectcontentBus = new SUBJECTCONTENT_BUS();
+                foreach (var item in li)
+                {
+                    var subjectContent =
+                        subjectcontentBus.GetByID(new SUBJECTCONTENT_OBJ.BusinessObjectID(item.SUBJECTCONTENTCODE));
+                    if (subjectContent != null)
+                        listSubjectContent.Add(subjectContent);
+                }
+                subjectcontentBus.CloseConnection();
+            }
+            return Json(new {data = li, lst = listSubjectContent, ret = ret}, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult Update(List<string> liSubjectContentCode, string coursecode, string subjectcode)
+        {
+            COURSECONTENT_BUS bus = new COURSECONTENT_BUS();
+            int ret = 0;
+            int add = 0;
+            COURSECONTENT_OBJ obj_temp = new COURSECONTENT_OBJ(); ;
+            List<COURSECONTENT_OBJ> li = new List<COURSECONTENT_OBJ>(); // danh sách sẽ insert vào csdl
+            if (liSubjectContentCode == null || liSubjectContentCode.Count <= 0)
+                ret = -1;
+            else
+            {
+                string temp_code = bus.genNextCode(obj_temp);
+                foreach (var subjectcontentcode in liSubjectContentCode)
+                {
+                    obj_temp = bus.GetByKey(new fieldpara("SUBJECTCONTENTCODE", subjectcontentcode, 0),
+                                            new fieldpara("COURSECODE", coursecode, 0),
+                                            new fieldpara("SUBJECTCODE", subjectcode, 0));
+                    if (obj_temp == null)
+                    {
+                        obj_temp = new COURSECONTENT_OBJ {CODE = temp_code};
+                        temp_code = bus.genNextCode(obj_temp, temp_code);
+                        //hết kiểm tra tồn tại bản ghi
+                        obj_temp.EDITTIME = DateTime.Now; //Thời điểm sủa bản ghi
+                        obj_temp.EDITUSER = ses.loginCode; //Người sửa bản ghi
+                        obj_temp.SUBJECTCODE = subjectcode;
+                        obj_temp.UNIVERSITYCODE = ses.gUNIVERSITYCODE;
+                        obj_temp.LOCK = 0;
+                        obj_temp.COURSECODE = coursecode;
+                        obj_temp.SUBJECTCONTENTCODE = subjectcontentcode;
+                        obj_temp.LANG = ses.getLang();
+                        obj_temp.LOCKDATE = DateTime.Now;
+                        li.Add(obj_temp);
+                    }
+                }
+            }
+            bus.BeginTransaction();
+            if (li.Count > 0)
+            {
+                ret = bus.InsertMultiItems(li);
+                if (ret < 0)
+                {
+                    //Trong trường hợp nhiều thao tác, có một thao tác không thành công,
+                    //hàm này được gọi để quay lại trạng thái trước khi thực hiện (bắt đầu từ khi gọi BeginTransaction()
+                    bus.RollbackTransaction();
+                }
+                else
+                {
+                    //Sau khi thao tác dữ liệu thành công, hàm này được gọi để thực hiện ghi vào cơ sở dữ liệu
+                    bus.CommitTransaction();
+                }
+            }
+            bus.CloseConnection();
+            //some thing like that
+            return Json(new {ret = ret}, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult Delete(List<string> liId, string coursecode)
+        {
+            var ret = 0;
+            if (liId != null) {
+                var bus = new COURSECONTENT_BUS();
+                foreach (var id in liId)
+                {
+                    var item = bus.GetByKey(new fieldpara("SUBJECTCONTENTCODE", id, 0),
+                        new fieldpara("COURSECODE", coursecode, 0),
+                        new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+                        if (item == null)
+                        {
+                            ret = -2;
+                            continue;
+                        }
+                        if (item.UNIVERSITYCODE != ses.gUNIVERSITYCODE)
+                        {
+                            ret = -4;
+                        }
+                        if (ret >= 0)
+                        {
+                            ret = bus.delete(item._ID);
+                        }
+                    
+                }
+                bus.CloseConnection();
+            }
+            return Json(new
+            {
+                ret = ret
+            }, JsonRequestBehavior.AllowGet);
+
+        }
+
+    }
+
+}

@@ -1,0 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+using IS.Base;
+using IS.fitframework;
+namespace IS.uni
+{
+    public class TESTSTRUCTDETAIL_BUS: BusinessController<TESTSTRUCTDETAIL_OBJ, TESTSTRUCTDETAIL_OBJ.BusinessObjectID>
+    {
+        public TESTSTRUCTDETAIL_BUS()
+        {
+        }
+        public override TESTSTRUCTDETAIL_OBJ createObject()
+        {
+            TESTSTRUCTDETAIL_OBJ obj = new TESTSTRUCTDETAIL_OBJ();
+            this.setNull(obj);
+            return obj;
+        }
+        public override TESTSTRUCTDETAIL_OBJ createNull()
+        {
+            return null;
+        }
+
+    }
+
+}
+

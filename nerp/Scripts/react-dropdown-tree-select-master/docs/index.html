@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>React Dropdown Tree Select Demo</title>
+        <link rel="stylesheet" href="./index.css" />
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    </head>
+    <body>
+        <h2>React Dropdown Tree Select Demo</h2>
+        <br/>
+        <div id="app"></div>
+        <script src="../../react/react.js"></script>
+        <script src="../../react/react-dom.js"></script>
+        <script src="bundle.js"></script>
+        <script src="../src/index.js"></script>
+        <script src="demo-data.json"></script>
+        <script>
+        ReactDOM.render(<DropdownTreeSelect data={data} onChange={onChange} onAction={onAction} onNodeToggle={onNodeToggle} />, document.getElementById('app'))
+        </script>
+    </body>
+</html>

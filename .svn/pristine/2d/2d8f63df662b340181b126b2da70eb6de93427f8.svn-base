@@ -1,0 +1,114 @@
+﻿var ListSubjectContent = React.createClass({
+    getInitialState: function () {
+        return {
+            tab: null,
+            data: [], // danh sách nội dung bài học theo môn học
+            listStudiedCode: [], // Danh sách các bài đã học
+            listCourseContent: []
+        };
+    },
+    componentWillMount: function () {
+    },
+    componentDidMount: function () {
+        setTitle('sys_title', 'Nội dung môn học');
+        this.loadData();
+        this.getListStudied();
+    },
+    // get parameter from url
+    gup: function (name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regexS = "[\\?&]" + name + "=([^&#]*)";
+        var regex = new RegExp(regexS);
+        var results = regex.exec(window.location.href);
+        if (results == null)
+            return "";
+        else
+            return results[1];
+    },
+    // danh sách các nội dung bài học
+    //loadData: function () {
+    //    var subjectcode = this.gup('id');
+    //    $.ajax({
+    //        url: '/SubjectContent/GetAll',
+    //        dataType: 'json',
+    //        data: { subjectcode: subjectcode },
+    //        success: function (data) {
+    //            setTimeout(function () {
+    //                this.setState({ data: data.data });
+    //            }.bind(this), 200);
+    //        }.bind(this),
+    //        error: function (xhr, status, err) {
+    //            console.log(err.toString());
+    //        }
+    //    });
+    //    window.NProgress.done();
+    //},
+
+    // danh sách các nội dung môn học
+    loadData: function () {
+        var coursecode = this.props.app.getKeyValue('coursecode');
+        $.ajax({
+            url: '/CourseContent/GetList',
+            dataType: 'json',
+            data: { coursecode: coursecode },
+            success: function (data) {
+                if (!!data.data) {
+                    setTimeout(function () {
+                        this.setState({ data: data.lst });
+                    }.bind(this), 200);
+                }
+
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    // danh sách các bài đã học
+    getListStudied: function () {
+        var postdata = {
+            subjectcode: this.props.app.getKeyValue('subjectcode'),
+            coursecode: this.props.app.getKeyValue('coursecode')
+        };
+        $.ajax({
+            url: '/CourseStudied/GetListStudied',
+            dataType: 'json',
+            data: postdata,
+            success: function (data) {
+                setTimeout(function () {
+                    this.setState({ listStudiedCode: data.listStudiedCode });
+                }.bind(this), 200);
+
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    
+    onActive: function () {
+      //  this.loadData();
+    },
+
+    render: function () {
+        var app = this.props.app;
+        var listSubjectContent = [];
+        var listStudiedCode = this.state.listStudiedCode;
+        if (!!this.state.data) {
+            this.state.data.forEach(function (item, key) {
+                if (listStudiedCode.indexOf(item.CODE) === -1)
+                    listSubjectContent.push(<SubjectContent key={key} app = {app} code={item.CODE} name={item.NAME} type={item.CONTENTTYPE} classname = 'not-active' disabled="true"/>);
+                else
+                   listSubjectContent.push(<SubjectContent key={key} code={item.CODE} name={item.NAME} app={app} type={item.CONTENTTYPE }/>);
+            });
+        }
+        
+        return (
+            <div>
+                   <div id="coursecontent" className="tab-pane fade in active">
+                       {listSubjectContent}
+                   </div>
+            </div>
+           );
+    }
+});

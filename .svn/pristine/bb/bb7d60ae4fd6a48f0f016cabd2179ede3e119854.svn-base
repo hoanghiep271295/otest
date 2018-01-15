@@ -1,0 +1,142 @@
+﻿var PopupQGROUP = React.createClass({
+    onSave: function () {
+        var node = new Object();
+        node.CODE = $('#CODE').val();
+        node.CODEVIEW = $('#CODEVIEW').val();
+        node.NAME = $('#NAME').val();
+        node.LOCK = $('#LOCK').prop("checked") ? 1 : 0;
+        node.NOTE = $('#NOTE').val();
+        node.THEORDER = $('#THEORDER').val();
+        
+        $('textarea.tinymce').html(tinymce.get('content_mce').getContent());
+        var content = $('textarea.tinymce').html();
+        node.CONTENT = $('textarea.tinymce').html();
+        $.ajax({
+            url: "/Question/UpdateQGROUP",
+            dataType: 'json',
+            data: {
+                CODE: node.CODE,
+                CODEVIEW: node.CODEVIEW,
+                NAME: node.NAME,
+                LOCK: node.LOCK,
+                NOTE: node.NOTE,
+                THEORDER: node.THEORDER,
+                CONTENT: node.CONTENT
+            },
+            success: function (data) {
+
+                if (data.ret >= 0) {
+                    var list = component.get('listQGROUP');
+                    list.refreshRowData();
+                    //alert('>> Success! <<');
+                    log.show("Ghi thành công!", true);
+                }
+                else {
+                    log.show("Ghi lỗi!", false);
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    handleSubmit: function () {
+        var CODE = $('#CODE').val();
+        var CODEVIEW = $('#CODEVIEW').val();
+
+        if (CODEVIEW == "") {
+            //alert("Chưa nhập mã");
+            log.show("Chưa nhập mã!", false);
+            //move to edit interface
+            $("#NewModal").modal('show');
+            return false;
+        }
+        else {
+            //Check trùng codeview
+            $.ajax({
+                url: "/Question/checkCodeViewExitQGROUP",
+                data: { code: CODE, codeView: CODEVIEW },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.sussess >= 0) {
+                        this.onSave();
+
+                    } else {
+                        //alert("Mã đã tồn tại");
+                        log.show("Mã đã tồn tại!", false);
+                    }
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error(this.props.url, status, err.toString());
+                }.bind(this)
+            });
+        }
+
+    },
+    render: function () {
+        return (
+                <div className="modal fade" id="NewModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div className="modal-dialog">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                        <h4 className="modal-title" id="myModalLabel">Thêm bản ghi mới</h4>
+                      </div>
+                      <div className="modal-body">
+                          <form className="form-horizontal" id='myform' role="form">
+                              <input type="text" id="CODE" className="form-control col-md-10 hidden" />
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Mã</label>
+                                  <div className="col-sm-10">
+                                      <input type="text" className="form-control" id="CODEVIEW" />
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Tên</label>
+                                  <div className="col-sm-10">
+                                      <input type="text" className="form-control" id="NAME" />
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <div className="col-sm-offset-2 col-sm-10">
+                                      <div className="checkbox">
+                                          <label>
+                                              <input type="checkbox" id='LOCK' /> Hiển thị
+                                          </label>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Thứ tự hiển thị</label>
+                                  <div className="col-sm-10">
+                                      <input type="number" className="form-control" id="THEORDER" />
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Ghi chú</label>
+                                  <div className="col-sm-10">
+                                      <textarea className="form-control" rows="4" id="NOTE"></textarea>
+                                  </div>
+                              </div>
+                              <div className="form-group">
+                                  <label className="col-sm-2 control-label">Contents</label>
+                                  <div className="col-sm-10">
+                                      <textarea className="tinymce form-control" id='content_mce'></textarea>
+                                  </div>
+                              </div>
+                             
+                          </form>
+                      </div>
+                      <div className="modal-footer">
+                        <button id='btn_Prev' className="btn btn-default" onClick={this.props.onPre}><i className="fa fa-angle-left fa-lg"></i></button>
+                        <button id='btn_Next' className="btn btn-default" onClick={this.props.onNext}><i className="fa fa-angle-right fa-lg"></i></button>
+                        <button type="button" className="btn btn-primary" onClick={this.props.clearData}>Thêm mới</button>
+                        <button id='btnSave' type="button" className="btn btn-primary" onClick={this.handleSubmit}>Lưu</button>
+                        <button type="button" className="btn btn-danger" data-dismiss="modal">Đóng</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            );
+    },
+});

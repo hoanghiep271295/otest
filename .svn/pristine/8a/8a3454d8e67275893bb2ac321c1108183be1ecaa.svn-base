@@ -1,0 +1,13 @@
+﻿var QuestionGroupPA = React.createClass({
+    componentDidMount:function() {
+        console.log("PA");
+    },
+    render: () => {
+        return(
+            <div>
+             </div>
+            
+            );
+    }
+
+});

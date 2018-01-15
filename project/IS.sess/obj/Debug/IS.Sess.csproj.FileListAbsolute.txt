@@ -1,0 +1,6 @@
+E:\hiep\NewOne\share\IS.Sess.dll
+E:\hiep\NewOne\share\IS.Sess.pdb
+E:\hiep\NewOne\share\IS.Sess.XML
+E:\hiep\NewOne\project\IS.sess\obj\Debug\IS.Sess.csprojResolveAssemblyReference.cache
+E:\hiep\NewOne\project\IS.sess\obj\Debug\IS.Sess.dll
+E:\hiep\NewOne\project\IS.sess\obj\Debug\IS.Sess.pdb

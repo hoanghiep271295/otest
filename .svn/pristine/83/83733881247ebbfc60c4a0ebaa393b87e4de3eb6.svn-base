@@ -1,0 +1,224 @@
+﻿using IS.Config;
+using IS.fitframework;
+using IS.Sess;
+using IS.uni;
+using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace nerp.Controllers.exam
+{
+    public class ExamHallController : Controller
+    {
+        private readonly session _ses = new session();
+
+        // GET: ExamHall
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public JsonResult getAllSearch(int page, int pageSize, string examtimecode, string code, bool codetype, string name, bool nametype,
+                                    string note, bool notetype)
+        {
+            //mặc định cho phần trang
+            if (pageSize == 0)
+            {
+                pageSize = AppConfig.item4page();
+            }
+            if (page < 1)
+            {
+                page = 1;
+            }
+            //Khai báo lấy dữ liệu
+            EXAMHALL_BUS bus = new EXAMHALL_BUS();
+            List<fieldpara> lipa = new List<fieldpara>
+            {
+                new fieldpara("EXAMTIMECODE", examtimecode, 0)
+            };
+            if (!string.IsNullOrEmpty(code))
+            {
+                lipa.Add(codetype ? new fieldpara("CODEVIEW", code, 0) : new fieldpara("CODEVIEW", code, 1));
+            }
+            if (!string.IsNullOrEmpty(name))
+            {
+                lipa.Add(nametype ? new fieldpara("NAME", name, 0) : new fieldpara("NAME", name, 1));
+            }
+            if (!string.IsNullOrEmpty(note))
+            {
+                lipa.Add(notetype ? new fieldpara("NOTE", note, 0) : new fieldpara("NOTE", note, 1));
+            }
+            //order by theorder, with pagesize and the page
+            int countpage;
+            int totalItem;
+            //order by theorder, with pagesize and the page
+            var li = bus.getAllBy2("NAME", pageSize, page, out countpage, out totalItem, lipa);
+            return Json(new
+            {
+                data = li,//Danh sách
+                totalItem, // số lượng tất cả các bản ghi
+                totalPage = countpage, // số lượng trang
+                ret = 0//ok
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public int DeleteAll(string examtimecode)
+        {
+            var ret = 0;
+            EXAMHALL_BUS bus = new EXAMHALL_BUS();
+            var li = bus.getAllBy2("CODE", new fieldpara("EXAMTIMECODE", examtimecode, 0));
+            foreach (var examhall in li)
+            {
+                ret = bus.delete(examhall._ID);
+                if (ret < 0)
+                    return ret;
+            }
+            return ret;
+        }
+
+        public JsonResult Delete(List<String> listCode)
+        {
+            var ret = 0;
+            if (listCode == null)
+                ret = -1;
+            else
+            {
+                var bus = new EXAMHALL_BUS();
+                foreach (string t in listCode)
+                {
+                    if (t != null)
+                    {
+                        var item = bus.GetByID(new EXAMHALL_OBJ.BusinessObjectID(t));
+                        if (item == null) { ret = -2; continue; }
+                        if (ret >= 0)
+                        {
+                            ret = bus.delete(item._ID);
+                        }
+                    }
+                }
+                bus.CloseConnection();
+            }
+            return Json(new
+            {
+                ret
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ArrayList UpdateExamHall(EXAMHALL_OBJ obj)
+        {
+            ArrayList arrList = new ArrayList();
+            EXAMHALL_BUS bus = new EXAMHALL_BUS();
+            int ret = 0;
+            int add = 0;
+            //kiểm tra tồn tại cho trường hợp sửa
+            var objTemp = !string.IsNullOrEmpty(obj.CODE) ? bus.GetByID(new EXAMHALL_OBJ.BusinessObjectID(obj.CODE)) : new EXAMHALL_OBJ();
+            if (ret < 0)
+            {
+                //đóng kết nối trước khi trả về
+                bus.CloseConnection();
+                //ban ghi sửa đã bị xóa
+                return arrList;
+            }
+            //hết kiểm tra tồn tại bản ghi
+            objTemp.EDITTIME = DateTime.Now;//Thời điểm sủa bản ghi
+            objTemp.EDITUSER = _ses.loginCode;//Người sửa bản ghi
+            objTemp.CODEVIEW = obj.CODEVIEW;
+            objTemp.NAME = obj.NAME;
+            objTemp.NOTE = obj.NOTE;
+            objTemp.LOCK = obj.LOCK;
+            //Kiểm tra tình trạng sửa hay là thêm mới
+            if (string.IsNullOrEmpty(obj.CODE))
+            {
+                //Thêm mới
+                add = 1;
+                //Sinh mã
+                objTemp.CODE = bus.genNextCode(obj);
+                objTemp.CODEVIEW = objTemp.CODE;
+                objTemp.LOCKDATE = DateTime.Now;
+            }
+            objTemp.EXAMTIMECODE = obj.EXAMTIMECODE;
+            objTemp.BAGGROUP = obj.BAGGROUP;
+            objTemp.HALLNUMBER = obj.HALLNUMBER;
+            objTemp.MAXSTUDENT = obj.MAXSTUDENT;
+            objTemp.STUDENTAMOUNT = obj.STUDENTAMOUNT;
+            objTemp.EXAMSTUDENTAMOUNT = obj.EXAMSTUDENTAMOUNT;
+            objTemp.PAPERAMOUNT = obj.PAPERAMOUNT;
+            objTemp.BEGINTIME = obj.BEGINTIME;
+            objTemp.ENDTIME = obj.ENDTIME;
+            objTemp.UNIVERSITYCODE = _ses.gUNIVERSITYCODE;
+            if (add == 1)
+            {
+                ret = bus.insert(objTemp);
+            }
+            else
+            {
+                //gán _ID để xác định bản ghi sẽ được cập nhật
+                objTemp._ID.CODE = obj.CODE;
+                ret = bus.update(objTemp);
+                if (ret >= 0)
+                {
+                    // update lại realbegintime và realendtime cho các sinh viên trong phòng này
+                    EXAMHALLSTUDENT_BUS stdBus = new EXAMHALLSTUDENT_BUS();
+                    var examHallStd = stdBus.getAllBy2("CODE", new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0),
+                                                        new fieldpara("EXAMHALLCODE", objTemp.CODE, 0));
+                    if (examHallStd != null)
+                    {
+                        foreach (var item in examHallStd)
+                        {
+                            item.REALBEGINTIME = objTemp.BEGINTIME;
+                            item.REALENDTIME = objTemp.ENDTIME;
+                            item.FINALENDTIME = objTemp.ENDTIME;
+                            ret = new ExamHallStudentController().Update(item);
+                        }
+                    }
+                    stdBus.CloseConnection();
+                }
+            }
+            int pagecount = 0;
+            int currentpage = 0;
+            if (ret >= 0)
+            {
+                List<fieldpara> lipa = new List<fieldpara> { new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0) };
+                objTemp._ID.CODE = objTemp.CODE;
+                ret = bus.checkPage(objTemp._ID, "CODE", AppConfig.item4page(), out pagecount, out currentpage, lipa);
+            }
+            bus.CloseConnection();
+            arrList.Add(objTemp.CODE);
+            arrList.Add(ret);
+            arrList.Add(pagecount);
+            arrList.Add(currentpage);
+            return arrList;
+        }
+
+        /// <summary>
+        /// Cập nhật một bản ghi được gửi lên từ phía client
+        /// </summary>
+        public JsonResult Update(EXAMHALL_OBJ obj)
+        {
+            ArrayList arrList = UpdateExamHall(obj);
+            var ret = arrList[1];
+            var pagecount = arrList[2];
+            var currentpage = arrList[3];
+            //some thing like that
+            return Json(new { ret, pagecount, currentpage }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult CheckCodeViewExit(string code, string codeView)
+        {
+            int ret;
+            EXAMHALL_BUS bus = new EXAMHALL_BUS();
+            List<EXAMHALL_OBJ> li = bus.getAllBy2(new fieldpara("CODEVIEW", codeView, 0), new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            bus.CloseConnection();
+            int count = li.Count;
+            if (count == 0) ret = 0;
+            else
+            {
+                if (code != "" && code == li[0].CODE) ret = 0;
+                else ret = 1;
+            }
+            return Json(new { sussess = ret }, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

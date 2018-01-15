@@ -1,0 +1,362 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using IS.Config;
+using IS.fitframework;
+using IS.localcomm;
+using IS.Sess;
+using IS.uni;
+using Newtonsoft.Json;
+using uni.Controllers;
+
+namespace nerp.Controllers.core
+{
+    public class ClassController : Controller
+    {
+        // GET: Class
+        session ses = new session();
+        localcommonlib com = new localcommonlib();
+
+        public string GetFirstClassCode(string gradecode)
+        {
+            string code = "";
+            //Kiểm tra phân quyền
+            List<CLASS_OBJ> resList = new List<CLASS_OBJ>();
+
+            //Lây dữ iệu
+            CLASS_BUS bus = new CLASS_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            lipa.Add(new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE));
+            List<jointable> lijo = new List<jointable>();
+            if (!string.IsNullOrEmpty(gradecode))
+            {
+                lipa.Add(new fieldpara("GRADECODE", gradecode));
+            }
+            //lấy tất cả không cần phân trang; sáp xếp tăng dần theo thứ tự hiển thị
+            List<CLASS_OBJ> li = bus.getAllBy2(" name ", lipa.ToArray()); //get all 
+
+            bus.CloseConnection();
+            try
+            {
+                code = li[0].CODE;
+            }
+            catch
+            {
+                code = "";
+            }
+            //Trả về cho client
+            return code;
+        }
+        /// <summary>
+        /// Lấy danh sách các đơn vị với đơn vị cấp trên được xác định
+        /// </summary>
+        /// <param name="GRADECODE">Mã đơn vị cấp trên</param>
+        /// <param name="keysearchCodeView">Tìm kiếm cho phần codeview</param>
+        /// <param name="keysearchName">Tìm kiếm cho name</param>
+        /// <param name="page">Trang cần được hiển thị</param>
+        /// <param name="pageSize">Số lượng phần tử trong một trang; 0: lấy số lượng trang mặc định từ srrver</param>
+        /// <returns></returns>
+        /// 
+        public JsonResult getAllSearch(int page, int pageSize, string gradecode, string code, bool codetype, string name, bool nametype,
+                                    string note, bool notetype)
+        {
+            List<CLASS_OBJ> li = null;
+            //mặc định cho phần trang
+            if (pageSize == 0)
+            {
+                pageSize = AppConfig.item4page();
+            }
+            if (page < 1)
+            {
+                page = 1;
+            }
+            //Khai báo lấy dữ liệu
+            CLASS_BUS bus = new CLASS_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            if (!string.IsNullOrEmpty(gradecode))
+            {
+                lipa.Add(new fieldpara("GRADECODE", gradecode, 0));
+            }
+            if (!string.IsNullOrEmpty(code))
+            {
+                if (codetype)
+                    lipa.Add(new fieldpara("CODEVIEW", code, 0));
+                else
+                    lipa.Add(new fieldpara("CODEVIEW", code, 1));
+            }
+            if (!string.IsNullOrEmpty(name))
+            {
+                if (nametype)
+                    lipa.Add(new fieldpara("NAME", name, 0));
+                else
+                    lipa.Add(new fieldpara("NAME", name, 1));
+            }
+            if (!string.IsNullOrEmpty(note))
+            {
+                if (notetype)
+                    lipa.Add(new fieldpara("NOTE", note, 0));
+                else
+                    lipa.Add(new fieldpara("NOTE", note, 1));
+            }
+            lipa.Add(new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+            int countpage;
+            int totalItem = 0;
+            //order by theorder, with pagesize and the page
+            li = bus.getAllBy2("CODE", pageSize, page, out countpage, out totalItem, lipa);
+            bus.CloseConnection();
+            //Chỉ số đầu tiên của trang hiện tại (đã trừ -1)
+            int startpage = (page - 1) * pageSize;
+            //Trả về client
+            return Json(new
+            {
+                lst = li,//Danh sách
+                totalItem = totalItem, // số lượng tất cả các bản ghi
+                totalPage = countpage, // số lượng trang
+                startindex = startpage,//bắt đầu số trang
+                ret = 0//ok
+            }, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult update(CLASS_OBJ obj, string keysearchCodeView, string keyseacrhName)
+        {
+            CLASS_BUS bus = new CLASS_BUS();
+            int ret = 0;
+            int add = 0;
+            CLASS_OBJ obj_temp = null;
+            // kiểm tra tồn tại cho trường hợp sửa
+            if (!string.IsNullOrEmpty(obj.CODE)) // edit
+            {
+                obj_temp = bus.GetByID(new CLASS_OBJ.BusinessObjectID(obj.CODE));
+                if (obj_temp == null)
+                {
+                    ret = -4;
+                }
+            }
+            else
+            {
+                obj_temp = new CLASS_OBJ();
+            }
+            if (ret < 0)
+            {
+                bus.CloseConnection();
+                return Json(new { sussess = ret }, JsonRequestBehavior.AllowGet);
+            }
+            obj_temp.EDITTIME = DateTime.Now; // thời điểm sửa bản ghi
+            obj_temp.EDITUSER = ses.loginCode; // người sửa bản ghi
+            obj_temp.CODEVIEW = obj.CODEVIEW;
+            obj_temp.NAME = obj.NAME;
+            obj_temp.NOTE = obj.NOTE;
+            obj_temp.LOCK = obj.LOCK;
+            obj_temp.GRADECODE = obj.GRADECODE;
+            obj_temp.STUDENTGROUPTYPE = obj.STUDENTGROUPTYPE;
+            obj_temp.DEPARTMENTCODE = "DEPART";
+            obj_temp.DEPARTMENTCODE2 = "DEPART2";
+            obj_temp.FEE = obj.FEE;
+            obj_temp.AMOUNT = obj.AMOUNT;
+            obj_temp.UNIVERSITYCODE = ses.gUNIVERSITYCODE;
+            // kiểm tra tình trạng sửa hay thêm mới
+            if (string.IsNullOrEmpty(obj.CODE))
+            {
+                // thêm mới
+                add = 1;
+                obj_temp.CODE = bus.genNextCode(obj);
+                obj_temp.LOCKDATE = DateTime.Now;
+            }
+            GRADE_OBJ obj_pro = new GRADE_OBJ();
+            GRADE_BUS bus_pro = new GRADE_BUS();
+            obj_pro = bus_pro.GetByID(new GRADE_OBJ.BusinessObjectID(obj.GRADECODE));
+
+            bus_pro.CloseConnection();
+            if (add == 1)
+            {
+                MAPPING_OBJ obj_map = new MAPPING_OBJ();
+                MAPPING_BUS bus_map = new MAPPING_BUS();
+                obj_map.UNIVERSITYCODE = ses.gUNIVERSITYCODE;
+                obj_map.TABLENAME = "GRADE";
+                obj_map.THECODE = obj_temp.CODE;
+                obj_map.EDITTIME = obj_temp.EDITTIME;
+                obj_map.EDITUSER = obj_temp.EDITUSER;
+                obj_map.LOCKDATE = DateTime.Now;
+
+
+                bus.BeginTransaction();
+                ret = bus.insert(obj_temp);
+
+                if (ret < 0)
+                {
+                    bus.RollbackTransaction();
+                }
+                else
+                {
+                    bus.CommitTransaction();
+                }
+            }
+            else
+            {
+                // gán _ID để xác định bản ghi được cập nhật
+                obj_temp._ID.CODE = obj.CODE;
+                ret = bus.update(obj_temp);
+            }
+            int pagecount = 0;
+            int currentpage = 0;
+            if (ret >= 0)
+            {
+                List<fieldpara> lipa = new List<fieldpara>();
+                // thêm điều kiện lọc theo codeview nếu nhập
+                if (!string.IsNullOrEmpty(keysearchCodeView))
+                {
+                    lipa.Add(new fieldpara("CODEVIEW", keysearchCodeView, 1));
+                }
+                // thêm điều kiện lọc theo name nếu nhập
+                if (!string.IsNullOrEmpty(keyseacrhName))
+                {
+                    lipa.Add(new fieldpara("NAME", keyseacrhName, 1));
+                }
+                // lọc theo đơn vị cấp trên
+
+                lipa.Add(new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+                obj_temp._ID.CODE = obj_temp.CODE;
+                ret = bus.checkPage(obj_temp._ID, " CODE ", AppConfig.item4page(), out pagecount, out currentpage, lipa);
+            }
+            bus.CloseConnection();
+            return Json(new { ret = ret, pagecount = pagecount, currentpage = currentpage }, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult delete(List<String> code)
+        {
+            var ret = 0;
+            var error = false;
+            if (code != null)
+            {
+                var bus = new CLASS_BUS();
+                for (var i = 0; i < code.Count; i++)
+                {
+                    if (code[i] != null)
+                    {
+                        var item = bus.GetByID(new CLASS_OBJ.BusinessObjectID(code[i]));
+                        if (item == null)
+                        {
+                            ret = -1;
+                            error = true;
+                            continue;
+                        }
+                        if (item.UNIVERSITYCODE != ses.gUNIVERSITYCODE)
+                        {
+                            ret = -4;
+                        }
+                        // kiểm tra có học sinh nào trong lớp hay chưa
+                        if (ret >= 0)
+                        {
+                            STUDENT_BUS bus_student = new STUDENT_BUS();
+                            //check children
+                            ret = bus_student.checkCode(null, new fieldpara("CLASSCODE", code[i]));
+                            bus_student.CloseConnection();
+                            //exist children
+                            if (ret != 0)
+                            {
+                                ret = -2;
+                            }
+                        }
+                        if (ret >= 0)
+                        {
+                            ret = bus.delete(item._ID);
+                        }
+                        if (!error && ret < 0)
+                        {
+                            error = true;
+                        }
+                    }
+                }
+                bus.CloseConnection();
+            }
+
+         //   ret = error ? -1 : 0;
+            return Json(new
+            {
+                ret = ret
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult CheckCodeViewExit(string code, string codeView)
+        {
+            int ret;
+            CLASS_BUS bus = new CLASS_BUS();
+            CLASS_OBJ obj = null;
+            if (!string.IsNullOrEmpty(code))
+            {
+                //check for update
+                obj = bus.GetByKey(new fieldpara("CODEVIEW", codeView, 0),
+                                           new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+
+                if (obj == null)
+                {
+                    //change codeview
+                    ret = 1;
+                }
+                else
+                {
+                    //change other feature,not codeview 
+                    ret = (code == obj.CODE) ? 1 : -1;
+                }
+
+            }
+            else
+            {
+
+                obj = bus.GetByKey(new fieldpara("CODEVIEW", codeView, 0),
+                                           new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+                ret = (obj == null) ? 1 : -1;
+            }
+            bus.CloseConnection();
+            return Json(new { sussess = ret }, JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult Listcombo(string gradeCode)
+        {
+            //Kiểm tra phân quyền
+            List<CLASS_OBJ> li = new List<CLASS_OBJ>();
+            //Lây dữ iệu
+            CLASS_BUS bus = new CLASS_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            //Lọc đơn vị cấp trên; '' sẽ là không co đơn vị cấp trên
+            lipa.Add(new fieldpara("UNIVERSITYCODE", ses.gUNIVERSITYCODE, 0));
+            lipa.Add(new fieldpara("GRADECODE", gradeCode, 0));
+
+            //order by theorder, with pagesize and the page
+            li = bus.getAllBy2(" CODE ", lipa.ToArray());
+            var count = li.Count;
+            var ret = count > 0 ? 1 : -1;
+            bus.CloseConnection();
+            //Chỉ số đầu tiên của trang hiện tại (đã trừ -1)
+            //Trả về cho client
+            return Json(new { data = li, ret = ret }, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetGrade(string classcode)
+        {
+
+            //Kiểm tra phân quyền
+            List<GRADE_OBJ> li = new List<GRADE_OBJ>();
+            if (ses.isLogin() < 0)
+            {
+                return Json(new { lst = li, ret = -1 }, JsonRequestBehavior.AllowGet);
+            }
+            if (classcode != "")
+            {
+                CLASS_OBJ obj_class = new CLASS_OBJ();
+                // tìm đối tượng GRADE_OBJ có code = gradecode
+                obj_class = new CLASS_BUS().GetByID(new CLASS_OBJ.BusinessObjectID(classcode));
+                GRADE_BUS bus = new GRADE_BUS();
+                GRADE_OBJ obj_pro = new GRADE_OBJ();
+                obj_pro = bus.GetByID(new GRADE_OBJ.BusinessObjectID(obj_class.GRADECODE));
+                li.Insert(0, obj_pro);
+                bus.CloseConnection();
+                //Chỉ số đầu tiên của trang hiện tại (đã trừ -1)
+                //Trả về cho client
+                return Json(new { lst = li, ret = 0 }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { lst = li, ret = 0 }, JsonRequestBehavior.AllowGet);
+            }
+        }
+    }
+}

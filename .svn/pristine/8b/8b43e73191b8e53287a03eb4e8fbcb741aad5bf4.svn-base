@@ -1,0 +1,110 @@
+﻿
+var CourseContentApp = React.createClass({
+    getInitialState: function () {
+        return {
+            cboSubject: [],
+            cboCourse: []
+        };
+    },
+    componentWillMount: function () {    
+    },
+    componentDidMount: function() {
+        this.loadSubject();
+    },
+    changeData: function (item) {
+        if (!!item)
+            this.refs.TabHeader.setKeyValue("coursecode", item.value);
+        else
+            this.refs.TabHeader.setKeyValue("coursecode", '');
+        this.refs.TabHeader.ChooseTab("coursecontent");
+    },
+    loadSubject: function () {
+        $.ajax({
+            url: '/Subject/GetAll',
+            dataType: 'json',
+            success: function (data) {
+                if (data.ret >= 0) {
+                    this.setState({
+                        cboSubject: data.lst
+                    });
+                    if (data.lst.length > 0) {
+                        this.refs["SUBJECTCODE"].setValueString(data.lst[0].CODE);
+                        var item = {value: data.lst[0].CODE };
+                        this.loadCourse(item);
+                    } else 
+                        this.refs["SUBJECTCODE"].setValueString('');
+                }
+                
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    loadCourse: function (item) {
+        var subjectcode = '';
+        if (!!item) {
+            this.refs.TabHeader.setKeyValue("subjectcode", item.value);
+            subjectcode = item.value;
+        }
+        $.ajax({
+            url: '/Course/GetAll',
+            dataType: 'json',
+            data: {subjectcode: subjectcode},
+            success: function (data) {
+                if (data.ret >= 0) {
+                    this.setState({
+                        cboCourse: data.lst
+                    });
+                    this.refs["COURSECODE"].setValueString(''); // clear dữ liệu cũ
+                    if (data.lst.length > 0) {
+                        this.refs["COURSECODE"].setValueString(data.lst[0].CODE);
+                        var obj = { value: data.lst[0].CODE };
+                        this.changeData(obj);
+                    } else {
+                        this.changeData(null);
+                    }
+                      
+                }
+               
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    render: function () {
+        var path = [{ title: 'Nội dung lớp môn học', status: 'active', link: '' }];;
+        var tab=[];
+        //Thêm một tab - id nên đăt theo đung luat de sau nay load duoc tu controller mac dinh
+        tab.push({ Com: CourseContentList, id: 'coursecontent', suburl: 'coursecontent', title: 'Nội dung lớp môn học', parentTitle: 'Nội dung lớp môn học', path: path });
+        var obj = window.getDefaultFromServer();
+        var defaulttab = "coursecontent";
+        if(!isMiss(obj.defaulttab))
+        {
+            defaulttab=obj.defauhlttab;
+        }
+//        console.log('Default to:', defaulttab);
+        return (
+            <div>
+                <div className="col-sm-4 subjectcodehead">
+                  
+                        <label className="col-sm-3">Môn học</label>
+                        <div className="col-sm-7">
+                            <Combobox lst={this.state.cboSubject} valuefield='CODE' textfield='{NAME}' id='SUBJECTCODE' callback={this.loadCourse} tooltip="Click hoặc space chọn" multiple={false} ref='SUBJECTCODE' />
+                        </div>
+                </div>
+                   <div className="col-sm-4 subjectcodehead">
+                        <label className="col-sm-4">Lớp môn học</label>
+                        <div className="col-sm-7">
+                            <Combobox lst={this.state.cboCourse} valuefield='CODE' textfield='{NAME}' id='COURSECODE' callback={this.changeData} tooltip="Click hoặc space chọn" multiple={false} ref='COURSECODE' />
+                        </div>
+                   </div>
+                
+                <TabHeader Tabs={tab} ref='TabHeader' defaulttab={defaulttab} basepath='/coursecontent/index' />
+                </div>
+        );
+    }
+});
+
+ReactDOM.render(<CourseContentApp />, document.getElementById('container'));

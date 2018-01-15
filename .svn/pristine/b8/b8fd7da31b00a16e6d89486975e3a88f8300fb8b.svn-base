@@ -1,0 +1,287 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Online testing system - 2017</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link href="~/Content/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.min.css">*@
+    <!-- Font Awesome -->
+    <link href="~/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../bower_components/font-awesome/css/font-awesome.min.css">*@
+    <!-- Ionicons -->
+    <link href="~/Content/Ionicons/css/ionicons.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../bower_components/Ionicons/css/ionicons.min.css">*@
+    <!-- DataTables -->
+    <link href="~/Content/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">*@
+    <link href="~/Content/jquery/jquery-ui.min.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link href="~/Content/AdminLTE/css/AdminLTE.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">*@
+    <!-- AdminLTE Skins. -->
+    <link href="~/Content/AdminLTE/css/skins/_all-skins.min.css" rel="stylesheet" />
+    @*React select *@
+    <link href="~/Content/reactselect/react-select.css" rel="stylesheet" />
+    <link href="~/Scripts/Dropdowntree/dropdowntree.css" rel="stylesheet" />
+
+    <link href="~/Content/comboxtree/css/default/style.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="~/Content/sysimage/favicon.ico" type="image/x-icon">
+    <link href="~/Content/site.css" rel="stylesheet" />
+</head>
+<body class="skin-green sidebar-mini sidebar-collapse ">
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top navbar-fixed-top" style="margin-left:0">
+                <a href="/" class="logo">
+                    <!-- mini logo for sidebar mini 50x50 pixels -->
+                    <span class="logo-mini"><img src="~/Content/sysimage/logo.png" height="auto" width="50px" /></span>
+                    <!-- logo for regular state and mobile devices -->
+                    <span class="logo-lg"><b>m</b>ERP</span>
+                </a>
+                @*Thiết lập tiêu đề, sau này sẽ sử dụng file cấu hình để thiết lập*@
+                @Html.Action("MasterTitle", "Common")
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        @Html.Action("Task", "Common")
+                        @Html.Action("Header", "Common")
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        @Html.Action("Menu", "Common")
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <!-- Main content -->
+            <section class="content" style="padding-top: 0 ">
+                @RenderBody()
+                <button id="return-to-top">
+                    <span class="glyphicon glyphicon-chevron-up">
+                    </span>
+                </button>
+                <!-- /.row -->
+            </section>
+            <!-- /.content -->
+            <!-- /.content-wrapper -->
+        </div>
+        <section class="main-footer no-print">
+            <div class="pull-right hidden-xs">
+                <b>Version</b> 2017
+            </div>
+            <strong>Copyright &copy; 2014-2017 <a href="https://fit.mta.edu.vn">Faculty of Information Technology</a>/Military Technical Academy .</strong> All rights
+            reserved.
+        </section>
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Create the tabs -->
+            <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+                <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+                <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+            </ul>
+            <!-- Tab panes -->
+        </aside>
+        <!-- /.control-sidebar -->
+        <!-- Add the sidebar's background. This div must be placed
+             immediately after the control sidebar -->
+        <div class="control-sidebar-bg"></div>
+    </div>
+    <!-- ./wrapper -->
+    <!-- jQuery 3 -->
+    <script>
+        var globalApp;
+        function getApp(ev) {
+            globalApp = ev;
+        }
+    </script>
+    <script>
+    //when you click this
+    function clickFunction(id) {
+        var question = $("#" + id);
+        question.empty();
+        var x = document.getElementById(id).length;
+        console.log(x);
+        //var questiongroupcode = id.split("_")[0];
+        var questioncode = id.split("_")[1];
+        // var questiontype = id.split("_")[2];
+        $.ajax({
+            url: "/StudentExam/GetAnswerQuestionFf",
+            data: {questioncode},
+            dataType:'json',
+            success: function (data) {
+            if (!!data.listAnswerObjs) {
+				   $("#"+id).get(0).options.length = 0;
+			       $("#" + id).get(0).options[0] = new Option("(Chọn đáp án đúng)", "");
+                    setTimeout(function () {
+                    data.listAnswerObjs.map(function (item) {
+                            $('#'+id).append('<option value='+item.CODE+'>'+item.NAME+'</option>');
+                        }.bind(this));
+                    }, 50);
+                    $('#' + id).attr('onclick', '').unbind('click');
+                    $('#' + id).attr("onchange", "myChangeFunction('"+id+"')");
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    }
+    function myChangeFunction(id) {
+        var questioncode = id.split('_')[1];
+        var type = id.split('_')[2];
+        var answercode = document.getElementById(id).value;
+        console.log(answercode);
+        globalApp.onCheck(questioncode, answercode, type);
+    }
+    </script>
+    <script src="~/Scripts/jquery/jquery.min.js">
+    </script>
+    <script src="~/Scripts/jquery/jquery-ui.min.js"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="~/Scripts/bootstrap/js/bootstrap.min.js"></script>
+    <!-- DataTables -->
+    <!-- SlimScroll -->
+    <script src="~/Scripts/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+    @*<script src="~/Scripts/alertifyjs/alertify.min.js"></script>*@
+
+    <!-- FastClick -->
+    <script src="~/Scripts/fastclick/fastclick.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/Scripts/AdminLTE/js/adminlte.min.js"></script>
+    <script src="~/Scripts/comboxtree/js/jstree.min.js"></script>
+    <script src="~/Scripts/tree/custom.tree.js"></script>
+    <script src="~/Content/moment/moment.min.js"></script>
+    <script src="~/Content/bootbox/bootbox.min.js"></script>
+    <script src="~/Scripts/react/react.js"></script>
+    <script src="~/Scripts/react/react-dom.js"></script>
+    <script src="~/Scripts/func.js"></script>
+    @RenderSection("scripts", false)
+    <!-- page script -->
+
+    <script>
+    function dragstart_handler(event) {
+        //debugger
+        //$('#' + event.target.id).draggable({
+        //    revert: true
+        //});
+        //     event.target.style.opacity = .5;
+        // Add the target element's id to the data transfer object
+        if (!!event) {
+            event.dataTransfer.setData("text", event.target.id);
+            event.dropEffect = "move";
+        }
+    }
+    //Cho phép thả vào đây hay không
+    function dragover_handler(event) {
+        ///    console.log("dragover",event.target);
+        event.preventDefault();
+        // Set the dropEffect to move
+        event.dataTransfer.dropEffect = "move";
+    }
+    ///vị trí thả
+    //sự kiện ondrop ở đây
+    //global dai dien cho event.target.id sau khi bat dau duoc keo roi khoi vi tri
+    function drop_handler(event) {
+        //event.target.style.background = "";
+        //console.log("droptarget", event.target);
+        //console.log("currentdroptarget", event.currentTarget);
+        ///trước khi cho phép thả 1 element hay không thì cần phải xác định được xem element
+        //hiện tại đã có element con nào kéo vào đấy hay chưa
+        //việc này rất quan trọng vì tránh trường hợp thả nhiều hơn 1 element vào 1 vị trí
+        //tìm số lượng element trong nó
+        if (!!global) {
+            event.preventDefault();
+            var type = global.split('_')[3];
+            var answercode = global.split('_')[1];
+            //lay questiongroup cua vi tri dang duoc drops
+            var targetdraggroupcode = global.split('_')[0];
+            //lay questiongroup cua vi tri dang duoc drag
+            /// targerdrop questiongroupcode_questioncode_type
+            var targetdrop = event.currentTarget.id;
+            var targetdropgroupcode = targetdrop.split('_')[0];
+            //kiem tra neu hop le có nghĩa là 2 questiongroup === nhau thì chúng cùng 1 group
+            //-> cho phép tranferdata
+            // if (targetdropgroupcode === targetdraggroupcode && childCount < 1) {
+            if (targetdropgroupcode === targetdraggroupcode) {
+                //check any p tag inside
+                var el = event.currentTarget.getElementsByTagName("p");
+                var data = event.dataTransfer.getData("text");
+                if (el.length === 0) {
+                    event.currentTarget.appendChild(document.getElementById(data));
+                } else {
+                    var cut = el[0].id.split('_')[1];
+                    document.getElementById(el[0].id.replace("_" + cut, "")).appendChild(el[0]);
+                    event.currentTarget.appendChild(document.getElementById(data));
+                }
+                event.preventDefault();
+                //var data = event.dataTransfer.getData("text");
+                //event.target.appendChild(document.getElementById(data));
+                //hiện tại thì chỉ xử lý được đến thế này
+                //vấn đề kĩ thuật trong khâu kéo thả cần xem xét lại
+                var questioncode = targetdrop.split('_')[1];
+                globalApp.onCheck(questioncode, answercode, type);
+
+            } else {
+                log.show("Không thể thực hiện được thao tác này", false);
+            }
+        }
+
+    }
+    </script>
+
+    <script>
+        (function() {
+            if (document.domain !== "localhost")
+            {
+                $("body")
+                    .css({
+                        "-webkit-user-select": "none",
+                        "-moz-user-select": "-moz-none",
+                        "-ms-user-select": "none",
+                        "user-select": "none"
+                    });
+            }
+        })();
+    </script>
+    <script>
+                //first of all,we need to get the following input id {id}
+                //then get questiontype{FG,FI} and questiongroup{QG_id_[FG|FI]}
+                function myFunction(id) {
+                    ///the value after onfoucusout the input
+                    if (!!document.getElementById(id).value) {
+                        //nội dung câu trả lời của câu hỏi dạng FG điền từ vào đoạn trống
+                        var value = document.getElementById(id).value;
+                        var income = id.split("_");
+                        //lấy kiểu của câu trả lời
+                        var questiontype = income[2];
+                        //lấy mã của câu hỏi
+                        var questioncode = income[1];
+                        // var questiongroup = income[0];
+                        globalApp.onCheck(questioncode, value, questiontype);
+
+                    }
+                }
+    </script>
+    <script>
+            // ===== Scroll to Top ====
+            $(window).scroll(function () {
+                if ($(this).scrollTop() >= 50) {        // If page is scrolled more than 50px
+                    $('#return-to-top').fadeIn(200);    // Fade in the arrow
+                } else {
+                    $('#return-to-top').fadeOut(200);   // Else fade out the arrow
+                }
+            });
+            $('#return-to-top').click(function () {      // When arrow is clicked
+                $('body,html').animate({
+                    scrollTop: 0                       // Scroll to top of body
+                }, 1500);
+            });
+    </script>
+</body>
+</html>

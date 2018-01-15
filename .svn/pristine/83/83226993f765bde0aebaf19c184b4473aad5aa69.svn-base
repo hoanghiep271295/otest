@@ -1,0 +1,104 @@
+﻿var Content = React.createClass({
+    getInitialState: function () {
+        return {
+            listSub: []
+        }
+    },
+    componentWillMount: function () {
+    },
+    componentDidMount: function () {
+        this.getSub();
+        this.getSubjectContent();
+    },
+    // lấy danh sách các subjectcontent con trực tiếp
+    getSub: function (parentcode) {
+        if (parentcode === null || typeof parentcode === "undefined")
+            parentcode =this.props.id;
+        if (!!parentcode) {
+            $.ajax({
+                url: '/SubjectContent/GetListSub',
+                dataType: 'json',
+                data: { parentCode: parentcode },
+                success: function (data) {
+                    setTimeout(function () {
+                        this.setState({ listSub: data.data });
+                    }.bind(this), 200);
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.log(err.toString());
+                }
+            });
+        }
+    },
+    // 
+    getListStudied: function () {
+        var subjectcode = this.gup('subid');
+        var coursecode = this.gup('id');
+        //danh sách nội dung đã học
+        $.ajax({
+            url: '/CourseContent/GetListStudied',
+            dataType: 'json',
+            data: {
+                subjectcode: subjectcode,
+                coursecode: coursecode
+            },
+            success: function (data) {
+                if (!!data.data) {
+                    this.setState({ listCourseStudied: data.data });
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    // nội dung bài học
+    getSubjectContent: function (subjectcontentcode) {
+        if (subjectcontentcode === null || typeof subjectcontentcode === "undefined")
+            subjectcontentcode = this.props.id;
+        $.ajax({
+            url: '/SubjectContent/GetById',
+            dataType: 'json',
+            data: { id: subjectcontentcode },
+            success: function (data) {
+                if (!!data.data) {
+                    var note = data.data.NOTE;
+                    note = note.split("&lt;").join("<").split("&gt;").join(">");
+                    note = note.split("&gt;").join(">");
+                    note = note.replace('"ContentQuestion', '"/ContentQuestion');
+                    document.getElementById('subjectcontent1').innerHTML = note;
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    render: function () {
+        var listSub = [];
+        this.state.listSub.forEach(function (item, key) {
+            listSub.push(<SubjectContent key={key} code={item.CODE} name={item.NAME} type={item.CONTENTTYPE}/>);
+        });
+        return (
+            <div>
+                <div>
+                <div className="tab-content">
+                    <div className="tab-pane fade in active">
+                         <div className="coursestudent" id='listSub'>
+                             <b>CÁC NỘI DUNG CON</b>
+                             {listSub}
+                         </div>
+                         <div className="coursestudent">
+                             <b>NỘI DUNG BÀI HỌC</b>
+                             <div id='subjectcontent1' >
+                                 
+                             </div>
+                         </div>
+                    </div>
+                </div>
+                </div>
+                
+            </div>
+        );
+    }
+});

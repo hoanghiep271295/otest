@@ -1,0 +1,110 @@
+﻿
+var QuestionTypeCO = React.createClass({
+    componentDidMount: function () {
+        document.getElementById(this.props.id + '_questiontypeCO').innerHTML =
+            this.props.objQuestionGroup.CONTENT;
+    },
+    render: function () {
+        var listQuestion = [];
+        var index = 0;
+        var that = this;
+        this.props.dataQuestion.forEach(function (rowitem) {
+            if (rowitem.QUESTIONGROUPCODE === that.props.id) {
+                index++;
+                listQuestion.push(<QuestionCO key={index}
+                                            index={index}
+                                            id={rowitem.CODE}
+                                            objQuestion={rowitem}
+                                            listanswer={that.props.dataAnswer}
+                                            onCheck={that.props.onCheck}
+                                            questiontype={that.props.questiontype} />);
+        }
+            index++;
+    });
+return (
+    <div>
+        <div className="container questiongroup">
+        <b>{this.props.number}.</b>
+           </div>
+           <div>
+        <div >
+            <fieldset className="fieldsetGroup lineHeight">
+         <span id={this.props.id + '_questiontypeCO'}></span>
+        <ul>
+            {listQuestion}
+        </ul>
+            </fieldset>
+        </div>
+        </div>
+    </div>
+            );
+}
+});
+
+
+var QuestionCO = React.createClass({
+    componentDidMount: function () {
+        //var id = this.props.ident;
+        document.getElementById(this.props.id + '_questionCO').innerHTML =
+            this.props.objQuestion.CONTENT;
+    },
+    //only onchange of
+    /**
+     * @param {} e
+     * @returns {} answer of Multichoice question
+     */
+    onChangeCO: function(e) {
+        var mch = e.target.name;
+        var mctl = e.target.id;
+        this.props.onCheck(mch, mctl,"CO");
+    },
+    /**
+     * reder data
+     * @returns {}
+     */
+    render: function() {
+        var listanswer = [];//danh sach cau tra loi
+        var indent = 0;//đánh chỉ mục cho câu hỏi số bao nhiêu
+        //vì mỗi câu hỏi có nhiều đáp án khác nhau nên render luôn tại đây
+        this.props.listanswer.forEach((rowitem) =>{
+          
+            if (rowitem.QUESTIONCODE === this.props.id) {
+                var answer = $("<div />").html(rowitem.CONTENT).text().trim();
+                listanswer.push(
+            <li key={indent} className='flex-item'
+                             name={rowitem.QUESTIONCODE}>
+                         <input type="radio"
+                                id={rowitem.CODE}
+                                name={rowitem.QUESTIONCODE}
+                                onClick={this.onChangeCO} />
+                                    &nbsp; &nbsp;&nbsp; &nbsp;
+                         <label id={indent+"CO"} htmlFor={rowitem.CODE}>
+                          <span style={{ textAlign:'left' }}
+                                 key={'error_'+ indent} 
+                                 dangerouslySetInnerHTML={{__html: answer}}>
+                          </span>
+                         </label>
+              </li>
+                );
+                indent++;
+            }
+});
+
+return (
+    <div>
+    <li className="none-style">
+    <div className="container" >
+               <b className="col-sm-1" >{this.props.index}.
+               </b>
+                <div className="col-sm-10 fitContent" >
+                               <span id={this.props.id + '_questionMC'}></span>
+                        </div>
+                        </div>
+                        <ul className="list-unstyled flex-container marginBottom" >
+                        {listanswer}
+                        </ul>
+                        </li>
+                        </div>
+                    );
+}
+});

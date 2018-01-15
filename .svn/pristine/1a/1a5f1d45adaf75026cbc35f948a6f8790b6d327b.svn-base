@@ -1,0 +1,205 @@
+﻿var ExamResult = React.createClass({
+    getInitialState: function () {
+        return {
+            listGroupQuesion: [],// list groupcode
+            listQuestion: [],/// list question
+            listAnswer: [],///list answer follow question
+            objHalltudent: null, ///object Hall student
+            objExamForm: null, /// Objet Exam Form
+            listExamDetail: [], ///list ExamFromdetail
+            listAnswerStudent: [], ///list answer of student get from server
+            numberQuestion: 0
+        }
+    },
+    componentDidMount: function ()
+    {
+        this.loadData();
+    },
+    loadData: function () {
+        var defaultvalue = window.getDefaultFromServer();
+        var markcode = defaultvalue.markcode;
+        var examtimecode = defaultvalue.examtimecode;
+        $.ajax({
+            url: "/ExamResult/ShowExamResult",
+            dataType: 'json',
+            data: {
+                markcode: markcode,
+                examtimecode: examtimecode
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    this.setState({
+                        listGroupQuesion: data.liQuestiongroup,
+                        listQuestion: data.li_question,
+                        listAnswer: data.li_answer,
+                        objHalltudent: data.ObjexamHallstudent,
+                        objExamForm: data.ObjexamForm,
+                        listExamDetail: data.liExamformDetail,
+                        listAnswerStudent : data.li_examresult,
+                        numberQuestion: data.numberQuestion
+                    });
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    render: function () {
+        var listQgroup = [];
+        var index = 0;
+        var that = this;
+        this.state.listGroupQuesion.forEach(function (rowitem) {
+            index++;
+            var type = rowitem._QUESTIONTYPECODE.CODEVIEW;
+            switch (type) {
+                case'CO':
+                    listQgroup.push(<QuestionGroupCO
+                                                    key={index}
+                                                    number={index}
+                                                    ident={rowitem.CODE}
+                                                    objQuestionGroup={rowitem}
+                                                    dataQuestion={that.state.listQuestion}
+                                                    dataAnswer={that.state.listAnswer}
+                                                    listAnswerStudent= {that.state.listAnswerStudent}
+                                                    questiontype={"CO"} 
+                                           />);
+                          break;
+            //writing
+              case 'WR':
+                 listQgroup.push(<WritingAnswer    
+                                key={index}
+                                number={index}
+                                ident={rowitem.CODE}
+                                objQuestionGroup={rowitem}
+                                dataQuestion={that.state.listQuestion}
+                                dataAnswer={that.state.listAnswer}
+                                listAnswerStudent= {that.state.listAnswerStudent}
+                                questiontype={"WR"}  />);
+                  break;
+                  //câu hỏi một nhiều chỉ dành cho một câu hỏi cho một nhóm;
+                  //Câu hỏi ỏ nhóm, tự động sinh ra một bản ghi câu hỏi giả để lien kết, sau đó có các đáp án. 
+                case 'MS':
+                 listQgroup.push(<QuestionGroupMS 
+                                key={index}
+                                number={index}
+                                ident={rowitem.CODE}
+                                objQuestionGroup={rowitem}
+                                dataQuestion={that.state.listQuestion}
+                                dataAnswer={that.state.listAnswer}
+                                listAnswerStudent= {that.state.listAnswerStudent}
+                                questiontype={"MS"} 
+                                 />);
+                    break;
+                    //: Viết lại câu; (câu hỏi chính ở nhóm), sau đó câu hỏi chi tiết chính là các từ;
+                    //Một câu hỏi có thể có nhiều đáp án đúng 
+                    //(để cho phép so sánh chỉ cần đúng một trong các đáp án đó là tính điểm)
+                case 'RW':
+                listQgroup.push(<QuestionGroupRW
+                                    key={index}
+                                    number={index}
+                                    ident={rowitem.CODE}
+                                    objQuestionGroup={rowitem}
+                                    dataQuestion={that.state.listQuestion}
+                                    dataAnswer={that.state.listAnswer}
+                                    listAnswerStudent= {that.state.listAnswerStudent}
+                                    questiontype={"RW"} 
+                        />);
+                    break;
+                    //dạng kéo thả vào trong đoạn văn
+                case 'FI':
+                    listQgroup.push(<QuestionGroupFI
+                                     key={index}
+                                      number={index}
+                                     ident={rowitem.CODE}
+                                     objQuestionGroup={rowitem}
+                                    dataQuestion={that.state.listQuestion}
+                                    dataAnswer={that.state.listAnswer}
+                                    listAnswerStudent= {that.state.listAnswerStudent}
+                                      questiontype={"FI"} 
+                     />);
+                    break;
+                    //dạng điền từ vào trong ô trống
+                case 'FG':
+                listQgroup.push(<QuestionGroupFG
+                                                    key={index}
+                                      number={index}
+                                     ident={rowitem.CODE}
+                                     objQuestionGroup={rowitem}
+                                    dataQuestion={that.state.listQuestion}
+                                    dataAnswer={that.state.listAnswer}
+                                    listAnswerStudent= {that.state.listAnswerStudent}
+                                      questiontype={"FG"} 
+                     />);
+                break;
+                 case 'FF':
+                listQgroup.push(<QuestionGroupFG
+                                     key={index}
+                                      number={index}
+                                     ident={rowitem.CODE}
+                                     objQuestionGroup={rowitem}
+                                    dataQuestion={that.state.listQuestion}
+                                    dataAnswer={that.state.listAnswer}
+                                    listAnswerStudent= {that.state.listAnswerStudent}
+                                      questiontype={"FF"} 
+                     />);
+                console.log("FG chưa làm");
+                break;
+                    // dạng kéo thả vào 
+                case 'PA':
+                listQgroup.push(<QuestionGroupFG
+                                                    key={index}
+                                      number={index}
+                                     ident={rowitem.CODE}
+                                     objQuestionGroup={rowitem}
+                                    dataQuestion={that.state.listQuestion}
+                                    dataAnswer={that.state.listAnswer}
+                                    listAnswerStudent= {that.state.listAnswerStudent}
+                                      questiontype={"PA"} 
+                     />);
+                    console.log("PA chưa làm");
+                    break;
+       case 'LA':
+                    listQgroup.push(<QuestionGroupLA
+                                       key={index}
+                                      number={index}
+                                     ident={rowitem.CODE}
+                                     objQuestionGroup={rowitem}
+                                    dataQuestion={that.state.listQuestion}
+                                    dataAnswer={that.state.listAnswer}
+                                    listAnswerStudent= {that.state.listAnswerStudent}
+                                      questiontype={"RW"} 
+                     />);
+                    console.log("PA chưa làm");
+                    break;
+//MC,CO
+
+
+                default:
+                    listQgroup.push(<QuestionGroup 
+                                                key={index}
+                                                number={index}
+                                                ident={rowitem.CODE}
+                                                objQuestionGroup={rowitem.CONTENT}
+                                                dataQuestion={that.state.listQuestion}
+                                                dataAnswer={that.state.listAnswer}
+                                                listAnswerStudent= {that.state.listAnswerStudent}
+                                                questiontype={type} 
+                                                   />);
+                    break;
+            }
+
+         });
+        return (
+                <div className="examform" >
+                        {listQgroup}
+                  </div>
+   
+            );
+       }
+});
+
+
+
+
+ReactDOM.render(<ExamResult />, document.getElementById('container'));

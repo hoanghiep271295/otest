@@ -1,0 +1,131 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Net.Mime;
+using System.Web.Mvc;
+using IS.Config;
+using IS.fitframework;
+using IS.Sess;
+using IS.uni;
+using mtarms._2.u.Controllers;
+using nerp.Controllers.exam;
+using Newtonsoft.Json;
+
+namespace nerp.Controllers.core
+{
+    public class CourseStudiedController : Controller
+    {
+        session ses = new session();
+        public JsonResult GetListStudied(string subjectcode, string coursecode)
+        {
+            COURSESTUDIED_BUS bus = new COURSESTUDIED_BUS();
+            List<string> listStudiedCode = new List<string>();
+            var data = bus.getAllBy2("CODE", new fieldpara("COURSECODE", coursecode, 0),
+                new fieldpara("SUBJECTCODE", subjectcode, 0));
+            foreach (var item in data)
+            {
+                listStudiedCode.Add(item.SUBJECTCONTENTCODE);
+            }
+            return Json(new { data = data, listStudiedCode = listStudiedCode }, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult Update(List<string> liSubjectContentCode, string coursecode, string subjectcode, List<string> liContentTypeCode)
+        {
+            COURSESTUDIED_BUS bus = new COURSESTUDIED_BUS();
+            int ret = 0, ret1 = 0, ret2 = 0;
+            COURSESTUDIED_OBJ obj_temp = null;
+
+            if (liSubjectContentCode == null || liSubjectContentCode.Count <= 0)
+                ret = -1;
+            else
+            {
+                for (int i=0; i< liSubjectContentCode.Count; i++)
+                {
+                    var subjectcontentcode = liSubjectContentCode[i];
+                    obj_temp = bus.GetByKey(new fieldpara("SUBJECTCONTENTCODE", subjectcontentcode, 0),
+                                            new fieldpara("COURSECODE", coursecode, 0));
+                    if (obj_temp == null)
+                    {
+                        obj_temp = new COURSESTUDIED_OBJ();
+                        //hết kiểm tra tồn tại bản ghi
+                        obj_temp.EDITTIME = DateTime.Now; //Thời điểm sủa bản ghi
+                        obj_temp.EDITUSER = ses.loginCode; //Người sửa bản ghi
+                        obj_temp.SUBJECTCODE = subjectcode;
+                        obj_temp.UNIVERSITYCODE = ses.gUNIVERSITYCODE;
+                        obj_temp.LOCK = 0;
+                        obj_temp.COURSECODE = coursecode;
+                        obj_temp.SUBJECTCONTENTCODE = subjectcontentcode;
+                    //    obj_temp.LANG = ses.getLang();
+                        //Kiểm tra tình trạng sửa hay là thêm mới
+                        obj_temp.CODE = bus.genNextCode(obj_temp);
+                        obj_temp.LOCKDATE = DateTime.Now;
+                        ret = bus.insert(obj_temp);
+                        // nếu là bài kiểm tra thì sinh phòng thi và đề thi
+                        // check xem có phải là bài kiểm tra hay ko
+                        var contentType = new CONTENTTYPE_OBJ();
+                        if (!!string.IsNullOrEmpty(liContentTypeCode[i]))
+                        contentType =
+                            new CONTENTTYPE_BUS().GetByID(new CONTENTTYPE_OBJ.BusinessObjectID(liContentTypeCode[i]));
+                        var contentTypeCode = "";
+                        if (contentType != null)
+                            contentTypeCode = contentType.CODEVIEW;
+                        if (contentTypeCode == "KT" || contentTypeCode == "BT" || contentTypeCode == "TH")
+                        {
+                            // lấy đợt thi và mã cấu trúc đề thi thông qua subjectcontenttest
+                            List<string> result = new SubjectContentTestController().GetBySubjectContent(subjectcontentcode);
+                            var examTimeCode = result[0];
+                            var testStructCode = result[1];
+                            // tạo phòng thi
+                            ret1 = new ExamHallStudentController().CreateExamHallStudent(examTimeCode);
+                            ArrayList resArrayList = new ExamFormController().CreateExamForm(examTimeCode, testStructCode);
+                            ret2 = (int)resArrayList[0];
+
+                        }
+                    } else
+                    {
+                        obj_temp.LOCK = 1;
+                        ret = bus.update(obj_temp);
+                       
+                    }
+                }
+            }
+            bus.CloseConnection();
+            //some thing like that
+            return Json(new { ret = ret, ret1 = ret1, ret2 = ret2 }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult Delete(List<string> liId)
+        {
+            var ret = 0;
+            if (liId != null)
+            {
+                var bus = new COURSESTUDIED_BUS();
+                foreach (var id in liId)
+                {
+                    var item = bus.GetByID(new COURSESTUDIED_OBJ.BusinessObjectID(id));
+                    if (item == null)
+                    {
+                        ret = -2;
+                        continue;
+                    }
+                    if (item.UNIVERSITYCODE != ses.gUNIVERSITYCODE)
+                    {
+                        ret = -4;
+                    }
+                    if (ret >= 0)
+                    {
+                        ret = bus.delete(item._ID);
+                    }
+
+                }
+                bus.CloseConnection();
+            }
+            return Json(new
+            {
+                ret = ret
+            }, JsonRequestBehavior.AllowGet);
+
+        }
+    }
+}

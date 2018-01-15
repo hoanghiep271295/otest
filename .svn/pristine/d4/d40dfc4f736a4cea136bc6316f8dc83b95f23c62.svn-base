@@ -1,0 +1,26 @@
+﻿var App = React.createClass({
+    componentDidMount:function() {
+        $( "#sortable" ).sortable();
+        $( "#sortable" ).disableSelection();
+        
+    },
+    render:function() {
+
+        return(
+
+            <div>
+            <ul id="sortable">
+  <li className="ui-state-default"><span className="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 1</li>
+  <li className="ui-state-default"><span className="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 2</li>
+  <li className="ui-state-default"><span className="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 3</li>
+  <li className="ui-state-default"><span className="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 4</li>
+  <li className="ui-state-default"><span className="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 5</li>
+  <li className="ui-state-default"><span className="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 6</li>
+  <li className="ui-state-default"><span className="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 7</li>
+        </ul>
+ </div>
+ );
+    }
+
+  });
+  ReactDOM.render(<App />, document.getElementById('container'));

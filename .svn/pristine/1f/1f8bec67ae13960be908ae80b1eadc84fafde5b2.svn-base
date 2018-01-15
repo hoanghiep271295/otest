@@ -1,0 +1,118 @@
+﻿using IS.Config;
+using IS.fitframework;
+using IS.Lang;
+using IS.Sess;
+using IS.uni;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace nerp.Controllers.core
+{
+    public class CourseTeacherController : Controller
+    {
+        private readonly session _ses = new session();
+
+        // GET: CourseTeacher
+        public ActionResult Index()
+        {
+            string defaultvalue = "{\"code\":\"123\", \"subcode\":\"345\", \"thedate\":\"2017-2-3\"}";
+            ViewBag.defaultvalue = defaultvalue;
+
+            //Xác lập các file jsx mặc định gửi cho client
+            string[] jsx =
+            {
+                "/Jsx/CourseTeacher/BreadCrumb.jsx",
+                "/Jsx/CourseTeacher/Content.jsx",
+                "/Jsx/CourseTeacher/SubjectContent.jsx",
+                "/Jsx/CourseTeacher/ListSubjectContent.jsx",
+                "/Jsx/CourseTeacher/Course.jsx",
+                "/Jsx/CourseTeacher/ListCourse.jsx",
+                "/Jsx/CourseTeacher/App.jsx"
+            };
+            ViewBag.jsx = jsx;
+            //Gán các thông tin về hiển thị cho view và cho client javascript thông qua ham getLangObject()
+            string clientjson;
+            dynamic objlang = Langresource.LangResource(AppConfig.langfilename, _ses.frontlang, "home-index4", out clientjson);
+            ViewBag.langobj = objlang;
+            ViewBag.langobjscript = clientjson;// stringobj;
+            //Mặc định luôn lấy view của Index 3 để hiển thị cho phần quản trị
+            return View("Index4");
+        }
+
+        public ActionResult Student(string id)
+        {
+            string defaultvalue = "{\"code\":\"123\", \"subcode\":\"345\", \"thedate\":\"2017-2-3\"}";
+            ViewBag.defaultvalue = defaultvalue;
+
+            string[] jsx = {
+                "/Jsx/CourseTeacher/PopupMark.jsx",
+                "/Jsx/CourseTeacher/ListStudent.jsx" ,
+                "/Jsx/CourseTeacher/AppStudent.jsx"
+            };
+            ViewBag.jsx = jsx;
+
+            //Gán các thông tin về hiển thị cho view và cho client javascript thông qua ham getLangObject()
+            string clientjson;
+            dynamic objlang = Langresource.LangResource(AppConfig.langfilename, _ses.frontlang, "home-index4", out clientjson);
+            ViewBag.langobj = objlang;
+            ViewBag.langobjscript = clientjson;// stringobj;
+            //Mặc định luôn lấy view của Index 3 để hiển thị cho phần quản trị
+            return View("Index4");
+        }
+
+        /// <summary>
+        /// lấy các khóa học của 1 giáo viên giảng dạy
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetCourseByStaff()
+        {
+            var ret = 0;
+            string staffcode = "";
+            if (_ses.loginType.Equals("LECTURER"))
+            {
+                staffcode = _ses.loginCode;
+            }
+            else
+                ret = -1;
+            List<COURSE_OBJ> liCourse = null;
+            if (ret >= 0)
+            {
+                STAFFCOURSE_BUS bus = new STAFFCOURSE_BUS();
+                var li = bus.getAllBy2("COURSECODE", new fieldpara("UNIVERSIYCODE", _ses.gUNIVERSITYCODE, 0),
+                                       new fieldpara("STAFFCODE", staffcode, 0));
+                if (li != null)
+                {
+                    liCourse = new List<COURSE_OBJ>();
+                    foreach (var item in li)
+                    {
+                        liCourse.Add(item._COURSECODE);
+                    }
+                }
+                if (liCourse == null)
+                    ret = -2;
+                bus.CloseConnection();
+            }
+
+            return Json(new { data = liCourse, ret }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// lấy danh sách đợt thi của sinh viên trong 1 lớp học
+        /// </summary>
+        /// <param name="studentcode">mã sinh viên</param>
+        /// <param name="coursecode">mã lớp môn học</param>
+        /// <returns></returns>
+        public JsonResult GetExamTime(string studentcode, string coursecode)
+        {
+            EXAMHALLSTUDENT_BUS bus = new EXAMHALLSTUDENT_BUS();
+            List<fieldpara> lipa = new List<fieldpara>
+            {
+                new fieldpara("STUDENTCODE", studentcode, 0),
+                new fieldpara("COURSECODE", coursecode, 0),
+                new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0)
+            };
+            var data = bus.getAllBy2("CODE", lipa.ToArray());
+            return Json(new {data }, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

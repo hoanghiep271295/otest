@@ -1,0 +1,158 @@
+﻿var SubjectContent = React.createClass({
+    getInitialState: function () {
+        return {
+            markcode: null,
+            examtimecode: null,
+            listSub: [],
+            note: null
+        };
+    },
+    getContentType: function (contentTypeCode, contentType) {
+        // get contentype by id
+        $.ajax({
+            url: "/ContentType/GetByIdJson",
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                code: contentTypeCode
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    contentType(data.data.CODEVIEW);
+                } else {
+                    contentType('');
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }.bind(this)
+        });
+    },
+    onClick: function () {
+        var contentTypeCode = this.props.type;
+        var that = this;
+        this.getContentType(contentTypeCode, function (contentType) {
+            // nếu là trường hợp này, chuyển sang trang cho sinh viên thi
+            if (contentType === 'TH' || contentType === 'KT' || contentType === 'BT') {
+                that.getMarkCode();
+                setTimeout(function() {
+                        this.getExamtime(this.props.code);
+                    }.bind(this),
+                    300);
+            } else { // ngược lại thì load nội dung con và nội dung bài học
+                var data = this.props.app.getBreadCrumb();
+                var item = {
+                    'name': this.props.name,
+                    'id': this.props.code
+                };
+
+                var subjectcode = this.props.app.getKeyValue('subjectcode');
+                window.history
+                    .pushState({}, '', '/CourseStudent/Index?id=' + subjectcode + '&subid=' + this.props.code);
+               // var content = component.get('content');
+                data.push(item);
+                this.props.app.setBreadCrumb(data);
+                if (!!document.getElementById('subjectcontent')) {
+                    this.getSub(this.props.code);
+                    this.getSubjectContent(this.props.code);
+                } else {
+                    ReactDOM.render(<Content id={this.props.code} listsub = {this.state.listSub} note={this.state.note}/>, document.getElementById('content'));
+                }
+            }
+        }.bind(this));
+      
+    
+    },
+    // lấy markcode của sinh viên dựa vào coursecode và studentcode
+    // chỉ truyền lên markcode còn studentcode = logincode (lấy trong controller)
+    getMarkCode: function () {
+        $.ajax({
+            url: '/Mark/GetByStudentCourse',
+            dataType: 'json',
+            data: {
+                coursecode: this.props.app.getKeyValue('coursecode')
+    },
+            success: function (data) {
+                this.setState({ markcode: data.data.CODE });
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    // lấy đọt thi tương ứng của SubjectContent 
+    getExamtime: function (subjectcontentcode) {
+        $.ajax({
+            url: '/SubjectContentTest/GetBySubjectContent',
+            dataType: 'json',
+            data: {
+                subjectcontentcode: subjectcontentcode
+            },
+            success: function (data) {
+                var markcode = this.state.markcode;
+                var examtimecode = data.data.EXAMTIMECODE;
+                window.location.href = '/StudentExam/Index/' + markcode + '/' + examtimecode;
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    // lấy danh sách các subjectcontent con trực tiếp
+    getSub: function (parentcode) {
+        if (parentcode === null || typeof parentcode === "undefined")
+            parentcode = this.props.id;
+        if (!!parentcode) {
+            $.ajax({
+                url: '/SubjectContent/GetListSub',
+                dataType: 'json',
+                data: { parentCode: parentcode },
+                success: function (data) {
+                    setTimeout(function () {
+                        this.setState({ listSub: data.data });
+                    }.bind(this), 200);
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.log(err.toString());
+                }
+            });
+        }
+    },
+    // nội dung bài học
+    getSubjectContent: function (subjectcontentcode) {
+        if (subjectcontentcode === null || typeof subjectcontentcode === "undefined")
+            subjectcontentcode = this.props.id;
+        $.ajax({
+            url: '/SubjectContent/GetById',
+            dataType: 'json',
+            data: { id: subjectcontentcode },
+            success: function (data) {
+                if (!!data.data) {
+                    var note = data.data.NOTE;
+                    note = note.split("&lt;").join("<").split("&gt;").join(">");
+                    note = note.split("&gt;").join(">");
+                    note = note.replace('"ContentQuestion', '"/ContentQuestion');
+                    this.setState({note: note});
+                    //  document.getElementById('subjectcontent').innerHTML = note;
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    render: function () {
+        var classname = "divSubjectContent ";
+        if (!!this.props.classname) {
+            classname += this.props.classname;
+        }
+        return (
+            <div >
+                <button onClick={this.onClick} id={this.props.code} className={classname}>{this.props.name}</button>
+            </div>
+        );
+    }
+});
+
+
+

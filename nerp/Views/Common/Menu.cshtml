@@ -1,0 +1,101 @@
+﻿@model IList<IS.uni.SYSMENU_OBJ>
+@{
+    Layout = null;
+}
+<aside class="main-sidebar" style="padding-top:0px;" >
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar" >
+        <ul class="sidebar-menu" data-widget="tree">
+            
+            @{
+                string[] code = { "", "", "", "", "", "", "", "", "", "" };
+                int index = 1;
+                string parentcode = "";
+                string previousCode = "NONE";
+                int closeme = 1;
+                //                foreach (var item in Model)
+                for (int i = 0; i < Model.Count; i++)//thiếu phần tử cuối
+                {
+                    closeme = 1;
+                    var item = Model[i];//Phần tử hiện tại
+                    string childparent = "";//cha của phần tử tiếp theo
+                    if (i < Model.Count - 1)
+                    {
+                        childparent = Model[i + 1].PARENTCODE;
+                    }
+                    //Cha của phần tử hiện tại
+                    //standardize the parent code
+                    if (string.IsNullOrEmpty(item.PARENTCODE))
+                    {
+                        parentcode = "";
+                    }
+                    else
+                    {
+                        parentcode = item.PARENTCODE;
+                    }
+
+                    //đóng lại cái trước; ngoại trừ đã đóng ở vòng lặp
+                    if (closeme == 1 && item.PARENTCODE != previousCode)
+                    {
+                        @:</li>
+                    }
+                    //Cha phân tử hiện tại không giống với cha hiện tại ->> cần phải đóng thẻ cha hiện tại
+                    if (parentcode != code[index])
+                    {
+                        //sẽ thêm đóng cái hiện tại hoặc thêm mới mục con
+                        while (parentcode != code[index])
+                        {
+                            index--;
+                            //close hiện tại, đóng tiếp cho cha của nó
+                            @:</ul>
+                            @:</li>
+                            closeme = 0;
+                        }
+                    }
+                    //Sinh ra phần tử hiện tại
+                    //Nếu có con thì thêm treeview, không thì không có
+                    if (childparent == item.CODE)
+                    {
+                        @:<li class="treeview">
+                    }
+                    else
+                    {
+                        @:<li >
+                    }
+                    //Nội dung bên trong
+                    @:<a href="@item.LINK">
+                    @:<i class="fa @item.ICON"></i> <span>@item.NAME</span>
+                    //nếu là có con
+                    if (childparent == item.CODE)
+                    {
+                            @:<span class="pull-right-container">
+                            @:<i class="fa fa-angle-left pull-right"></i>
+                            @:</span>
+                    }
+                    @:</a>
+                    if (childparent == item.CODE)
+                    {
+                        index++;
+                        code[index] = item.CODE;
+                        @:<ul class="treeview-menu menu-open">
+                    }
+      
+        
+                previousCode = item.CODE;
+
+            }
+   
+}
+</li>
+</ul>
+
+
+
+
+
+
+
+                </section>
+<!-- /.sidebar -->
+</aside>
+

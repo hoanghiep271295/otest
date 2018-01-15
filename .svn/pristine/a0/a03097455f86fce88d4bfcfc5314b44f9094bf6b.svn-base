@@ -1,0 +1,144 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Đăng nhập</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link href="~/Content/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="~/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <!-- Ionicons -->
+    <link href="~/Content/Ionicons/css/ionicons.min.css" rel="stylesheet" />
+    <!-- Theme style -->
+    <link href="~/Content/AdminLTE/css/AdminLTE.min.css" rel="stylesheet" />
+    <!-- iCheck -->
+    @*<link rel="stylesheet" href="../../plugins/iCheck/square/blue.css">*@
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+
+</head>
+<body class="hold-transition login-page">
+    <div class="box col-xs-8">
+        <div class="logo">
+            <b>Quản trị chung</b>
+        </div>
+        <!-- /.login-logo -->
+        <div class="login-box-body">
+            <div class="row">
+                <div class="col-xs-4">Số kết nối</div>
+                <div class="col-xs-8">@ViewBag.Poolcount</div>
+            </div>  
+            <div class="row">
+                <div class="col-xs-4">Bắt đầu</div>
+                <div class="col-xs-8">@ViewBag.Poolbeginapp</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">Số session</div>
+                <div class="col-xs-8">@ViewBag.Poolcountsession</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">Số tối đa</div>
+                <div class="col-xs-8">@ViewBag.Poolmaxcount</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">Số hiện thời</div>
+                <div class="col-xs-8">@ViewBag.PoolcountConcurrentUser</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="row">
+                        <div class="col-xs-2">
+                            STT
+                        </div>
+                        <div class="col-xs-2">
+                            Trạng thái
+                        </div>
+                        <div class="col-xs-2">
+                            Giữ phiên
+                        </div>
+                        <div class="col-xs-2">
+                            Trạng thái Kết nối
+                        </div>
+                        <div class="col-xs-2">
+                            Số lần sử dụng
+                        </div>
+                        <div class="col-xs-2">
+                           Thời gian cuối
+                        </div>
+                    </div>
+
+                    @{
+                        var i = 1;
+                        var countuse = 0;
+                        var lastuse = DateTime.MinValue;}
+                    @foreach (var it in ViewBag.Poolli)
+                    {
+                        <div class="row">
+                            <div class="col-xs-2">
+                                @i
+                                @{ i++;}
+                            </div>
+                            <div class="col-xs-2">
+                                @it.status
+                            </div>
+                            <div class="col-xs-2">
+                                @if (it.tran == null)
+                                {
+                                    <span>NULL</span>
+                                }
+                                else
+                                {
+                                    <span>HOLDING</span>
+                                }
+                            </div>
+                            <div class="col-xs-2">
+                                @it.conn.State
+                            </div>
+                            <div class="col-xs-2">
+                                @it.countuse
+                                @{ countuse += it.countuse;}
+                            </div>
+                            <div class="col-xs-2">
+                                @it.lastuse
+                                @{
+                                    if (it.lastuse > lastuse)
+                                    {
+                                        lastuse = it.lastuse;
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="col-xs-2">Tổng dùng:</div>
+                        <div class="col-xs-2">@countuse</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-2">Dùng cuối:</div>
+                        <div class="col-xs-2">@lastuse</div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <!-- /.login-box-body -->
+    </div>
+<!-- jQuery 3 -->
+<script src="~/Scripts/jquery/jquery.min.js"></script>
+
+<!-- Bootstrap 3.3.7 -->
+<script src="~/Scripts/bootstrap/js/bootstrap.min.js"></script>
+<script src="~/Content/bootbox/bootbox.min.js"></script>
+
+
+</body>
+</html>
+

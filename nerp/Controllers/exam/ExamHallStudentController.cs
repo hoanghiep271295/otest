@@ -1,0 +1,374 @@
+﻿using IS.Config;
+using IS.fitframework;
+using IS.Sess;
+using IS.uni;
+using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Dynamic;
+using System.Web.Mvc;
+using IS.localcomm;
+
+namespace nerp.Controllers.exam
+{
+    public class ExamHallStudentController : Controller
+    {
+        private readonly session _ses = new session();
+        localcommonlib com = new localcommonlib();
+
+        /// <summary>
+        /// lấy danh sách sinh viên theo phòng thi, dùng bên quản lý
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="examHallCode">mã phòng thi</param>
+        /// <returns></returns>
+        public JsonResult GetListManage(string examhallcode)
+        {
+            ////khai báo lấy dữ liệu
+            STUDENT_BUS bus = new STUDENT_BUS();
+            DataSet ds = new DataSet();
+            var ret = 0;
+            ret = bus.getByExamhallManage(ref ds, examhallcode);
+            bus.CloseConnection();
+            List<dynamic> liStudent = new List<dynamic>();
+            if (ret >= 0)
+            {
+                foreach (DataRow r in ds.Tables["examhallstudent"].Rows)
+                {
+                    dynamic objtemp = new ExpandoObject();
+                    objtemp.EXAMHALLSTUDENTCODE = com.string4Row(r, "code", "");
+                    objtemp.CODEVIEW = com.string4Row(r, "codeview", ""); // MÃ SINH VIÊN
+                    objtemp.NAME = com.string4Row(r, "name", ""); // MÃ SINH VIÊN
+                    objtemp.BIRTHDAY = com.string4Row(r, "birthday", "");
+                    objtemp.EXAMFORMNAME = com.string4Row(r, "examformname", "");
+                    objtemp.REALBEGINTIME = com.string4Row(r, "realbegintime", ""); // thời gian thực tế sinh viên bắt đầu thi
+                    objtemp.REALENDTIME = com.string4Row(r, "realendtime", "");
+                    objtemp.EXAMFORMCODE = com.string4Row(r, "examformcode", "");
+                    objtemp.LOCK = com.int4Row(r, "lock", 0);
+                    objtemp.FINALENDTIME = com.string4Row(r, "finalendtime", "");
+                    liStudent.Add(objtemp);
+                }
+            }
+            return Json(new
+            {
+                ret = ret,
+                lst = liStudent
+            }, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetList(string examhallcode)
+        {
+            ////khai báo lấy dữ liệu
+            STUDENT_BUS bus = new STUDENT_BUS();
+            DataSet ds = new DataSet();
+            var ret = 0;
+            ret = bus.getByExamhall(ref ds, examhallcode);
+            bus.CloseConnection();
+            List<dynamic> liStudent = new List<dynamic>();
+            if (ret >= 0)
+            {
+                foreach (DataRow r in ds.Tables["examhallstudent"].Rows)
+                {
+                    dynamic objtemp = new ExpandoObject();
+                    objtemp.EXAMHALLSTUDENTCODE = com.string4Row(r, "code", "");
+                    objtemp.CODEVIEW = com.string4Row(r, "codeview", ""); // MÃ SINH VIÊN
+                    objtemp.NAME = com.string4Row(r, "name", ""); // MÃ SINH VIÊN
+                    objtemp.BIRTHDAY = com.string4Row(r, "birthday", "");
+                    objtemp.REALBEGINTIME = com.string4Row(r, "realbegintime", ""); // thời gian thực tế sinh viên bắt đầu thi
+                    objtemp.REALENDTIME = com.string4Row(r, "realendtime", "");
+                    objtemp.EXAMFORMCODE = com.string4Row(r, "examformcode", "");
+                    objtemp.LOCK = com.int4Row(r, "lock", 0);
+                    objtemp.FINALENDTIME = com.string4Row(r, "finalendtime", "");
+                    liStudent.Add(objtemp);
+                }
+            }
+            return Json(new
+            {
+                ret = ret,
+                lst = liStudent
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// lấy danh sách sinh viên của lớp môn học, chưa được thêm vào đợt thi
+        /// </summary>
+        /// <param name="examtimeCode">mã đợt thi</param>
+        /// <param name="courseCode">mã lớp môn học</param>
+        /// <returns></returns>
+        public JsonResult GetAllStudent(string examtimeCode, string courseCode)
+        {
+            var ret = 0;
+            MARK_BUS markBus = new MARK_BUS();
+            //lấy toàn bộ danh sách sinh viên trong một lớp môn học
+            var liMark = markBus.getAllBy2(new fieldpara("COURSECODE", courseCode, 0),
+                                           new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            markBus.CloseConnection();
+            EXAMHALLSTUDENT_BUS examBus = new EXAMHALLSTUDENT_BUS();
+            var liExamHallStudent = examBus.getAllBy2(new fieldpara("EXAMTIMECODE", examtimeCode, 0),
+                new fieldpara("COURSECODE", courseCode, 0),
+                new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            if (liMark == null && liExamHallStudent == null)
+                ret = -1;
+            else
+            {
+                foreach (var examHallStudent in liExamHallStudent)
+                {
+                    for (int i = 0; i < liMark.Count; i++)
+                    {
+                        var mark = liMark[i];
+                        if (mark.CODE == examHallStudent.MARKCODE && mark.COURSECODE == examHallStudent.COURSECODE)
+                        {
+                            liMark.Remove(mark);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            List<STUDENT_OBJ> liStudent = new List<STUDENT_OBJ>();
+            if (liMark != null && liMark.Count > 0)
+            {
+                foreach (var mark in liMark)
+                {
+                    liStudent.Add(mark._STUDENTCODE);
+                }
+            }
+            
+            return Json(new { data = liStudent, ret = ret }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// thêm dữ liệu vào bảng examhallstudent :
+        /// </summary>
+        /// <param name="listStudentCode"></param>
+        /// <param name="examTimeCode"></param>
+        /// <param name="courseCode"></param>
+        /// <param name="parentCode"></param>
+        /// <returns></returns>
+
+        public JsonResult Insert(List<string> listStudentCode, string examTimeCode, string courseCode)
+        {
+            int ret = 0;
+            if (listStudentCode != null)
+            {
+                EXAMHALLSTUDENT_BUS bus = new EXAMHALLSTUDENT_BUS();
+                foreach (var studentCode in listStudentCode)
+                {
+                    MARK_BUS markBus = new MARK_BUS();
+                    MARK_OBJ markObj = markBus.GetByKey(
+                        new fieldpara("STUDENTCODE", studentCode, 0),
+                        new fieldpara("COURSECODE", courseCode, 0),
+                        new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0)
+                     );
+                    if (markObj == null)
+                        ret = -1;
+                    else
+                    {
+                        // kiểm tra đã tồn tại bản ghi có markcode và coursecode truyền vào chưa
+                        EXAMHALLSTUDENT_OBJ obj = bus.GetByKey(
+                                        new fieldpara("MARKCODE", markObj.CODE, 0),
+                                        new fieldpara("COURSECODE", courseCode, 0),
+                                        new fieldpara("EXAMTIMECODE", examTimeCode, 0),
+                                        new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0)
+                        );
+                        if (obj != null)
+                        {
+                            ret = -2;
+                            return Json(new { ret }, JsonRequestBehavior.AllowGet);
+                        }
+                        EXAMHALLSTUDENT_OBJ objTemp = new EXAMHALLSTUDENT_OBJ();
+                        objTemp.CODE = bus.genNextCode(objTemp);
+                        objTemp.MARKCODE = markObj.CODE;
+                        objTemp.COURSECODE = courseCode;
+                        objTemp.EXAMTIMECODE = examTimeCode;
+                        objTemp.LOCK = 0;
+                        objTemp.EDITTIME = DateTime.Now;
+                        objTemp.EDITUSER = _ses.loginCode;
+                        objTemp.UNIVERSITYCODE = _ses.gUNIVERSITYCODE;
+                        ret = bus.insert(objTemp);
+                    }
+                    markBus.CloseConnection();
+                }
+                bus.CloseConnection();
+            }
+            return Json(new { ret }, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// update bản ghi
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public int Update(EXAMHALLSTUDENT_OBJ obj)
+        {
+            int ret = 0;
+            EXAMHALLSTUDENT_BUS bus = new EXAMHALLSTUDENT_BUS();
+            var objTemp = bus.GetByID(new EXAMHALLSTUDENT_OBJ.BusinessObjectID(obj.CODE));
+            if (objTemp == null)
+            {
+                ret = -1;
+            }
+            else
+            {
+               // objTemp.EXAMFORMCODE = obj.EXAMFORMCODE;
+                if (!string.IsNullOrWhiteSpace(obj.EXAMHALLCODE))
+                    objTemp.EXAMHALLCODE = obj.EXAMHALLCODE;
+                objTemp.LOCK = obj.LOCK; // = 0: thi bình thường, = 1: hủy kết quả thi
+                objTemp.REALBEGINTIME = obj.REALBEGINTIME;
+                objTemp.REALENDTIME = obj.REALENDTIME;
+                objTemp.FINALENDTIME = obj.FINALENDTIME;
+                objTemp.FINISHTIME = obj.FINISHTIME;
+                objTemp.REPORTTIME = obj.REPORTTIME;
+                objTemp.EDITTIME = DateTime.Now;
+                obj.EDITUSER = _ses.loginCode;
+                ret = bus.update(objTemp);
+            }
+            bus.CloseConnection();
+            return ret;
+        }
+        /// <summary>
+        /// update
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public JsonResult UpdateJson(EXAMHALLSTUDENT_OBJ obj)
+        {
+            int ret = 0;
+            ret = Update(obj);
+            return Json(new { ret }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// xóa danh sách sinh viên trong đợt thi
+        /// </summary>
+        /// <param name="listCode"></param>
+        /// <returns></returns>
+        public JsonResult Delete(List<string> listCode)
+        {
+            var ret = 0;
+            EXAMHALLSTUDENT_BUS bus = new EXAMHALLSTUDENT_BUS();
+            List<EXAMHALLSTUDENT_OBJ.BusinessObjectID> deletedata = new List<EXAMHALLSTUDENT_OBJ.BusinessObjectID>();
+            foreach (var code in listCode)
+            {
+                var item = bus.GetByID(new EXAMHALLSTUDENT_OBJ.BusinessObjectID(code));
+                if (item != null)
+                {
+                    deletedata.Add(item._ID);
+                }
+            }
+            if (deletedata.Count > 0)
+            {
+                //mặc định khi vào danh sách này là xóa thành công nên ret= 1;
+                //duyệt toàn bộ danh sách bản ghi để xóa
+                bus.BeginTransaction();
+                ret = bus.DeletetMultiItems(deletedata);
+                if (ret < 0)
+                {
+                    //Trong trường hợp nhiều thao tác, có một thao tác không thành công,
+                    //hàm này được gọi để quay lại trạng thái trước khi thực hiện (bắt đầu từ khi gọi BeginTransaction()
+                    bus.RollbackTransaction();
+                }
+                else
+                {
+                    //Sau khi thao tác dữ liệu thành công, hàm này được gọi để thực hiện ghi vào cơ sở dữ liệu
+                    bus.CommitTransaction();
+                }
+            }
+            bus.CloseConnection();
+
+            return Json(new
+            {
+                ret
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// tạo phòng thi cho sinh viên
+        /// </summary>
+        /// <param name="examTimeCode">mã đợt thi</param>
+        /// <returns></returns>
+        public int CreateExamHallStudent(string examTimeCode)
+        {
+            var ret = 0;
+            // delete all examhall by examtimecode
+            ExamHallController examhallstudens = new ExamHallController();
+            ret = examhallstudens.DeleteAll(examTimeCode);
+            if (ret >= 0)
+            {
+                // get examtime
+                EXAMTIME_BUS examTimeBus = new EXAMTIME_BUS();
+                EXAMTIME_OBJ examtime = examTimeBus.GetByID(new EXAMTIME_OBJ.BusinessObjectID(examTimeCode));
+                int studentAmountHall = examtime.STUDENTAMOUNTHALL;
+                //get all student by examtime
+                EXAMHALLSTUDENT_BUS bus = new EXAMHALLSTUDENT_BUS();
+                List<fieldpara> lipa = new List<fieldpara>
+            {
+                new fieldpara("EXAMTIMECODE", examTimeCode, 0),
+                new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0)
+            };
+                //order by code
+                var liStudent = bus.getAllBy2("CODE", lipa.ToArray()); // list ExamHallStudent
+                EXAMHALLSTUDENT_OBJ examhallstudent = new EXAMHALLSTUDENT_OBJ();
+                string examhallcode = "";
+                int counthall = 0; // số phòng
+                // gán mã phòng cho sinh viên
+                for (int i = 0; i < liStudent.Count; i++)
+                {
+                    // ví dụ: từ sinh viên 1 -> count - 1
+                    if (i % studentAmountHall != 0)
+                    {
+                        examhallstudent.CODE = liStudent[i].CODE;
+                        examhallstudent.EXAMHALLCODE = examhallcode;
+                        ret = Update(examhallstudent);
+                        if (ret < 0)
+                        {
+                            bus.CloseConnection();
+                            examTimeBus.CloseConnection();
+                            return ret;
+                        }
+                    }
+                    else
+                    {
+                        counthall++;
+                        // các sinh viên đầu phòng
+                        // create examhall
+                        EXAMHALL_OBJ examhall = new EXAMHALL_OBJ
+                        {
+                            NAME = examtime.NAME + " - "+ counthall,
+                            EXAMTIMECODE = examTimeCode,
+                            UNIVERSITYCODE = _ses.gUNIVERSITYCODE
+                        };
+                        ArrayList result = new ExamHallController().UpdateExamHall(examhall);
+                        examhallcode = (string)result[0]; // examhallcode
+                                                          // update examhallcode
+                        examhallstudent.CODE = liStudent[i].CODE;
+                        examhallstudent.EXAMHALLCODE = examhallcode;
+                        ret = Update(examhallstudent);
+                        if (ret < 0)
+                        {
+                            bus.CloseConnection();
+                            examTimeBus.CloseConnection();
+                            return ret;
+                        }
+                    }
+                }
+                bus.CloseConnection();
+                examTimeBus.CloseConnection();
+            }
+           
+            return ret;
+        }
+
+        /// <summary>
+        /// chia phòng thi
+        /// </summary>
+        /// <param name="examTimeCode"></param>
+        /// <returns></returns>
+        public JsonResult CreateExamHallStudentJson(string examTimeCode)
+        {
+            int ret = CreateExamHallStudent(examTimeCode);
+            return Json(new { ret }, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

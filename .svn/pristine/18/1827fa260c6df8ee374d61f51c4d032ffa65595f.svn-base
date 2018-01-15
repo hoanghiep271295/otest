@@ -1,0 +1,1080 @@
+﻿/**
+ * Quy tắc đặt tên
+ * QUESTIONGROUP :Câu hỏi hay được hiểu hay hơn chính là đầu bài của câu hỏi
+ * QUESTION : câu hỏi con trong một đề bài
+ * ANSWER : Câu trả lời cho một câu hỏi con 
+ * TRUEANSWER : Nếu là 0 tức là câu trả lời sai và là 1 tức là câu trả lời đúng
+ * các questiontype :Các hình thức câu hỏi thi khác nhau
+    MC: câu hỏi một nhiều - có thể là 1 câu hỏi có nhiều đáp án và chọn một đáp án đúng
+    PA: câu hỏi dạng ghép đôi - hiển thị một danh sách các câu hỏi bên trái, danh sách các câu hỏi bên phải ghép lại thành cặp
+    FI: Câu hỏi điền vào đoạn trống - Có một đoạn các câu hỏi và sau đó có danh sách các đáp án (có thể dư hoặc không dư) để điền vào
+    FG: Câu hỏi điền vào đoạn trống tự gõ từ - Có một đoạn các câu hỏi và sau đó người thi phải tự điền từ thích hợp vào ô trống.
+    CO: Dạng câu hỏi tổng kết - cho một đoạn đọc; sau đó tiến hành đưa ra một câu hỏi và có nhiều đáp án trả lời độc lập - true/false, true/false/not given
+    RW: Viết lại câu; Một câu hỏi có thể có nhiều đáp án đúng (để cho phép so sánh chỉ cần đúng một trong các đáp án đó là tính điểm)
+    LA: Nghe nói - lưu lại một file không có answer
+    WR: Bài viết (tự luận)
+  * statecontrol: kiểm tra trạng thái từ các tab sang tab answer,
+        = -10: tức là khởi tạo
+        = 1  : tức là chuyển từ tab số 1( ListSubCon, Nội dung môn học ) sang
+        = 2  : tức là chuyển từ tab số 2( ListQGROUP, Câu hỏi) sang
+        = 3  : tức là chuyển từ tab số 3(ListQuestion,Chi tiết câu hỏi) sang
+ */
+var ListAnswer = React.createClass({
+    getInitialState: function() {
+        return {
+            agGrid: { setRowData: null, getDataChange: null, setNextRow: null, setPrevRow: null },
+            rowSelect: null,
+            columnDefs: [
+                { headerName: "Mã hiển thị", field: "CODEVIEW", width: 200, editable: false },
+                { headerName: "Tên", field: "NAME", width: 200, editable: false },
+                { headerName: "Đúng", field: "TRUEANSWER", width: 200, editable: false, type: 'checkbox' }
+            ],
+            tab: null,
+            page: 1,
+            statecontrol: -10,
+            questiontypeAnswer: null,
+            buts: [{ ref: 'cmdAdd', callback: this.onNewClick }
+//             , { ref: 'cmdSearchSQL', callback: this.onSearchSQL }
+//     , { ref: 'cmdPrint', callback: this.onReport }
+//     , { ref: 'cmdSearch', callback: this.onSearch }
+     , { ref: 'cmdEdit', callback: this.onEditClick }
+     , { ref: 'cmdDelete', callback: this.onDeleteClick }
+     , { ref: 'cmdRefresh', callback: this.Refresh }
+            ]
+
+        };
+    },
+    componentWillMount: function() {
+        //var tab = new Tab(true,'listAnswer','Câu trả lời',this.onNewClick,null,this.onDeleteClick,this.onNextClick,this.onPrevClick,this.onReport,this.onActive,this.onSearch,this.onSearchSQL);
+        //tab.pushToList();
+        //this.setState({ tab: tab });
+        //component.add('listAnswer', this);
+    },
+    componentDidMount: function () {
+        this.setState({ popup: this.refs[this.props.id + '_Popup'] });
+        //        this.loadData();
+
+    },
+
+    initAgGrid: function(setRowData, getDataChange, setNextRow, setPrevRow) {
+        var agGrid = {
+            setRowData: setRowData,
+            getDataChange: getDataChange,
+            setNextRow: setNextRow,
+            setPrevRow: setPrevRow
+        };
+        this.setState({ agGrid: agGrid });
+    },
+    refreshRowData: function () {
+        this.loadData();
+    },
+    onRowSelect: function (itemSelect) {
+//        if (!!itemSelect.length) {
+            this.setState({ rowSelect: itemSelect });
+//        }
+
+    },
+    onActive: function () {
+        console.log('Active list answer');
+        var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+        var questioncode = this.props.parent.getKeyValue('questioncode');
+        var that = this;
+
+        if (isMiss(questiongroupcode)) {
+            bootbox.alert("Chưa chọn nhóm câu hỏi", function () { that.props.parent.ChooseTab('questiongroup') });
+            return;
+        }
+        if (isMiss(questioncode)) {
+            bootbox.alert("Chưa chọn câu hỏi", function () { that.props.parent.ChooseTab('question') });
+            return;
+        }
+        //var questionactive = component.get('listQuestion');
+        //var questiongroup = component.get('listQGROUP');
+        ////truong hop di tu tab 1 (subjectcontent) sang tab 4, đề phòng trường hợp cả hidden cũng null
+        ////khi này dữ liệu sẽ được lấy ra từ các input hidden
+        //if (questionactive.state.questionactive < 0 && questiongroup.state.statusQGroup < 0)
+        //{ this.setState({ statecontrol: 1 }); this.loadData(); }
+        ////truong hop di tu tab 2 (questiongroup) sang tab 4, can lay du lieu de đổ
+        ////trường hợp này sẽ không lấy được rowselect của tab question(tab 3) nên cần thông qua
+        ////1 hàm loadDataBackup để lấy dữ liệu bản ghi đầu tiên của listQuestion theo questiongroupcode (nếu có) 
+        //if (questionactive.state.questionactive < 0 && questiongroup.state.statusQGroup > 0)
+        //{ this.setState({ statecontrol: 2 }); questionactive.loadDataBackup(); }
+        ////truong hop di tu tab 3 (question)  sang tab 4
+        //if (questionactive.state.questionactive > 0 && questiongroup.state.statusQGroup < 0)
+        //{ this.setState({ statecontrol: 3 }); this.loadData(); }
+
+        //var dataSearch = [
+        //{ title: 'Mã', id: 'CODESEARCH', type: 'text' },
+        //{ title: 'Tên', id: 'NAMESEARCH', type: 'text' },
+        //{ title: 'Ghi chú', id: 'NOTESEARCH', type: 'text' }
+        //];
+        ////ẩn combobox trên thanh header
+        //setTimeout(function () {
+        //    $("#PARENTCODE").parent().show();
+        //    setTimeout(function () {
+        //        $("#PARENTCODE").prop("disabled", true);
+        //    }, 100);
+        //    $("#PARENTCODE3").parent().hide();
+        //}, 200);
+        //var app = component.get('app');
+        //app.setState({ dataSearch: dataSearch });
+        this.loadData();
+    },
+    /**
+*Lấy lại toàn bộ dữ liệu 
+*/
+    Refresh: function () {
+//        this.loadData(this.state.searchstatus, this.state.rowSelect[0]);
+    },
+    /**
+    *Lấy lại toàn bộ dữ liệu được gọi bởi popup - với đối tượng vào để xử lý phù hợp
+    */
+    ReloadList: function (obj) {
+        //Mặc định theo giá trị tìm kiếm hiện tại, thiết lập theo bản ghi hiện tại
+        this.loadData(this.state.searchstatus, obj);
+
+    }
+    ,
+    /**
+    * Cập nhật lại thông tin sau khi gọi xóa dữ liệu thành công
+    */
+    ReloadListDelete: function () {
+        //cập nhật lại danh sách
+        this.loadData();//(this.state.currentcode);
+    },
+    //load data for list answer
+    loadData: function () {
+
+        //     var ret;
+        //     //check state is from hidden input or from rowselect from question
+        //     var parent = component.get('listQuestion');
+        //     var questioncode;
+        //     var questiongroupcode;
+        //     //from rowselect
+        //     var control = this.state.statecontrol;
+        //     //trong trường hợp có  rowselect  
+        //     debugger
+        //     console.log(parent.state.rowSelect);
+        //     if (!!parent.state.rowSelect) {
+        //         //set state questiontypeAnswer =rowselect lấy sanh từ từ tab số 3
+        //         this.setState({ questiontypeAnswer: parent.state.questiontypeQuestion });
+        //         ///clear data in hidden input
+        //         $('#hidQUESTIONCODE').val('');
+        //         var question = parent.state.rowSelect[0];
+        //         questioncode = parent.state.rowSelect[0].CODE;
+        //         questiongroupcode = parent.state.rowSelect[0].QUESTIONGROUPCODE;
+        //         var income = JSON.stringify(parent.state.rowSelect[0]);
+        //         //đưa giá trị select vào hidden input
+        //         $('#hidQUESTIONCODE').val('');
+        //         $('#hidQUESTIONCODE').val(income);
+        //         //convert dangerous text HTML to HTML
+        //         var parser = new DOMParser;
+        //         var dom = parser.parseFromString('<!doctype html><body>' + question.CONTENT, 'text/html');
+        //         //text content là biến số mặc định
+        //         var decodedString = dom.body.textContent;
+        //         document.getElementById('content_question').innerHTML = '';
+        //         document.getElementById('content_question').className = '';
+        //         document.getElementById('content_question').innerHTML = decodedString;
+        //     } else
+        //         //không có rowselect phải lấy từ hidden input
+        //     {
+        //         // kiểm tra trạng thái từ các tab sang tab answer
+        //         switch (control) {
+        //             //từ tab 1 sang, cần kiểm tra xem nó có dữ liệu trong hidden input hay không đã
+        // case 1:
+        //     console.log('TH tab 1 sang');      
+        //                 //from hidden input, và sử dụng trong trường hợp từ tab số 1 sang tab 4, chứ qua tab 3 thì không cần thiết nữa
+        //                 //ve ban chat thi khi di tu tab 2 hay tab 1 sang tab 4 thi cung nhu nhau             
+        //                 if (!!$('#hidQUESTIONCODE').val()) {
+        //                     var question1 = JSON.parse($('#hidQUESTIONCODE').val());
+        //                     questioncode = question1.CODE;
+        //                     questiongroupcode = question1.QUESTIONGROUPCODE;
+        //                     //convert dangerous text HTML to HTML
+        //                     var parser2 = new DOMParser;
+        //                     var dom2 = parser2.parseFromString('<!doctype html><body>' + question1.CONTENT, 'text/html');
+        //                     var decoded = dom2.body.textContent;
+        //                     document.getElementById('content_question').innerHTML = '';
+        //                     document.getElementById('content_question').className = '';
+        //                     document.getElementById('content_question').innerHTML = decoded;
+        //                     //if hidQUESTIONCODE not null=>  hidQUESTIONGROUPCODE not null too=>no net to check null
+        //                     if (!!$('#hidQUESTIONGROUPCODE').val()) {
+        //                         var questiongroup = $('#hidQUESTIONGROUPCODE').val();
+        //                         this.setState({ questiontypeAnswer: questiongroup._QUESTIONTYPECODE.CODEVIEW });
+        //                     }                       
+        //                 }
+        //                     //trường hợp không phải từ tab question sang 
+        //                     //và cũng không có dữ liệu lưu hidden input questioncode 
+        //                     //thì có nghĩa là không có câu hỏi,nhưng TH chưa thấy xuất hiện
+        //                 else
+        //                     if (!!$('#hidQUESTIONGROUPCODE').val()) {
+        //                         //convert to object     
+        //                         var questiongroup1 = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+        //                             questioncode = "";
+        //                             questiongroupcode = questiongroup1.CODE;
+        //                      //convert Html to string ,decdode
+        //                         var parserquesiongroup = new DOMParser;
+        //                         var domQg = parserquesiongroup.parseFromString('<!doctype html><body>' + questiongroup1.CONTENT, 'text/html');
+        //                         var decodeQg = domQg.body.textContent;                       
+        //                         document.getElementById('content_question').innerHTML = '';
+        //                         document.getElementById('content_question').className = '';
+        //                         document.getElementById('content_question').innerHTML = decodeQg;        
+        //                         this.setState({ questiontypeAnswer: questiongroup1._QUESTIONTYPECODE.CODEVIEW });
+        //                     }
+        //                     else
+        //                     {
+        //                         questioncode = "";
+        //                         questiongroupcode = "";                          
+        //                         document.getElementById('content_question').innerHTML = 'No data being show for this subjectcontent !!';
+        //                         document.getElementById('content_question').className = "content_questionClass";
+        //                     }
+        //                 break;
+
+        //                 //sang từ tab 2
+        //                 //check null hidden trước
+        //case 2:
+        //                 //trường hợp này nội dung câu hỏi đã được lấy sang từ loadDataBackup
+        //                 // của tabquestion(tab 3),xuống onactive xem để biết
+        //                /*
+        //                vấn đề là từ tab 2 sang thì sẽ dồn dữ liệu nếu có vào trong thằng hidden input question rồi nên giờ sẽ chỉ cần lấy hiện đưa vào question code là ok
+        //                 may mắn là ở đây chúng ta không cần set nội dung câu hỏi nữa, điều này đã được phía tab 3 trong hàm loadDataBackup bên kia thực hiện hộ rồi
+        //                  */
+        //              //đã xét questiontype ở tab bên kia listquestion chỗ hàm getlistbackup 
+        //                 console.log('TH tab 2 sang');
+        //                 if (!!$('#hidQUESTIONCODE').val())
+        //                 {
+        //                     var question2 = JSON.parse($('#hidQUESTIONCODE').val());
+        //                     questioncode = question2.CODE;
+        //                     questiongroupcode = question2.QUESTIONGROUPCODE;
+        //                 }
+        //                 else
+        //                     //trường hợp chỉ có questiongroup không có question 
+        //                     if (!!$('#hidQUESTIONGROUPCODE').val())
+        //                     {
+        //                    var objquestiongroup = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+        //                    questioncode = "";
+        //                    questiongroupcode = objquestiongroup.CODE;
+
+        //                     }
+        //                         //trường hợp tệ nhất, k có gì
+        //                     else {
+        //                        questioncode = "";
+        //                        questiongroupcode = "";
+        //             }
+        //              break;
+        // case 3:
+        //                 //Th này là trường hợp mặc định từ tab 3 sang tab 4 nếu 
+        //                 //không có rowselect thì tức là chả có gì, trong hidden cũng mặc định null luôn
+        //                 console.log('TH tab 3 sang');
+        //                 //đây là trường hợp chỉ có câu hỏi chi tiết mà không có câu hỏi                    
+        //                 /*hiện tại thì tôi chưa làm trường hợp nào thế này lên cứ để đây sau này bảo trì cần sẽ sửa */
+        //                 if (!!$('#hidQUESTIONCODE').val()) {
+        //                     $('#hidQUESTIONCODE').val('');
+        //                     questioncode = ""; }
+        //                 //nếu thế thì cho phép lấy dữ liệu từ hidden questiongroupcode,
+        //                 if (!!$('#hidQUESTIONGROUPCODE').val()) {
+        //                     var questiongroup3 = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+        //                     this.setState({ questiontypeAnswer: questiongroup3._QUESTIONTYPECODE.CODEVIEW });
+        //                     questiongroupcode = questiongroup3.CODE;
+        //                     var parserquesiongroup3 = new DOMParser;
+        //                     var domQg3 = parserquesiongroup3.parseFromString('<!doctype html><body>' + questiongroup3.CONTENT, 'text/html');
+        //                     var decodQg3 = domQg3.body.textContent;
+        //                     document.getElementById('content_question').innerHTML = '';
+        //                     document.getElementById('content_question').className = '';
+        //                     document.getElementById('content_question').innerHTML = decodQg3;
+        //                     log.show("data from hidden questiongroup!!", true);
+        //                 }
+        //                 else                  
+        //                 { questiongroupcode = ""; questioncode = ""; }
+        //                 document.getElementById('content_question').innerHTML = 'No data from Listquestion !!!';
+        //                 document.getElementById('content_question').className = "content_questionClass";
+        //                 break;
+
+        //                 //trường hợp mặc định để cho vui,chứ cũng hết tab mà chuyển rồi nên theo quy định cứ để default cho chắc kèo
+        // default:
+        //                     console.log('TH tab mặc định');
+        //                    questioncode = "";
+        //                    questiongroupcode = "";
+        //                    $('#hidQUESTIONCODE').val('');
+        //                    $('#hidQUESTIONGROUPCODE').val('');
+        //                    document.getElementById('content_question').innerHTML = 'No data from Listquestion and Listquestiongroup!!!';
+        //                    document.getElementById('content_question').className = "content_questionClass";
+        //                 break;
+        //         }
+        //     }       
+        var questioncode = this.props.parent.getKeyValue('questioncode');
+        var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+        var ret = 0;
+             var pageSize = 0;
+             if (isNaN(pageSize)) {
+                 pageSize = 0;
+             }
+        var page = 1;//this.state.page;
+             $.ajax({
+                 url: "/Question/getListAnswer",
+                 data: {
+                     questioncode: questioncode,
+                     questiongroupcode: questiongroupcode,
+                     page: page,
+                     pageSize: pageSize
+                 },
+                 dataType: 'json',
+                 success: function(data) {
+                     //ret = data.data;
+                     ////SO LUONG BAN GHI DUNG 
+                     //$('#hidQUANTITIES').val('');
+                     //$('#hidQUANTITIES').val(data.quantiti);       
+                     ////CODE CAU TRA LOI DUNG
+                     //$('#hidANSWERCODE').val('');
+                     //$('#hidANSWERCODE').val(data.answer);
+                     ////TONG SO LUONG CAU TRA LOI
+                     //$('#hidTOTALITEMANSWER').val('');
+                     //$('#hidTOTALITEMANSWER').val(data.totalItem);
+
+                     if (data.data.length === 0) {
+                         this.setState({ rowSelect: null });
+                     }
+                     this.state.agGrid.setRowData(data.data);
+//                     this.setDisplay(page, pageSize, data);
+                 }.bind(this),
+                 error: function(xhr, status, err) {
+                     console.log(err.toString());
+                 }
+             });
+             return ret;
+    },
+    // set hiển thị số bản ghi và disable nút
+    /**
+     * 
+     * @param {} page 
+     * @param {} pageSize 
+     * @param {} data 
+     * @returns {} 
+     */
+    setDisplay: function(page, pageSize, data) {
+        //// set phần hiển thị số bản ghi
+        //$("#startIndexAnswer").text((page - 1) * pageSize + 1);
+        //if (page === data.totalPage) {
+        //    $("#endIndexAnswer").text(data.totalItem);
+        //} else
+        //    $("#endIndexAnswer").text(page * pageSize);
+        //$("#totalItemAnswer").text(data.totalItem);
+        //// disable nút <,>
+        //if (page === 1)
+        //    $("#prePageAnswer").prop('disabled', true);
+        //else
+        //    $("#prePageAnswer").prop('disabled', false);
+        //if (page === data.totalPage)
+        //    $("#nextPageAnswer").prop('disabled', true);
+        //else
+        //    $("#nextPageAnswer").prop('disabled', false);
+    },
+    //set data cho popup
+    setData: function (data) {
+  //      var obj;
+  //      if (!!data) {
+  //          //trường hợp người dùng chuyển từ tab số 2 là LISTQGROUP sang tab 
+  //          //của chúng ta là tab 4 : ListAnswer 
+  //          var questiongroup = component.get('listQGROUP');
+  //          var questiontype = "";
+  //          //kiểm tra trạng thái là select từng dòng trên danh sách
+  //          if (!!questiongroup.state.rowSelect.length) {
+  //              questiontype = questiongroup.state.questiontypeQGroup;                          
+  //          } else
+  //              //hay là chuyển từ tab 1: ListSubCon  sang tab 4 ,
+  //              //vì không thể lấy được rowselected nên phải dấu dữ liệu, vào trong input hidden và từ đó lấy sang đây
+  //          {
+  //              if (!!$('#hidQUESTIONGROUPCODE').val()) {
+  //                  obj = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+  //                  questiontype = obj._QUESTIONTYPECODE.CODEVIEW;
+  //              //thông qua questongroup để xác định codeview của questiontype, định dạng loại câu hỏi
+  //                  questiongroup.setState({ questiontypeQGroup: questiontype });
+  //              }
+  //              //vì trường hợp chuyển từ tab 3 (listquestion) sang thì không lấy được questiontype của nó
+  //              //nên không thể lấy component.get('listQuestion ');
+  //          }
+  //          ///switch case questiontype
+  //          var parser2 = new DOMParser;
+  //          var dom2 = parser2.parseFromString('<!doctype html><body>' + data._QUESTIONCODE.CONTENT,'text/html');
+  //          var decoded = dom2.body.textContent;
+  //          document.getElementById('content_question').innerHTML = decoded;
+  //          switch (questiontype) {   
+  //              //multichoice
+  //              //nếu là trường hợp multichoice thì kiểm tra xem số lượng câu trả lời đúng của câu hỏi này
+  //              //nếu bằng một thì có nghĩa là không thể thêm 1 câu trả lời đúng nữa
+  //              //thì mặc định các câu trả lời được thêm tiếp theo sẽ là câu trả lời sai
+  //              //setdata
+  //  case 'MC':
+  //              $('#btn_PrevAnswer').prop('disabled', false);
+  //              $('#btn_NextAnswer').prop('disabled', false);
+  //      $('#btnAddNewAnswer').show();
+  //              $("#answercontent").show();
+  //              $('#TRUEANSWER').val(data.TRUEANSWER);
+  //              $('#CONTENT_QUESTION_POPUP').html($("<div/>").html(data._QUESTIONCODE.CONTENT).text());
+  //              if (parseInt($("#hidQUANTITIES").val()) >= 1) { $("#TRUEANSWER").prop("disabled", true); }
+  //              if ($('#hidANSWERCODE').val() === data.CODE) {
+  //                  setTimeout(function () { $('#TRUEANSWER').prop('disabled', false); },30);}
+  //                      break;
+  //              //setdata
+  //              //trường hợp câu hỏi tổng hợp
+  //              //chi nhap True/false/not given
+  //              //answercontent :tinyMCE
+  //              //content_parent(CONTENT_QUESTION_POPUP ): nội dung câu hỏi trên popup
+  //   case 'CO':
+  //               $('#btnAddNewAnswer').show();
+  //               $('#btn_PrevAnswer').prop('disabled', false);
+  //               $('#btn_NextAnswer').prop('disabled', false);
+  //                  $("#answercontent").hide();
+  //                  $('#TRUEANSWER').val(data.TRUEANSWER);
+  //                  if (parseInt($("#hidQUANTITIES").val()) >= 1) {$("#TRUEANSWER").prop("disabled", true);}
+  //                  if ($('#hidANSWERCODE').val() === data.CODE) {
+  //                      setTimeout(function () { $('#TRUEANSWER').prop('disabled', false); }, 50);
+  //                  }
+  //       //neu ma so luong cau tra loi lon hon 3 thi thoi an nut them moi di
+  //                  if (parseInt($('#hidTOTALITEMANSWER').val()) >= 3) {
+  //                      $('#btnAddNewAnswer').hide();
+  //                  } 
+  //                  setTimeout(function () {
+  //                      $('#CONTENT_QUESTION_POPUP').html($("<div/>").html(data._QUESTIONCODE.CONTENT).text());
+  //                      $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //                      $('#CO_ANSWER').val(data.CONTENT);
+  //                  }, 10);
+  //                  break;
+  //              //setData
+  //              //ghép đôi,mặc định là đúng,vì 1 câu hỏi chỉ có 1 câu trả lời
+  //       //cho phép hiển thị nội dung câu hỏi conntent_parent trong dialog 
+  //       //vì vậy nếu số lượng câu trả lời đã là 1 và mặc định đúng rồi thì không thể sử dụng các nút di chuyển hay thêm mới được nữa
+  //   case 'PA':
+  //       $('#btnAddNewAnswer').show();
+  //                  $('#btn_PrevAnswer').prop('disabled', false);
+  //                  $('#btn_NextAnswer').prop('disabled', false);
+  //                  $("#answercontent").show();
+  //                  $('#TRUEANSWER').val(data.TRUEANSWER);
+  //                  if (parseInt($('#hidTOTALITEMANSWER').val()) >= 1 || parseInt($("#hidQUANTITIES").val()) >= 1) {
+  //                      $('#btnAddNewAnswer').hide();
+  //                      $('#btn_PrevAnswer').prop('disabled', true);
+  //                      $('#btn_NextAnswer').prop('disabled', true);
+  //                  } else {
+  //                      $('#btnAddNewAnswer').show();
+  //                      $('#btn_PrevAnswer').prop('disabled', false);
+  //                      $('#btn_NextAnswer').prop('disabled', false);
+  //                  }
+  //                  setTimeout(function () {$("#TRUEANSWER").prop("disabled", true);}, 30);
+  //     $('#CONTENT_QUESTION_POPUP').html($("<div/>").html(data._QUESTIONCODE.CONTENT).text());
+  //     break;
+  //               //setData
+  //               //Dạng điền vào đoạn trống tự gõ từ 
+  //               //Không cho phép hiển thị nội dung câu hỏi vì cũng có gì đâu mà hiển thị
+  //case 'FG':
+  //    $('#btnAddNewAnswer').show();
+  //                $('#btn_PrevAnswer').prop('disabled', false);
+  //                $('#btn_NextAnswer').prop('disabled', false);
+  //                  $('#TRUEANSWER').val(data.TRUEANSWER);
+  //                  $('#answercontent').hide();
+  //                  if (parseInt($('#hidQUANTITIES').val()) >= 1 || parseInt($('#hidTOTALITEM').val()) >= 1)
+  //                  {
+  //                    $('#btn_PrevAnswer').prop('disabled', true);           
+  //                    $('#btn_NextAnswer').prop('disabled',true);
+  //                      $('#btnAddNewAnswer').hide();
+  //                  }
+  //                  setTimeout(function () { $("#TRUEANSWER").prop("disabled", true); }, 30);
+  //                  $('#CONTENT_QUESTION_POPUP').text(data._QUESTIONCODE.NAME);
+  //                  $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //                  $('#FG_ANSWER').val(data.CONTENT);
+  //                  break;
+  //        //xác định dạng này giống hệt với dạng MC, khác là ở chỗ kéo thả,
+  //        //với 1 vị trí cần điền tương ứng là một chi tiết câu hỏi(question) 
+  //        //vì FI là dạng kéo thả nên cho nó được nhập đẹp,tức là có tinyMCE
+  //        //setdata
+  //case 'FI':
+  //    $('#btnAddNewAnswer').show();
+  //              $('#btn_PrevAnswer').prop('disabled', false);
+  //              $('#btn_NextAnswer').prop('disabled', false);
+  //               $('#TRUEANSWER').val(data.TRUEANSWER);
+  //               $('#CONTENT_QUESTION_POPUP').text(data._QUESTIONCODE.CONTENT);
+  //               $('#CONTENT_QUESTION_POPUP').addClass("content_questionClass");
+  //                          $("#answercontent").show();
+  //                          if ($("#hidQUANTITIES").val() >= 1) {
+  //                              $("#TRUEANSWER").prop("disabled", true);                             
+  //                          }
+  //                          if ($('#hidANSWERCODE').val() === data.CODE) {
+  //                              setTimeout(function () {              
+  //                                  $('#TRUEANSWER').prop('disabled', false);
+  //                              }, 30);
+  //                          }
+                    
+  //                     break;
+  //       //viet lai cau
+  //       //cho phép hiển thị nội dung câu hỏi nhưng câu trả lời thì không được nhập dạng html vì khó mà
+  //       //decode để mà compare với vâu trả lời của sinh viên
+  //       //dạng này không có tiny nên không hiển thị answercontent
+  //       //setData
+  // case 'RW':
+  //     $('#btnAddNewAnswer').show();
+  //              $('#btn_PrevAnswer').prop('disabled', false);
+  //              $('#btn_NextAnswer').prop('disabled', false);
+  //              $('#TRUEANSWER').val(data.TRUEANSWER);
+  //              $('#answercontent').hide();
+  //              $('#RW_ANSWER').val(data.CONTENT);
+  //              setTimeout(function () {              
+  //                  $("#TRUEANSWER").prop("disabled", true);
+  //                  $('#CONTENT_QUESTION_POPUP').html($("<div/>").html(data._QUESTIONCODE.CONTENT).text());
+  //                  $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //              },30);               
+  //              break;
+  //       //trường hợp này là trương hợp mà cần cung cấp một số gợi ý cho giáo viên để chấm bài
+  //       //nên câu trả lời cho nhập dạng tinyMCE cũng được và mặc định là đúng
+  //       //chỉ cho nhập 1 lần câu trả lời thôi
+  //       //setData
+  //   case 'WR':
+  //       $('#btnAddNewAnswer').show();
+  //              $('#btn_PrevAnswer').prop('disabled', false);
+  //              $('#btn_NextAnswer').prop('disabled', false);
+  //              $('#TRUEANSWER').val(data.TRUEANSWER);
+  //               $('#CONTENT_QUESTION_POPUP').html($("<div/>").html(data._QUESTIONCODE.CONTENT).text());
+  //               $('#CONTENT_QUESTION_POPUP').addClass("content_questionClass");
+  //               $("#answercontent").show();
+                
+  //               if ($("#hidQUANTITIES").val() >= 1) {
+  //                   $('#btnAddNewAnswer').hide();
+  //                   $('#btn_PrevAnswer').prop('disabled', true);
+  //                   $('#btn_NextAnswer').prop('disabled', true);
+  //               } else {
+  //                   $('#btnAddNewAnswer').show();
+  //                   $('#btn_PrevAnswer').prop('disabled', false);
+  //                   $('#btn_NextAnswer').prop('disabled', false);
+  //               }
+  //               if ($('#hidANSWERCODE').val() === data.CODE) {
+  //                   setTimeout(function () {
+  //                       $('#TRUEANSWER').prop('disabled', false);
+  //                   }, 30);
+  //               }
+  //               break;
+  //        //cau hoi dang nghe noi
+  //        //dạng này cũng mặc định 
+  //        //dạng này cũng không cần có câu hỏi : content_parent
+  //        //setData
+  //  case 'LA':
+  //      $('#btnAddNewAnswer').show();
+  //                  $('#btn_PrevAnswer').prop('disabled', false);
+  //                  $('#btn_NextAnswer').prop('disabled', false);
+  //                  $('#TRUEANSWER').val(data.TRUEANSWER);
+  //                  if ($("#hidQUANTITIES").val() >= 1) {
+  //                      $('#btnAddNewAnswer').hide();
+  //                      $('#btn_PrevAnswer').prop('disabled', true);
+  //                      $('#btn_NextAnswer').prop('disabled', true);
+  //                  } else {
+  //                      $('#btnAddNewAnswer').show();
+  //                      $('#btn_PrevAnswer').prop('disabled', false);
+  //                      $('#btn_NextAnswer').prop('disabled', false);
+  //                  }
+  //                  setTimeout(function () {
+  //                      $("#TRUEANSWER").prop("disabled", true);
+  //                      $('#CONTENT_QUESTION_POPUP').html($("<div/>").html(data._QUESTIONCODE.CONTENT).text());
+  //                      $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //                      },30);
+  //                  break;
+        
+  //        //trường hợp mặc định
+  //       //giả sử như tất cả các Listquestiongroup đều null và tất cả Listquestion cũng null hết
+  //              default:
+  //                  $('#TRUEANSWER').val(data.TRUEANSWER);
+  //                  $('#TRUEANSWER').prop('disabled', false);
+  //                  setTimeout(function () {
+  //                      $("#CODEVIEWANSWER").prop('disable', true);
+  //                      $('#CONTENT_QUESTION_POPUP').text($("<div/>").html(data._QUESTIONCODE.CONTENT).text());
+  //                  }, 30);
+  //                      break;
+  //          }
+  //          //mã chi tiết câu hỏi và tên chi tiết câu hỏi
+  //          $('#QUESTIONGROUPCODE2').val(data.QUESTIONGROUPCODE);
+  //          $('#QUESTIONGROUPNAME2').text(data._QUESTIONGROUPCODE.NAME);
+  //          $('#QUESTIONNAME2').text(data._QUESTIONCODE.NAME);
+  //          $('#QUESTIONCODE2').val(data.QUESTIONCODE);
+  //          //Hiện code 
+  //          $('#CODEANSWER').val(data.CODE);
+  //          $('#CODEVIEWANSWER').val(data.CODEVIEW);
+  //          $('#NAMEANSWER').val(data.NAME);
+  //          //Hiện nội dung câu trả lời
+  //          $('textarea.CONTENTANSWER').html(data.CONTENT);
+  //          window.tinymce.get('CONTENTANSWER').setContent($("<div/>").html(data.CONTENT).text());
+  //          $('#CONTENTIMGANSWER').val(data.CONTENTIMG);
+  //          $('#THEORDERANSWER').val(data.THEORDER);          
+  //      }
+  //          //nếu không có dữ liệu thì mặc định là thêm mới
+  //          //tất cả các loại hình câu trả lời cho tất cả câu hỏi đêu như nhau ở đây
+  //      else {
+  //          //mã chi tiết câu hỏi và tên chi tiết câu hỏi
+  //          $('#QUESTIONCODE2').val('');
+  //          $('#QUESTIONNAME2').text('');
+  //          //mã câu hỏi và tên câu hỏi
+  //          $('#QUESTIONGROUPCODE2').val('');
+  //          $('#QUESTIONGROUPNAME2').text('');
+       
+  //          this.clearData();
+  //          //nếu dữ liệu đầu vào là null và không có 
+  //          //tên câu hỏi và tên chi tiết câu hỏi thì cần lấy thông qua hidden đã gán từ những tab trước 
+  //          if (!!$('#hidQUESTIONCODE').val()) {
+  //              //parse nó ra thành đối tượng dùng JSON.Paser sẽ từ string ra Object
+  //              var question = JSON.parse($('#hidQUESTIONCODE').val());
+  //              //chi tiết câu hỏi vào đây
+  //              $('#QUESTIONCODE2').val(question.CODE);
+  //              $('#QUESTIONNAME2').text(question.NAME);
+  //              //nếu đối tượng chi tiết câu hỏi không null tức là bố nó câu hỏi cũng không null         
+  //              $('#QUESTIONGROUPCODE2').val(question.QUESTIONGROUPCODE);
+  //              $('#QUESTIONGROUPNAME2').text(question._QUESTIONGROUPCODE.NAME);
+  //          } else {
+  //              //trường hợp này là không có chi tiết câu hỏi nhưng thực sự thì chỉ có dạng nghe nói thì may ra có 
+  //              //nhưng dạng câu trả lời thì cũng còn xem xét
+  //              if (!!$('#hidQUESTIONGROUPCODE').val()) {
+  //                  var objgroup = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+  //                  $('#QUESTIONGROUPCODE2').val(objgroup.CODE);
+  //                  $('#QUESTIONGROUPNAME2').text(objgroup.NAME);
+  //                  // set cho question is null
+  //                  $('#QUESTIONCODE2').val('');
+  //                  $('#QUESTIONNAME2').text("No data question");
+  //                  $('#QUESTIONNAME2').addClass("content_questionClass");
+
+  //              } else {
+  //                  //trường hợp này không có dữ liệu ở bất kỳ đây đến cả, tab 2, tab 3 is null
+  //                  //set data is null
+  //                  //questiongroup on top of popupAnswer
+  //                  $('#QUESTIONGROUPCODE2').val('');
+  //                  $('#QUESTIONGROUPNAME2').text("No data questiongroup is available");
+  //                  $('#QUESTIONGROUPNAME2').addClass("content_questionClass");
+  //                  //question on second stap on top of popupAnswer
+  //                  $('#QUESTIONCODE2').val('');
+  //                  $('#QUESTIONNAME2').text("No data question is available");
+  //                  $('#QUESTIONNAME2').addClass("content_questionClass");
+  //              }
+  //          }
+              
+               
+           
+  //      }
+    },
+    //clear data on popup
+    clearData: function () {
+  //      //thực hiện khá tương tự như setData nhưng khác đây là thêm mới,kia là xem chi tiết
+  //      //dựa vào dạng câu hỏi để hiển thị dạng thêm mới
+  //      //thêm mới có thể là do ấn nút thêm mới hoặc do nút xem chi tiết câu hỏi nhưng không có dữ liệu cũng mặc định là thêm mới
+  //      var questiongroup = component.get('listQGROUP');
+  //      var questiontype= "";
+  //      var obj;
+  //      //dùng một state để giữ giá trị của dạng câu hỏi từ đó suy ra dạng hiển thị nhâp
+  //      if (!!questiongroup.state.rowSelect.length) {
+  //          questiontype = questiongroup.state.rowSelect[0]._QUESTIONTYPECODE.CODEVIEW;
+  //          this.setState({ questiontype: questiontype });
+  //      } else
+  //          //hay là chuyển từ tab 1:ListSubCon  sang tab 4 ,vì không thể lấy được rowselected nên phải dấu dữ liệu
+  //          //vào trong input hidden và từ đó lấy sang đây
+  //      {           
+  //          if (!!$('#hidQUESTIONGROUPCODE').val()) {
+  //              obj = JSON.parse($('#hidQUESTIONGROUPCODE').val());
+  //              questiontype = obj._QUESTIONTYPECODE.CODEVIEW;
+  //              this.setState({ questiontypeAnswer: questiontype });
+  //          }
+  //      }
+  //      //tuy vao questiontype mà định kiểu hiển thị
+  //      switch (questiontype) {
+  //          //1
+  //   case 'MC':
+  //          //trường hợp đang ở câu trả lời đúng và ấn thêm mới
+  //          ///cần chuyển nút về trạng thái là câu trả lời không đúng
+  //       //rồi sau đó lại disable đi 1
+  //       $('#btnAddNewAnswer').show();
+  //       $('#btn_PrevAnswer').prop('disabled', false);
+  //       $('#btn_NextAnswer').prop('disabled', false);
+  //       $('#answercontent').show();
+  //       $('#CONTENT_QUESTION_POPUP').html($('#content_question').html());
+  //       $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //       var trueanswer = parseInt($('#TRUEANSWER').val());
+  //       $("#TRUEANSWER").prop("disabled", false);
+  //       if (trueanswer === 1) {          
+  //           if (parseInt($('#hidQUANTITIES').val()) >= 1) {
+  //               $('#TRUEANSWER').val("0");
+  //               $('#TRUEANSWER option[value="0"]').attr("selected", true);
+  //               setTimeout(function () {
+  //                   $('#TRUEANSWER option[value="0"]').attr("selected", true);
+  //                   $("#TRUEANSWER").prop("disabled", true);
+  //               }, 50);
+  //           }
+  //       } else {
+  //           //trường hợp số lượng câu trả lời >=1 
+  //           //disable trueanswer và chuyển trạng thái trueanswer về là đang là câu trả lời sai
+             
+
+  //           if (parseInt($('#hidQUANTITIES').val()) >= 1) {
+  //               $('#TRUEANSWER').val("0");
+  //               $('#TRUEANSWER option[value="0"]').attr("selected", true);
+  //               setTimeout(function () {    
+  //                   $('#TRUEANSWER option[value="0"]').attr("selected", true);
+  //                   $("#TRUEANSWER").prop("disabled", true);
+  //               }, 50);
+  //           }
+  //       }
+  //       break;
+  //      //dạng ghép đôi, mặc định là đúng 2
+  //  case 'PA':
+  //      $('#btnAddNewAnswer').show();
+  //          $('#btn_PrevAnswer').prop('disabled', false);
+  //          $('#btn_NextAnswer').prop('disabled', false);
+  //          $('#CONTENT_QUESTION_POPUP').html($('#content_question').html());
+  //          $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //          $('#answercontent').show();
+  //              $('#TRUEANSWER').val("1");
+  //              $('#TRUEANSWER option[value="1"]').attr("selected", true);
+  //              if (parseInt($('#hidTOTALITEMANSWER').val()) >= 1 || parseInt($("#hidQUANTITIES").val()) >= 1) {
+  //                  $('#btnAddNewAnswer').hide();
+  //                  $("#TRUEANSWER").prop('disabled', true);
+  //                  $('#btn_PrevAnswer').prop('disabled', true);
+  //                  $('#btn_NextAnswer').prop('disabled', true);
+
+  //              } else {
+  //                  $('#btnAddNewAnswer').show();
+  //                  $("#TRUEANSWER").prop('disabled', true);
+  //                  $('#btn_PrevAnswer').prop('disabled', false);
+  //                  $('#btn_NextAnswer').prop('disabled', false);
+  //              } 
+  //              break;
+  //      //cleardata 3
+  //      //Câu hỏi điền vào đoạn trống tự gõ từ 
+  //      //không cần nội dung câu hỏi vì nội dung câu hỏi cũng không có gì ngoài các con số hoặc tên câu hỏi
+  //   case 'FG':
+  //       $('#btnAddNewAnswer').show();
+  //              $('#btn_PrevAnswer').prop('disabled', false);
+  //              $('#btn_NextAnswer').prop('disabled', false);
+  //              $("#TRUEANSWER").prop("disabled", false);
+  //              setTimeout(function () {
+  //                  $('#TRUEANSWER option[value="1"]').attr("selected", true);
+  //                  $('#answercontent').hide();
+  //                  $('#TRUEANSWER').prop("disabled", true);
+  //                  $('#CONTENT_QUESTION_POPUP').html($('#content_question').html());
+  //                  $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //                  $('#FG_ANSWER').val('');
+  //              }, 50);
+  //              break;
+  //              //Câu hỏi điền vào đoạn trống - 4
+  //              //Có một đoạn các câu hỏi và sau đó có
+  //              //danh sách các đáp án (có thể dư hoặc không dư) để điền vào
+  //              //vì có thể có nhiều câu trả lời nên ta sẽ hạn chế sử dụng lựa chọn bằng hidQuantites
+  //              //cleardata
+  //   case 'FI':
+  //       $('#btnAddNewAnswer').show();
+  //              $('#btn_PrevAnswer').prop('disabled', false);
+  //              $('#btn_NextAnswer').prop('disabled', false);
+  //              $('#CONTENT_QUESTION_POPUP').html($('#content_question').html());
+  //              $('#CONTENT_QUESTION_POPUP').addClass("content_questionClass");
+  //              $('#answercontent').show();
+  //              if (parseInt($('#hidQUANTITIES').val()) >= 1) {
+  //                  $('#TRUEANSWER').val("0");
+  //                  setTimeout(function () {
+  //                      $("#TRUEANSWER").prop('disabled', true);
+  //                  }, 30);
+  //              } else {
+  //                  $("#TRUEANSWER").prop('disabled', false);
+  //              }
+  //              break;
+  //              //trường hợp câu hỏi tổng hợp 5
+  //              // trường hợp này chỉ cũng tương tự như dạng PA, nhập câu trả lời dạng tinyMCE
+  //              //nhap input
+  //              //content_parent(CONTENT_QUESTION_POPUP ): nội dung câu hỏi trên popup
+  //              //cleardata
+  //          //dạng nghe nói, mặc đinh là đúng nhưng không cần hiển thị
+  //          //content_parent :trong popupanswer, nó là nội dung câu hỏi 3
+  //  case 'LA':
+  //              $('#answercontent').show();
+  //      $('#btnAddNewAnswer').show();
+  //              $('#btn_PrevAnswer').prop('disabled', false);
+  //              $('#btn_NextAnswer').prop('disabled', false);
+  //              $('#CONTENT_QUESTION_POPUP').html($('#content_question').html());
+  //              $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //              $("#TRUEANSWER").prop("disabled", false);
+  //              $('#TRUEANSWER').val("1");
+  //              if (parseInt($('#hidTOTALITEMANSWER').val()) >= 1 || parseInt($("#hidQUANTITIES").val()) >= 1) {
+  //                  $('#btnAddNewAnswer').hide();
+  //                  $("#TRUEANSWER").prop('disabled', true);
+  //                  $('#btn_PrevAnswer').prop('disabled', true);
+  //                  $('#btn_NextAnswer').prop('disabled', true);
+
+  //              } else {
+  //                  $('#btnAddNewAnswer').show();
+  //                  $("#TRUEANSWER").prop('disabled', true);
+  //                  $('#btn_PrevAnswer').prop('disabled', false);
+  //                  $('#btn_NextAnswer').prop('disabled', false);
+  //              }
+  //          break;
+  //              //dạng viết lại câu, mặc đinh là đúng
+  //              //cleardata 6
+  // case 'RW':
+  //          $('#answercontent').hide();
+  //     $('#btnAddNewAnswer').show();
+  //          $('#btn_PrevAnswer').prop('disabled', false);
+  //          $('#btn_NextAnswer').prop('disabled', false);
+  //          $("#TRUEANSWER").val("1");     
+  //          $('#TRUEANSWER option[value="1"]').attr("selected", true);
+  //          $('#RW_ANSWER').val('');
+  //          $('#RW_ANSWER').addClass('content_questionClass');
+  //          if ($("#hidQUANTITIES").val() >= 1) {
+  //              $('#btnAddNewAnswer').hide();
+  //              $('#btn_PrevAnswer').prop('disabled', true);
+  //              $('#btn_NextAnswer').prop('disabled', true);
+  //          } else {
+  //              $('#btnAddNewAnswer').show();
+  //              $('#btn_PrevAnswer').prop('disabled', false);
+  //              $('#btn_NextAnswer').prop('disabled', false);
+  //          }
+  //          setTimeout(function () {
+  //                  $("#TRUEANSWER").prop("disabled", true);
+  //                  $('#CONTENT_QUESTION_POPUP').html($('#content_question').html());
+  //                  $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //              },30);
+  //          break;
+  //   //7
+  //case 'CO':
+  //              console.log('CO answer');               
+  //              $('#answercontent').hide();
+  //              $('#CO_ANSWER').val('');
+  //              $('#CONTENT_QUESTION_POPUP').html($('#content_question').html());
+  //              $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');         
+  //        if (parseInt($('#TRUEANSWER').val()) === 1) {
+  //                  $("#TRUEANSWER").prop("disabled", false);
+  //                  if (parseInt($('#hidQUANTITIES').val()) >= 1) {
+  //                      $('#TRUEANSWER').val("0");
+  //                      $('#TRUEANSWER option[value="0"]').attr("selected", true);
+  //                      setTimeout(function () {
+  //                          $('#TRUEANSWER option[value="0"]').attr("selected", true);
+  //                          $("#TRUEANSWER").prop("disabled", true); }, 50);
+  //                  }
+  //        } else {
+  //                  //trường hợp số lượng câu trả lời >=1 
+  //                  //disable trueanswer và chuyển trạng thái trueanswer về là đang là câu trả lời sai
+  //                   $("#TRUEANSWER").prop("disabled", false);
+  //                   $('#TRUEANSWER').val("0");
+  //                  if (parseInt($('#hidQUANTITIES').val()) >= 1) {
+  //                      $('#TRUEANSWER option[value="0"]').attr("selected", true);
+  //                      setTimeout(function () {
+  //                          $('#TRUEANSWER option[value="0"]').attr("selected", true);
+  //                          $("#TRUEANSWER").prop("disabled", true);  }, 50);
+  //                  }
+  //        }
+  //           break;
+  //    //8
+  // case 'WR':
+  //     $('#btnAddNewAnswer').show();
+  //              $('#btn_PrevAnswer').prop('disabled', false);
+  //              $('#btn_NextAnswer').prop('disabled', false);
+  //              $('#answercontent').show();
+  //              $('#CONTENT_QUESTION_POPUP').html($('#content_question').html());
+  //              $('#CONTENT_QUESTION_POPUP').addClass('content_questionClass');
+  //              $("#TRUEANSWER").val("1");
+  //              $('#TRUEANSWER option[value="1"]').attr("selected", true);
+  //              setTimeout(function () {
+  //                  $("#TRUEANSWER").prop("disabled", true);}, 30);
+  //              break;
+  //   //default 
+  //  default:
+  //          console.log('nothing here');
+  //      break;
+  //      }
+
+  //      $('#CODEANSWER').val("");
+  //      $('#CODEVIEWANSWER').val("");
+  //      $('#NAMEANSWER').val("");
+  //      $('#CONTENTANSWER').val(0);
+  //      $('#CONTENTIMGANSWER').val("");
+  //      $('#THEORDERANSWER').val("");
+  //      window.tinymce.get('CONTENTANSWER').setContent("");
+  //      $('#CONTENTANSWER').val("");     
+    },
+    onNewClick: function () {
+        var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+        var questiontypecode = this.props.parent.getKeyValue('questiontypecode');
+        var questiontypecodeview = this.props.parent.getKeyValue('questiontypecodeview');
+        var questioncode = this.props.parent.getKeyValue('questioncode');
+        var questionname = this.props.parent.getKeyValue('questionname');
+        var questioncontent = this.props.parent.getKeyValue('questioncontent');
+        var questiongroupname = this.props.parent.getKeyValue('questiongroupname');
+        var obj = {
+            QUESTIONGROUPCODE: questiongroupcode,
+            QUESTIONTYPECODE: questiontypecode,
+            QUESTIONTYPECODEVIEW: questiontypecodeview,
+            QUESTIONCODE: questioncode,
+            QUESTIONNAME: questionname,
+            QUESTIONCONTENT: questioncontent,
+            QUESTIONGROUPNAME: questiongroupname
+    };
+        this.state.popup.ClearInput(obj);
+        this.state.popup.Show();
+        //$('#NewModalAnswer').modal('show');
+        //var rowSelect = this.state.rowSelect;
+        //if (!!rowSelect && !!rowSelect[0]) {
+        //    this.setData(rowSelect[0]);
+        //}
+        //else
+        //{
+        //    this.setData();
+        //}
+      
+     
+    },
+    onEditClick: function () {
+        if (this.state.rowSelect.length != 1) {
+            bootbox.alert('Chưa chọn bản ghi hoặc nhiều hơn một bản ghi');
+        } else {
+            var questiongroupcode = this.props.parent.getKeyValue('questiongroupcode');
+            var questiontypecode = this.props.parent.getKeyValue('questiontypecode');
+            var questiontypecodeview = this.props.parent.getKeyValue('questiontypecodeview');
+            var questioncode = this.props.parent.getKeyValue('questioncode');
+            var questiongroupname = this.props.parent.getKeyValue('questiongroupname');
+            var questionname = this.props.parent.getKeyValue('questionname');
+            var questioncontent = this.props.parent.getKeyValue('questioncontent');
+            var obj = this.state.rowSelect[0];
+            obj.QUESTIONGROUPCODE = questiongroupcode;
+            obj.QUESTIONTYPECODE = questiontypecode;
+            obj.QUESTIONTYPECODEVIEW = questiontypecodeview;
+            obj.QUESTIONGROUPNAME = questiongroupname;
+            obj.QUESTIONCODE = questioncode;
+            obj.QUESTIONNAME = questionname;
+            obj.QUESTIONCONTENT = questioncontent;
+            this.state.popup.SetInput(obj);
+            this.state.popup.Show();
+        }
+
+
+        //if (this.state.rowSelect.length != 1) {
+        //    bootbox.alert('Chưa chọn bản ghi hoặc nhiều hơn một bản ghi');
+        //} else {
+        //    var obj = this.state.rowSelect[0];
+        //    this.state.popup.SetInput(obj);
+        //    this.state.popup.Show();
+        //}
+    },
+
+    handDelete: function () {
+        if (!!this.state.rowSelect) {
+            var data = [];
+            this.state.rowSelect.forEach(function (item) {
+                data.push(item.CODE);
+            });
+            var postData = { code: data };
+            $.ajax({
+                url: "/Question/DeleteAnswer",
+                type: "POST",
+                dataType: "json",
+                traditional: true,
+                data: postData,
+                success: function (data) {
+                    if (data.ret >= 0) {
+                        this.refreshRowData();
+                        log.show("Đã xoá các bản ghi đã chọn?", true);
+                    }
+                    else {
+                        log.show("Xoá không thành công!", false);
+                    }
+
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.log(err.toString());
+                }
+            });
+        }
+        else {
+            log.show("Không có bản ghi nào!", false);
+        }
+    },
+    onDeleteClick: function () {
+        var that = this;
+        bootbox.confirm({
+            message: "Do you want to delete these items ?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    that.handDelete();
+                }
+                else {
+                    log.show("No items have been deleted !", true);
+                }
+            }
+        });
+    },
+    onNextClick: function () {
+        !!this.state.rowSelect && this.state.agGrid.setNextRow(this.state.rowSelect[0]);
+        setTimeout(function () {
+            this.setData(this.state.rowSelect[0]);
+        }.bind(this), 200);
+    },
+    onPrevClick: function () {
+        !!this.state.rowSelect && this.state.agGrid.setPrevRow(this.state.rowSelect[0]);
+        setTimeout(function () {
+            this.setData(this.state.rowSelect[0]);
+        }.bind(this), 200);
+    },
+    onKeyUp: function (event) {
+        var keypressed = event.keyCode || event.which;
+        if (keypressed === 13) {
+            this.setState({ page: 1 });
+            setTimeout(function () {
+                this.loadData();
+            }.bind(this), 200);
+        }
+    },
+    onReport: function () {
+        console.log("onReport");
+    },
+    onSearch: function () {
+        $('#ModalSearch').modal('show');
+        console.log('Search grade');
+    },
+    onSearchSQL: function () {
+        console.log("search SQL GRADE");
+    },
+    prePage: function () {
+        var c = this.state.page - 1;
+        this.setState({ page: c });
+
+        setTimeout(function () {
+            this.loadData();
+        }.bind(this), 200);
+    },
+    nextPage: function () {
+        var c = this.state.page + 1;
+        this.setState({ page: c });
+
+        setTimeout(function () {
+            this.loadData();
+        }.bind(this), 200);
+    },
+ 
+    render: function () {
+        return (
+            <div id="listAnswer" className="tab-pane fade in">
+               <PopupAnswer ReloadData={this.ReloadList} ref ={this.props.id + '_Popup'} id ={this.props.id + '_Popup'} parent={this.props.parent} />
+          
+
+   
+
+    <div id={this.props.id+'_grid'} className="ag-fresh customgrid">
+    </div>
+
+        <AgGrid container={this.props.id+'_grid'}
+        initAgGrid={this.initAgGrid}
+        loadData={this.loadData}
+        onRowSelect={this.onRowSelect}
+        columnDefs={this.state.columnDefs}
+        headerCheckBox={true}> </AgGrid>
+
+</div>
+            );
+}
+});
+
+var count = 0;

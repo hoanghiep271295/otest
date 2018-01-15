@@ -1,0 +1,93 @@
+﻿using IS.fitframework;
+using IS.Sess;
+using IS.uni;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Web.Mvc;
+using IS.Config;
+using IS.Lang;
+
+namespace nerp.Controllers.core
+{
+    public class CourseStudentController : Controller
+    {
+        private readonly session _ses = new session();
+
+        // GET: CourseStudent
+      /// <summary>
+      /// 
+      /// </summary>
+      /// <param name="id">markcode</param>
+      /// <param name="subid">coursecode</param>
+      /// <returns></returns>
+        public ActionResult Index(string id, string subid)
+        {
+            dynamic defaultobject = new ExpandoObject();
+            defaultobject.markcode = id;
+            defaultobject.coursecode = subid;
+            defaultobject.thetype = _ses.loginType;
+            ViewBag.defaultvalue = JsonConvert.SerializeObject(defaultobject);
+
+            string[] jsx = {
+                "/Scripts/reactselect/prop-types.js"
+                ,"/Scripts/reactselect/react-input-autosize.js"
+                ,"/Scripts/reactselect/classname.js"
+                ,"/Scripts/reactselect/react-select.js"
+                , "/Jsx/_Shared/ButtonList.jsx"
+                ,"/Jsx/_Shared/PopupSearch.jsx"
+                ,"/Jsx/_Shared/Combobox.jsx"
+                ,"/Jsx/_Shared/DropDownTree.jsx"
+                 ,"/Scripts/Dropdowntree/dropdowntree.js"
+                ,"/Jsx/_Shared/Tree.jsx"
+                ,"/Scripts/Ag-grid/ag-grid.js"
+                ,"/Jsx/_Shared/AgGrid.jsx"
+                ,"/Jsx/_Shared/TabHeader.jsx"
+                  ,"/jsx/Core/CourseStudent/Coursestudied.jsx"
+                ,"/jsx/Core/CourseStudent/PopupMark.jsx"
+                 ,"/jsx/Core/CourseStudent/CoursestudentApp.jsx"
+            };
+            ViewBag.jsx = jsx;
+            return View("Adminindex");//Lấy index mặc định trong share
+        }
+
+        /// <summary>
+        /// get danh sách các course của 1 sinh viên
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult GetByStudent()
+        {
+            var ret = 1;
+            string studentcode = "";
+            if (_ses.loginType.Equals("STUDENT"))
+            {
+                studentcode = _ses.loginCode;
+            }
+            else
+            {
+                ret = -1;
+            }
+            List<COURSE_OBJ> liCourse = null;
+            if (ret >= 0)
+            {
+                MARK_BUS bus = new MARK_BUS();
+                liCourse = new List<COURSE_OBJ>();
+                List<fieldpara> lipa = new List<fieldpara>();
+                if (!string.IsNullOrEmpty(studentcode))
+                    lipa.Add(new fieldpara("STUDENTCODE", studentcode, 0));
+                lipa.Add(new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+                var liMark = bus.getAllBy2("CODE", lipa.ToArray());
+                if (liMark != null)
+                {
+                    foreach (var mark in liMark)
+                    {
+                        liCourse.Add(mark._COURSECODE);
+                    }
+                }
+                bus.CloseConnection();
+            }
+
+            return Json(new { data = liCourse, ret }, JsonRequestBehavior.AllowGet);
+        }
+    }
+}

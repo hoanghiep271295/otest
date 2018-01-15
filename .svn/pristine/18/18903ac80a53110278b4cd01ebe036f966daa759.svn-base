@@ -1,0 +1,269 @@
+﻿body {
+    padding-top: 50px;
+    /*padding-bottom: 20px;*/
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    /*max-width: 280px;*/
+}
+
+/* styles for validation helpers */
+.field-validation-error {
+    color: #b94a48;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
+
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.validation-summary-errors {
+    color: #b94a48;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+.banner_title{
+    color:white;
+    font-size:xx-large;
+    margin-left:10px;
+}
+.subtitle{
+    font-size:large;
+    padding-top:2px;
+}
+.popup {
+    width: 120%;
+}
+.nav-tabs-custom{
+    min-height:606px;
+}
+.customgrid{
+    width: 100%; height:540px;
+}
+.subjectcodehead {
+    padding-bottom: 15px;
+    margin-left: -15px;
+}
+.updatecontent {
+    padding: 5px 10px;
+    background-color: #3c8dbc;
+    color: white;
+    border: solid #e0dbdb;
+}
+.coursestudent{
+    width: 100%;
+    border:1px solid #f1e8e8;
+}
+div#subjectcontent > p {
+    text-align: unset;
+}
+.coursename {
+    padding-left: 0px;
+}
+
+td[rowspan] {
+  vertical-align:  middle !important;
+  text-align: left;
+}
+.btn_getMark {
+    padding: 5px;
+    background-color: #387ed6;
+    color: white;
+}
+.comboboxSearch {
+    margin-right: 10px;
+}
+ .btn-breadcrumb .btn:not(:last-child):after { 
+content: " "; 
+display: block; 
+width: 0; 
+height: 0; 
+border-top: 17px solid transparent; 
+border-bottom: 17px solid transparent; 
+border-left: 10px solid white; 
+position: absolute; 
+top: 50%; 
+margin-top: -17px; 
+left: 100%; 
+z-index: 3;
+}
+ 
+.btn-breadcrumb .btn:not(:last-child):before { 
+content: " "; 
+display: block; 
+width: 0; 
+height: 0; 
+border-top: 17px solid transparent; 
+border-bottom: 17px solid transparent; 
+border-left: 10px solid rgb(173, 173, 173); 
+position: absolute; 
+top: 50%; 
+margin-top: -17px; 
+margin-left: 1px; 
+left: 100%; 
+z-index: 3;
+}
+ 
+.btn-breadcrumb .btn {  
+padding:6px 12px 6px 24px;
+}
+ 
+.btn-breadcrumb .btn:first-child {  
+padding:6px 6px 6px 10px;
+}
+ 
+.btn-breadcrumb .btn:last-child {   
+padding:6px 18px 6px 24px;
+}
+ 
+ 
+.btn-breadcrumb .btn.btn-default:not(:last-child):after { 
+border-left: 10px solid #fff;
+}
+ 
+.btn-breadcrumb .btn.btn-default:not(:last-child):before { 
+border-left: 10px solid #ccc;
+}
+ 
+.btn-breadcrumb .btn.btn-default:hover:not(:last-child):after { 
+border-left: 10px solid #ebebeb;
+}
+ 
+.btn-breadcrumb .btn.btn-default:hover:not(:last-child):before { 
+border-left: 10px solid #adadad;
+}
+ 
+ 
+.btn-breadcrumb .btn.btn-primary:not(:last-child):after { 
+border-left: 10px solid #428bca;
+}
+ 
+.btn-breadcrumb .btn.btn-primary:not(:last-child):before { 
+border-left: 10px solid #357ebd;
+}
+ 
+.btn-breadcrumb .btn.btn-primary:hover:not(:last-child):after { 
+border-left: 10px solid #3276b1;
+}
+ 
+.btn-breadcrumb .btn.btn-primary:hover:not(:last-child):before { 
+border-left: 10px solid #285e8e;
+}
+ 
+.btn-breadcrumb .btn.btn-success:not(:last-child):after { 
+border-left: 10px solid #5cb85c;
+}
+ 
+.btn-breadcrumb .btn.btn-success:not(:last-child):before { 
+border-left: 10px solid #4cae4c;
+}
+ 
+.btn-breadcrumb .btn.btn-success:hover:not(:last-child):after { 
+border-left: 10px solid #47a447;
+}
+ 
+.btn-breadcrumb .btn.btn-success:hover:not(:last-child):before { 
+border-left: 10px solid #398439;
+}
+ 
+ 
+.btn-breadcrumb .btn.btn-danger:not(:last-child):after { 
+border-left: 10px solid #d9534f;
+}
+ 
+.btn-breadcrumb .btn.btn-danger:not(:last-child):before { 
+border-left: 10px solid #d43f3a;
+}
+ 
+.btn-breadcrumb .btn.btn-danger:hover:not(:last-child):after { 
+border-left: 10px solid #d2322d;
+}
+ 
+.btn-breadcrumb .btn.btn-danger:hover:not(:last-child):before { 
+border-left: 10px solid #ac2925;
+}
+ 
+ 
+.btn-breadcrumb .btn.btn-warning:not(:last-child):after { 
+border-left: 10px solid #f0ad4e;
+}
+ 
+.btn-breadcrumb .btn.btn-warning:not(:last-child):before { 
+border-left: 10px solid #eea236;
+}
+ 
+.btn-breadcrumb .btn.btn-warning:hover:not(:last-child):after { 
+border-left: 10px solid #ed9c28;
+}
+ 
+.btn-breadcrumb .btn.btn-warning:hover:not(:last-child):before { 
+border-left: 10px solid #d58512;
+}
+ 
+.btn-breadcrumb .btn.btn-info:not(:last-child):after { 
+border-left: 10px solid #5bc0de;
+}
+ 
+.btn-breadcrumb .btn.btn-info:not(:last-child):before { 
+border-left: 10px solid #46b8da;
+}
+ 
+.btn-breadcrumb .btn.btn-info:hover:not(:last-child):after { 
+border-left: 10px solid #39b3d7;
+}
+ 
+.btn-breadcrumb .btn.btn-info:hover:not(:last-child):before { 
+border-left: 10px solid #269abc;
+}
+.divSubjectContent {
+    white-space: pre-wrap;
+    width: 350px;
+    text-align: left;
+    height: 40px;
+    line-height: 40px;
+    background-position: -4px -529px;
+    color: #c75959;
+    font-size: 18px;
+    margin-top: 5px;
+    margin-right: -11px;
+    border: solid 1px;
+    padding-left: 10px;
+    border-radius: 10px;
+}
+.divSubjectContent:hover {
+    background-color: #23b92f;
+    transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -webkit-transform: scale(1.1);
+}
+
+.divSubjectContent a {
+     text-decoration: none;
+}
+
+.not-active {
+   pointer-events: none;
+   cursor: default;
+   color: #5d5454;
+}
+#box-breadcrumb {
+    border-top: none;
+}

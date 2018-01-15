@@ -1,0 +1,13 @@
+﻿var Test1 = React.createClass( {
+    render: function() {
+        return (
+            <div>
+               Test
+            </div>
+        );
+    }
+} );
+ReactDOM.render(
+    <Test1 />,
+    document.getElementById('container')
+);

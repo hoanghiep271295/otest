@@ -1,0 +1,21 @@
+﻿  var WRQuestion = React.createClass({
+      componentWillMount: function () {
+          component.add('WRQuestion', this);
+      },
+      
+      render: function () {       
+          return (
+                        <div>
+                               <input type="text" id="hidWRANSWERCODE" className="hidden" />
+                                   <div className="form-group" id='wrques'>
+                                    <label className="col-sm-2 control-label">Nội dung câu trả lời</label>
+                                    <div className="col-sm-10">
+                                        <div style={{ minHeight: '30px', height: 'fit-content', 'overflowY': 'scroll', fontWeight: 'bold' }}
+                                              className="form-control" id='WRANSWER'></div>
+                                    </div>
+                                   </div>
+                        </div>
+                      
+            );
+      }
+  });

@@ -1,0 +1,39 @@
+﻿//FI Question,first render questiongroup htmldrangerous
+//render ul contain list answer
+var QuestionTypeFI = React.createClass({
+    componentDidMount: function () {
+        document.getElementById(this.props.id + '_questiontypeFI').innerHTML =
+            this.props.objQuestionGroup.CONTENT;
+    },
+    render() {
+        var listanswer = [];
+        var idquesQg = this.props.id;
+        var value = 0;
+        this.props.dataAnswer.map( (rowitem)=> {
+            if (rowitem.QUESTIONGROUPCODE === idquesQg) {
+                listanswer.push(
+              <Drag key={value}
+                        index={value}
+                        id={rowitem.QUESTIONGROUPCODE+"_"+ rowitem.CODE}
+                        content={rowitem.CONTENT}
+                        type={this.props.type} />
+                    );}
+            value++;
+    });
+return (
+<div>
+<div className="container questiongroup dragFi">
+<b>{this.props.number}.</b>
+</div>
+    <div className="fieldsetGroup lineHeight">
+         <ul className="portfolio-grid">
+             {listanswer}
+         </ul>
+            <div >
+               <span id={this.props.id + '_questiontypeFI'}></span>
+            </div>
+    </div>
+</div>
+       );
+}
+});

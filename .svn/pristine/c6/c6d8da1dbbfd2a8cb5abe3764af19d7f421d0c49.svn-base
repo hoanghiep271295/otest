@@ -1,0 +1,512 @@
+﻿'use strict';
+
+var AgGrid = React.createClass({
+    displayName: 'AgGrid',
+
+    getInitialState: function getInitialState() {
+        //        console.log('Grid width:', $('#' + this.props.container));
+        var initColDefs = [];
+
+        !!this.props.headerCheckBox && initColDefs.push({ headerName: '', field: '', width: 28, editable: false, checkboxSelection: true, headerCheckboxSelection: true });
+
+        for (var i = 0; i < this.props.columnDefs.length; i++) {
+            var obj = new Object();
+
+            obj['headerName'] = this.props.columnDefs[i]['headerName'];
+            obj['field'] = this.props.columnDefs[i]['field'];
+
+            obj['width'] = parseInt(this.props.columnDefs[i]['width']);
+            obj['editable'] = this.props.columnDefs[i]['editable'];
+
+            if (this.props.columnDefs[i]['type'] === 'number') {
+                obj['filter'] = 'number';
+                obj['cellEditor'] = this.Number;
+            }
+            if (this.props.columnDefs[i]['type'] === 'checkbox') {
+                obj['editable'] = false;
+                obj['cellRenderer'] = this.CellRenderCheckbox;
+                obj['cellStyle'] = { display: 'flex', 'align-items': 'center', 'justifyContent': 'center' };
+            }
+            if (this.props.columnDefs[i]['type'] === 'date') {
+                obj['cellFormatter'] = this.Datepicker;
+            }
+            if (this.props.columnDefs[i]['type'] === 'datetime') {
+                obj['cellFormatter'] = this.Datetimepicker;
+            }
+            if (this.props.columnDefs[i]['type'] === 'option') {
+                obj['select'] = this.props.columnDefs[i]['select'];
+                obj['cellRenderer'] = this.CellRenderSelect;
+                obj['cellStyle'] = { display: 'flex', 'align-items': 'center', 'justifyContent': 'center' };
+                obj['valueType'] = this.props.columnDefs[i]['valueType'];
+            }
+            if (this.props.columnDefs[i]['type'] === 'button') {
+                obj['button'] = this.props.columnDefs[i]['button'];
+                obj['cellRenderer'] = this.CellRenderButton;
+                obj['cellStyle'] = { display: 'flex', 'align-items': 'center', 'justifyContent': 'center' };
+            }
+            initColDefs.push(obj);
+        }
+        return {
+            data: null,
+            dataCopy: null,
+            gridOptions: null,
+            columnDefs: initColDefs,
+
+            editList: [],
+            removeList: [],
+            newList: []
+        };
+    },
+
+    CellRenderCheckbox: function CellRenderCheckbox(params) {
+
+        var checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = params.value;
+        checkbox.addEventListener('click', (function () {
+            //console.log(checkbox.checked);
+            params.node.data[params.colDef.field] = checkbox.checked ? 1 : 0;
+            this.state.gridOptions.api.refreshRows(params.note);
+            this.Change(params.node.data);
+        }).bind(this));
+        return checkbox;
+    },
+    onCellClickedCheckbox: function onCellClickedCheckbox(params) {
+        params.node.data[params.colDef.field] = !params.node.data[params.colDef.field];
+        params.node.data[params.colDef.field] = params.node.data[params.colDef.field] ? 1 : 0;
+        this.state.gridOptions.api.refreshRows(params.note);
+    },
+    CellRenderSelect: function CellRenderSelect(params) {
+        var select = document.createElement("select");
+        for (var i = 0; i < params.colDef['select'].length; i++) {
+            var option = document.createElement('option');
+            option.text = params.colDef['select'][i].text;
+            option.value = params.colDef['select'][i].value;
+            select.appendChild(option);
+        }
+        select.value = params.value;
+        select.addEventListener('change', (function () {
+            if (params.colDef.valueType === 'int') params.node.data[params.colDef.field] = parseInt(select.value);
+            if (params.colDef.valueType === 'float') params.node.data[params.colDef.field] = parseFloat(select.value);
+            if (params.colDef.valueType === null) params.node.data[params.colDef.field] = select.value;
+            this.state.gridOptions.api.refreshRows(params.note);
+            this.Change(params.node.data);
+        }).bind(this));
+        return select;
+    },
+    CellRenderButton: function CellRenderButton(params) {
+        var _this = this;
+
+        var button = document.createElement("button");
+        button.className = params.colDef['button'].className;
+        button.innerText = params.colDef['button'].text;
+        button.style.color = "white";
+        button.style.backgroundColor = "#3447ca";
+        button.addEventListener('click', function () {
+            return _this.onClickForButton(button.className, params.data);
+        });
+        return button;
+    },
+    onClickForButton: function onClickForButton(className, data) {
+        var examTimeCode;
+        if (className === "createHall") {
+            examTimeCode = data.CODE;
+            $.ajax({
+                url: '/ExamHallStudent/CreateExamHallStudent',
+                dataType: 'json',
+                data: { examTimeCode: examTimeCode },
+                success: (function (data) {
+                    log.show('Tạo phòng thành công!', true);
+                }).bind(this),
+                error: function error(xhr, status, err) {
+                    log.show("Tạo phòng lỗi!", false);
+                    console.log(err.toString());
+                }
+            });
+        }
+        var testStructCode;
+        var subjectCode;
+        if (className === "createExamform") {
+            examTimeCode = data.CODE;
+            testStructCode = data.TESTSTRUCTCODE;
+            subjectCode = $('#PARENTCODE').val();
+            $.ajax({
+                url: '/ExamForm/createExamForm',
+                dataType: 'json',
+                data: {
+                    examTimeCode: examTimeCode,
+                    testStructCode: testStructCode,
+                    subjectCode: subjectCode
+                },
+                success: (function (data) {
+                    if (data.ret >= 0) log.show('Tạo đề thành công!', true);else log.show("Tạo đề lỗi!", false);
+                }).bind(this),
+                error: (function (xhr, status, err) {
+                    log.show("Tạo đề lỗi!", false);
+                    console.log(err.toString());
+                }).bind(this)
+            });
+        }
+        if (className === "ViewMark") {
+            $.ajax({
+                url: '/ExamResult/GetResult',
+                dataType: 'json',
+                data: {
+                    markcode: data.MARKCODE,
+                    coursecode: data.COURSECODE
+                },
+                success: (function (data) {
+                    if (!!data.data) {
+                        var liExam = data.data;
+                        var popupmark = component.get('popupmark');
+                        popupmark.setState({ liExam: liExam });
+                        $('#ModalMark').modal('show');
+                    }
+                }).bind(this),
+                error: (function (xhr, status, err) {
+                    console.log(err.toString());
+                }).bind(this)
+            });
+        }
+    },
+    Number: function Number() {
+        this.init = function init(params) {
+            this.eInput = document.createElement("INPUT");
+            this.eInput.setAttribute("type", "number");
+            params.value != null ? this.eInput.value = params.value : this.eInput.value = 0;
+        };
+
+        this.getGui = function getGui() {
+            return this.eInput;
+        };
+
+        this.afterGuiAttached = function afterGuiAttached() {
+            this.eInput.focus();
+            this.eInput.select();
+        };
+
+        this.getValue = function getValue() {
+            return parseInt(this.eInput.value);
+        };
+    },
+    Datepicker: function Datepicker(data) {
+        return moment(data.value).format('DD/MM/YYYY');
+    },
+    Datetimepicker: function Datetimepicker(data) {
+        return moment(data.value).format('DD/MM/YYYY HH:mm');
+    },
+    myTabToNextCell: function myTabToNextCell(params) {
+        var previousCell = params.previousCellDef;
+        var lastRowIndex = previousCell.rowIndex;
+        var nextRowIndex = params.backwards ? lastRowIndex + 1 : lastRowIndex - 1;
+
+        var renderedRowCount = this.state.gridOptions.api.getModel().getRowCount();
+
+        if (nextRowIndex < 0) {
+            nextRowIndex = 0;
+        }
+        if (nextRowIndex >= renderedRowCount) {
+            nextRowIndex = renderedRowCount - 1;
+        }
+
+        var result = {
+            rowIndex: nextRowIndex,
+            column: previousCell.column,
+            floating: previousCell.floating
+        };
+
+        return result;
+    },
+    myNavigateToNextCell: function myNavigateToNextCell(params) {
+        var previousCell = params.previousCellDef;
+        var suggestedNextCell = params.nextCellDef;
+        switch (params.key) {
+            case 38:
+                if (this.state.objectChange != null) {
+                    break;
+                }
+                var nextRowIndex = previousCell.rowIndex - 1;
+                if (nextRowIndex < 0) {
+                    return null;
+                }
+                return { rowIndex: nextRowIndex, column: previousCell.column, floating: previousCell.floating };
+
+            case 40:
+                if (this.state.objectChange != null) return;
+                var nextRowIndex = previousCell.rowIndex + 1;
+                var renderedRowCount = this.state.gridOptions.api.getModel().getRowCount();
+                if (nextRowIndex >= renderedRowCount) {
+                    return null;
+                } else {
+                    return { rowIndex: nextRowIndex, column: previousCell.column, floating: previousCell.floating };
+                }
+            case 37:
+            case 39:
+                return suggestedNextCell;
+            default:
+                throw 'this will never happen, navigation is always on of the 4 keys above';
+        }
+    },
+    onSelectionChanged: function onSelectionChanged() {
+        var SelectedRows = this.state.gridOptions.api.getSelectedRows();
+    },
+    Comparator: function Comparator(object_A, object_B) {
+        if (object_A === null) return false;
+        for (var i = 0; i < Object.keys(object_A).length; i++) {
+            if (object_A[Object.keys(object_A)[i]] != object_B[Object.keys(object_A)[i]]) return false;
+        }
+        return true;
+    },
+    Exist: function Exist(list, data) {
+        if (list === null) return false;
+        for (var i = 0; i < list.length; i++) {
+            if (data.agGridID === list[i].agGridID) return true;
+        }
+        return false;
+    },
+    Change: function Change(data) {
+        var dataBuffer = JSON.parse(JSON.stringify(data));
+        delete dataBuffer.agGridID;
+        if (!this.Exist(this.state.editList, data) && !this.Comparator(this.state.dataCopy[data.agGridID], dataBuffer)) {
+            var editList = this.state.editList;
+            editList.push(data);
+            this.setState({ editList: editList });
+        } else {
+            if (this.Comparator(this.state.dataCopy[data.agGridID], dataBuffer) || 1) {
+                var editList = this.state.editList;
+                editList.splice(editList.indexOf(data), 1);
+                this.setState({ editList: editList });
+            }
+        }
+    },
+    IsChange: function IsChange() {
+        if (this.state.editList.length != 0 || this.state.removeList.length || this.state.newList.length) return true;
+        return false;
+    },
+    componentWillMount: function componentWillMount() {
+        this.setState({
+            gridOptions: {
+                columnDefs: this.state.columnDefs,
+                rowData: null,
+                rowSelection: 'multiple',
+                suppressRowClickSelection: false,
+                //doubleClickEdit : true,
+                onSelectionChanged: this.onSelectionChanged,
+                enableColResize: true,
+                enableFilter: true,
+                headerHeight: 30,
+                rowHeight: 28,
+                enableSorting: true,
+                animateRows: true,
+                navigateToNextCell: this.myNavigateToNextCell,
+                tabToNextCell: this.myTabToNextCell,
+                onGridReady: function onGridReady(params) {
+
+                    //params.api.sizeColumnsToFit();
+                },
+                onCellEditingStarted: (function (event) {}).bind(this),
+                onCellEditingStopped: function onCellEditingStopped(event) {},
+                onRowSelected: (function (params) {
+                    var selectedRows = this.state.gridOptions.api.getSelectedRows();
+                }).bind(this),
+                onCellValueChanged: (function (event) {
+                    this.Change(event.data);
+                }).bind(this),
+                onSelectionChanged: (function () {
+                    var selectedRows = this.state.gridOptions.api.getSelectedRows();
+                    this.props.onRowSelect(selectedRows);
+                }).bind(this)
+
+            }
+        });
+    },
+    componentDidMount: function componentDidMount() {
+        this.props.initAgGrid(this.setRowData, this.getDataChange, this.setNextRow, this.setPrevRow);
+        var option = this.state.gridOptions;
+        var gridDiv = document.querySelector('#' + this.props.container);
+        new agGrid.Grid(gridDiv, option);
+        this.state.gridOptions = option;
+        this.fitToContainer();
+        $('#' + this.props.container).keyup((function (e) {
+            if (e.keyCode === 46) {
+                //console.log("Delete Key press!");
+                var selectedNodes = this.state.gridOptions.api.getSelectedNodes();
+                //console.log(selectedNodes);
+
+                if (selectedNodes != null) {
+                    this.state.gridOptions.api.removeItems(selectedNodes);
+                    this.state.gridOptions.api.refreshView();
+                    var deleteList = this.state.removeList;
+                    selectedNodes.forEach((function (item, index) {
+                        deleteList.push(item.data.agGridID);
+                    }).bind(this));
+                    //console.log(deleteList);
+                    this.setState({ removeList: deleteList });
+                }
+            }
+        }).bind(this));
+    },
+    componentDidUpdate: function componentDidUpdate() {
+        this.fitToContainer();
+    },
+    fitToContainer: function fitToContainer() {
+
+        var gridDiv = document.querySelector('#' + this.props.container);
+        var gridOptions = this.state.gridOptions;
+
+        var columnDefs = this.state.columnDefs;
+        //console.log(columnDefs);
+        var sum = 0;
+        columnDefs.forEach(function (item) {
+            sum += item.width;
+        });
+
+        setTimeout((function () {
+            var width = $('#' + this.props.container).width();
+            //console.log($('#' + this.props.container).width(), this.props.container);
+
+            columnDefs.forEach(function (item) {
+                var col = gridOptions.columnApi.getColumn(item.field);
+                gridOptions.columnApi.setColumnWidth(col, Math.floor(item.width / sum * width));
+            });
+        }).bind(this), 200);
+    },
+    Refresh: function Refresh(data) {
+
+        if (data != null) {
+
+            var dataCopy = JSON.parse(JSON.stringify(data));
+            this.setState({ dataCopy: dataCopy });
+            var length = data.length;
+            for (var i = 0; i < length; i++) {
+                data[i].agGridID = i;
+            }
+            this.state.gridOptions.api.setRowData(data);
+            this.state.gridOptions.api.refreshView();
+        }
+        this.setState({ dataCopy: dataCopy, removeList: [], newList: [], editList: [] });
+    },
+    setRowData: function setRowData(data) {
+        if (data != null) {
+
+            var dataCopy = JSON.parse(JSON.stringify(data));
+            this.setState({ dataCopy: dataCopy });
+            var _length = data.length;
+            for (var i = 0; i < _length; i++) {
+                data[i].agGridID = i;
+            }
+
+            this.state.gridOptions.api.setRowData(data);
+            this.state.gridOptions.api.refreshView();
+            this.setState({ dataCopy: dataCopy, removeList: [], newList: [], editList: [] });
+
+            this.state.gridOptions.api.forEachNode(function (node) {
+                if (node.childIndex === 0) {
+                    node.setSelected(true);
+                    return;
+                }
+            });
+            this.fitToContainer();
+        } else {
+            console.log(' ***** data null .....!');
+        }
+    },
+    getDataChange: function getDataChange() {
+
+        var obj = new Object();
+
+        obj['edit'] = this.state.editList;
+        for (var i = 0; i < this.state.editList.length; i++) {
+            delete obj['edit'][i].agGridID;
+        }
+
+        obj['delete'] = this.state.removeList;
+        for (var i = 0; i < this.state.removeList.length; i++) {
+            delete obj['delete'][i].agGridID;
+        }
+
+        return obj;
+    },
+    setNextRow: function setNextRow(row) {
+        var _this2 = this;
+
+        if (!row) {
+            (function () {
+                var isStop = false;
+                _this2.state.gridOptions.api.forEachNode((function (node) {
+                    if (!isStop) {
+                        this.state.gridOptions.api.deselectAll();
+                        node.setSelected(true);
+                        isStop = true;
+                    }
+                }).bind(_this2));
+            })();
+        } else {
+            var firstNode;
+
+            (function () {
+                var isStop = false;
+                var isNode = false;
+                firstNode = new Object();
+
+                _this2.state.gridOptions.api.deselectAll();
+                _this2.state.gridOptions.api.forEachNode((function (node) {
+                    if (isStop) return;
+                    if (node.rowIndex === 0) {
+                        firstNode = node;
+                        if (!row) return;
+                    }
+                    if (isNode) {
+                        node.setSelected(true);
+                        isStop = true;
+                        return;
+                    }
+                    if (node.data.agGridID === row.agGridID) {
+                        isNode = true;
+                    }
+                }).bind(_this2));
+                if (!isStop && isNode) {
+                    firstNode.setSelected(true);
+                }
+            })();
+        }
+    },
+    setPrevRow: function setPrevRow(row) {
+        var _this3 = this;
+
+        if (!row) {
+            (function () {
+                var isStop = false;
+                _this3.state.gridOptions.api.forEachNode((function (node) {
+                    if (!isStop) {
+                        this.state.gridOptions.api.deselectAll();
+                        node.setSelected(true);
+                        isStop = true;
+                    }
+                }).bind(_this3));
+            })();
+        } else {
+            var prev = null;
+            var isFirst = false;
+            var isStop = false;
+            this.state.gridOptions.api.deselectAll();
+            this.state.gridOptions.api.forEachNode((function (node) {
+                if (node.rowIndex === 0) {
+                    if (node.data.agGridID === row.agGridID) isFirst = true;
+                } else {
+                    if (!isFirst && node.data.agGridID === row.agGridID && !isStop) {
+                        prev.setSelected(true);
+                        isStop = true;
+                        return;
+                    }
+                }
+                prev = node;
+            }).bind(this));
+            if (isFirst) prev.setSelected(true);
+        }
+    },
+    render: function render() {
+        return React.createElement('div', null);
+    }
+});
+

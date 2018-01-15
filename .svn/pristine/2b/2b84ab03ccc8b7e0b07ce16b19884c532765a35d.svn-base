@@ -1,0 +1,173 @@
+﻿using IS.fitframework;
+using IS.Sess;
+using IS.uni;
+using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace nerp.Controllers.core
+{
+    public class StudentRegisCourseController : Controller
+    {
+        private readonly session _ses = new session();
+
+        // GET: StudentRegisterCourse
+        /// <summary>
+        /// lấy danh sách các khóa học
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult LoadListGrade()
+        {
+            //Kiểm tra phân quyền
+            List<GRADE_OBJ> reslist = new List<GRADE_OBJ>();
+            if (_ses.isLogin() < 0)
+            {
+                return Json(new { reslist, ret = -1 }, JsonRequestBehavior.AllowGet);
+            }
+            //Lây dữ iệu
+            GRADE_BUS bus = new GRADE_BUS();
+            //lấy tất cả không cần phân trang; sáp xếp tăng dần theo thứ tự hiển thị
+            List<GRADE_OBJ> li = bus.getAllBy2(" NAME ", new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0)); //get all
+            bus.CloseConnection();
+            //Trả về cho client
+            return Json(new { lst = li, ret = 0 }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        ///get all class
+        /// </summary>
+        /// <param name="gradeCode"></param>
+        /// <returns></returns>
+        public JsonResult LoadListClass(string gradeCode)
+        {
+            //Kiểm tra phân quyền
+            List<CLASS_OBJ> resList = new List<CLASS_OBJ>();
+            if (_ses.isLogin() < 0)
+            {
+                return Json(new { lst = resList, ret = -1 }, JsonRequestBehavior.AllowGet);
+            }
+            //Lây dữ iệu
+            CLASS_BUS bus = new CLASS_BUS();
+
+            //lấy tất cả không cần phân trang; sáp xếp tăng dần theo thứ tự hiển thị
+            List<CLASS_OBJ> li = bus.getAllBy2(" NAME ", new fieldpara("GRADECODE", gradeCode, 0),
+                                    new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0)); //get all
+            bus.CloseConnection();
+            //Trả về cho client
+            return Json(new { lst = li, ret = 0 }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// get all student by class and grade
+        /// </summary>
+        /// <param name="classCode"></param>
+        /// <param name="gradeCode"></param>
+        /// <returns></returns>
+        public JsonResult LoadListStudent(string classCode, string gradeCode)
+        {
+            STUDENT_BUS busStudent = new STUDENT_BUS();
+            List<fieldpara> lipa = new List<fieldpara>
+            {
+                new fieldpara("CLASSCODE", classCode, 0),
+                new fieldpara("GRADECODE", gradeCode, 0)
+            };
+            List<STUDENT_OBJ> liStudent = busStudent.getAllBy2("NAME", lipa.ToArray());
+            return Json(
+            new
+            {
+                liStudent
+            }, JsonRequestBehavior.AllowGet
+            );
+        }
+
+        //lấy danh sách sinh viên theo lớp môn học bao gồm lấy danh sách sinh viên đã đăng kí vào lớp môn học đó rồi
+        //danh sách sinh viên chưa đăng kí vào lớp môn học
+        /// <summary>
+        /// ở đây sẽ hiển thị lên danh sách sinh viên của 1 lớp học (1 class) mà chưa đăng kí được vào
+        ///  trong lớp môn học(1 course)
+        /// đầu tiên cần lấy danh sách sinh viên thuộc 1 lớp(class)
+        /// lấy danh sách sinh viên thuộc lớp môn học(course)
+        /// cuối cùng là danh sách sinh viên không thuộc lớp môn học(course)
+        /// </summary>
+        /// <param name="classCode"> mã lớp học</param>
+        /// <param name="gradeCode"> mã khóa học</param>
+        /// <param name="coursecode">mã lớp môn học</param>
+        /// <returns></returns>
+
+        public JsonResult LoadListStudentNotRegisted(string classCode, string gradeCode, string coursecode)
+        {
+            STUDENT_BUS busStudent = new STUDENT_BUS();
+            List<fieldpara> lipa = new List<fieldpara>
+            {
+                new fieldpara("CLASSCODE", classCode, 0),
+                new fieldpara("GRADECODE", gradeCode, 0),
+                new fieldpara("MARK.COURSECODE", null)
+        };
+            List<jointable> lijoin = new List<jointable>();
+            lijoin.Clear();
+            //danh sách sinh viên thuộc lớp và chưa thuộc lớp môn học
+             lijoin.Add(new jointable(typeof(MARK_OBJ), "CODE", "COURSECODE", new fieldpara("COURSECODE", coursecode)));
+            List<STUDENT_OBJ> liStudent = busStudent.getAllBy2("CODE", lipa, lijoin);
+
+            return Json(
+            new
+            {
+                lst = liStudent
+            }, JsonRequestBehavior.AllowGet
+            );
+        }
+
+        /// <summary>
+        /// Get all students that they've registed
+        /// </summary>
+        /// <param name="coursecode"></param>
+        /// <param name="code"></param>
+        /// <param name="codetype"></param>
+        /// <param name="name"></param>
+        /// <param name="nametype"></param>
+        /// <param name="note"></param>
+        /// <param name="notetype"></param>
+        /// <returns></returns>
+        public JsonResult LoadListStudentOnCourse(string coursecode, string code, bool codetype, string name,
+            bool nametype, string note, bool notetype)
+        {
+            //khai báo lấy dữ liệu
+         
+            STUDENT_BUS bus = new STUDENT_BUS();
+            List<fieldpara> lipa = new List<fieldpara>();
+            //mặc định cho phần trang
+
+            if (!string.IsNullOrEmpty(coursecode))
+            {
+                lipa.Add(new fieldpara("COURSECODE", coursecode, 0));
+            }
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                lipa.Add(codetype ? new fieldpara("CODEVIEW", code, 0) : new fieldpara("CODEVIEW", code, 1));
+            }
+            if (!string.IsNullOrEmpty(name))
+            {
+                lipa.Add(nametype ? new fieldpara("NAME", name, 0) : new fieldpara("NAME", name, 1));
+            }
+            if (!string.IsNullOrEmpty(note))
+            {
+                lipa.Add(notetype ? new fieldpara("NOTE", note, 0) : new fieldpara("NOTE", note, 1));
+            }
+            lipa.Add(new fieldpara("UNIVERSITYCODE", _ses.gUNIVERSITYCODE, 0));
+            lipa.Add(new fieldpara("MARK.COURSECODE", null));
+            List<jointable> lijoin = new List<jointable>();
+            lijoin.Clear();
+            lijoin.Add(new jointable(typeof(MARK_OBJ), "CODE", "STUDENTCODE", JOIN.LEFT, new fieldpara("COURSECODE", coursecode, (int)searchType.NONE)));
+            List<STUDENT_OBJ> liStudent = bus.getAllBy2("CODEVIEW", lipa, lijoin);
+            return Json(new
+            {
+                lst = liStudent
+            }, JsonRequestBehavior.AllowGet);
+        }
+    }
+
+    public class StudentSelectedTemp
+    {
+        public string StudentCode { get; set; }
+    }
+}

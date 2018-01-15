@@ -1,0 +1,60 @@
+﻿  var COQuestion = React.createClass({
+      getInitialState:function() {
+          return {
+              listAnswer:[],
+              page: 1,
+              check:-1
+          }
+      },
+      componentWillMount: function () {
+      },
+      render: function () {
+          var listRow = [];
+          var that = this;
+          var index = 0;
+          this.state.listAnswer.forEach(function (rowitem) {
+              var content = $('<div/>').html(rowitem.CONTENT).text();
+              listRow.push(
+             
+              <tr key={index}>
+                   <td style={{'textAlign':'center'}}> {index} </td>
+                         <td style={{'textAlign':'center'}}>
+                         <input type="checkbox" id={rowitem.CODE}
+                checked={ that.state.check === rowitem.CODE}
+              className={index}
+              onClick={that.loadCheck.bind(that, rowitem.CODE)} />
+            </td>
+            <td style={{'textAlign':'center'}}>
+              <span style={{ 'textAlign': 'left' }} key={'error_' + index} dangerouslySetInnerHTML={{ __html: content }}></span>                
+             </td>
+                <td style={{'textAlign':'center'}}>{rowitem.NAME}</td>
+                  </tr>);
+              index++;
+              });
+          return (
+            <div>              
+             <input type="text" id="hidCOANSWERCODE" className="hidden" />
+                          <div className="form-group">
+                            <label className="col-sm-2 control-label">Danh sách đáp án</label>
+                            <div className="col-sm-10">
+
+                                    <table id="example2" className="table table-bordered table-hover">
+                                  <thead>
+                            <tr>
+
+                            <th style={{'textAlign':'center'}}>STT</th>
+                                <th style={{'textAlign':'center'}}>Đúng</th>
+                            <th style={{'textAlign':'center'}}>Câu trả lời</th>
+                            <th style={{'textAlign':'center'}}>Đáp án</th>
+                          
+                            </tr>
+                                  </thead>
+                                          <tbody>{listRow}</tbody>
+                                    </table>
+                            </div>
+                          </div>
+                      
+                                 </div>                      
+            );
+      }
+  });

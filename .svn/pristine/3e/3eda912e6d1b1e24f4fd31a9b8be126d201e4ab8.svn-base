@@ -1,0 +1,134 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Optimization;
+using System.Web.Routing;
+using System.IO;
+
+//for pooling
+using IS.fitframework;
+using IS.localcomm;
+using IS.uni;
+using IS.Pool;
+using System.Web.Configuration;
+using IS.Config;
+
+
+
+namespace nerp
+{
+    public class MvcApplication : System.Web.HttpApplication
+    {
+        protected void Application_Start()
+        {
+            AreaRegistration.RegisterAllAreas();
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            //for pool
+            string connectionstring = WebConfigurationManager.AppSettings["connectionString"];
+            int thecount = PoolConnection.init(connectionstring);
+            PoolConnection.countConcurrentUser = 0;
+            PoolConnection.beginapp = DateTime.Now;
+            PoolConnection.countsession = 0;
+            AppConfig.baseDirectory = Server.MapPath("/");
+            try
+            {
+                if (!Directory.Exists(Server.MapPath("/") + "log"))
+                {
+                    Directory.CreateDirectory(Server.MapPath("/") + "log");
+                }
+            }
+            catch
+            {
+
+            }
+            IS.LogFile.logFile.fileName = Server.MapPath("/") + "log/log.txt";
+            nerp.update a = new nerp.update();
+            int ret = a.updateAll(Server.MapPath("/"));
+
+        }
+        protected void Application_End()
+        {
+            // Stop all connection
+            PoolConnection.dispose();
+        }
+        void Session_Start(object sender, EventArgs e)
+        {
+            // Code that runs when a new session is started
+            PoolConnection.countConcurrentUser++;
+            if (PoolConnection.countConcurrentUser > PoolConnection.maxcount)
+            {
+                PoolConnection.maxcount = PoolConnection.countConcurrentUser;
+                PoolConnection.maxcounttime = DateTime.Now;
+            }
+            PoolConnection.countsession++;
+            Context.ClearError();
+            //COMMONTOOL comt = new COMMONTOOL();
+            //comt.logSession();
+        }
+
+        void Session_End(object sender, EventArgs e)
+        {
+            // Code that runs when a session ends. 
+            // Note: The Session_End event is raised only when the sessionstate mode
+            // is set to InProc in the Web.config file. If session mode is set to StateServer 
+            // or SQLServer, the event is not raised.
+            PoolConnection.countConcurrentUser--;
+            //COMMONTOOL comt = new COMMONTOOL();
+            //HttpSessionState GetSession = null;
+            ////Check if current context exists
+            //if (HttpContext.Current != null)
+            //{
+            //    GetSession = HttpContext.Current.Session;
+            //}
+            //else
+            //{
+            //    GetSession = this.Session;
+            //}
+
+            ////            session ses = new session();
+            //string sessioncode = "";
+            //string plogin = "";
+            //int ret = 0;
+            //if (GetSession != null)
+            //{
+            //    if (GetSession["p_SESSIONCODE"] != null)
+            //    {
+            //        sessioncode = GetSession["p_SESSIONCODE"].ToString();
+            //    }
+            //    if (GetSession["p_LOGINSESSION"] != null)
+            //    {
+
+            //        plogin = GetSession["p_LOGINSESSION"].ToString();
+            //    }
+            //    if (plogin != "")
+            //    {
+            //        LOGME_BUS bus_log = new LOGME_BUS();
+            //        LOGME_OBJ obj_log = new LOGME_OBJ();
+            //        obj_log.CODE = plogin;
+            //        obj_log._ID.CODE = sessioncode;
+            //        obj_log.ENDTIME = DateTime.Now;
+            //        string[] fi = { "ENDTIME" };
+            //        ret = bus_log.Update(fi, obj_log);
+            //        bus_log.CloseConnection();
+            //    }
+            //    if (sessioncode != "")
+            //    {
+            //        LOGME_OBJ obj = new LOGME_OBJ();
+            //        LOGME_BUS bus = new LOGME_BUS();
+            //        obj.CODE = sessioncode;
+            //        obj._ID.CODE = obj.CODE;
+            //        obj.ENDTIME = DateTime.Now;
+            //        string[] fi = { "ENDTIME" };
+            //        bus.Update(fi, obj);
+            //        bus.CloseConnection();
+
+            //    }
+
+            //}
+        }
+    }
+}

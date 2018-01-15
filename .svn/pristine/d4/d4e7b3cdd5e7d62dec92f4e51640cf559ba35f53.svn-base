@@ -1,0 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+using IS.Base;
+using IS.fitframework;
+namespace IS.uni
+{
+    public class EXAMRESULT_BUS: BusinessController<EXAMRESULT_OBJ, EXAMRESULT_OBJ.BusinessObjectID>
+    {
+        public EXAMRESULT_BUS()
+        {
+        }
+        public override EXAMRESULT_OBJ createObject()
+        {
+            EXAMRESULT_OBJ obj = new EXAMRESULT_OBJ();
+            this.setNull(obj);
+            return obj;
+        }
+        public override EXAMRESULT_OBJ createNull()
+        {
+            return null;
+        }
+
+    }
+
+}
+

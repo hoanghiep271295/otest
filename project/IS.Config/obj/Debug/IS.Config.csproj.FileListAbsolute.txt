@@ -1,0 +1,5 @@
+E:\hiep\NewOne\share\IS.Config.dll
+E:\hiep\NewOne\share\IS.Config.pdb
+E:\hiep\NewOne\project\IS.Config\obj\Debug\IS.Config.dll
+E:\hiep\NewOne\project\IS.Config\obj\Debug\IS.Config.pdb
+E:\hiep\NewOne\project\IS.Config\obj\Debug\IS.Config.csprojResolveAssemblyReference.cache

@@ -1,0 +1,88 @@
+﻿var alert = document.createElement('div');
+alert.classList += 'notification';
+alert.id = 'alert';
+var span = document.createElement('span');
+span.classList += 'span_alert';
+
+alert.appendChild(span);
+
+var style_alert = "font-family:'serif'; position: fixed; z-index: 10000;height:50px; bottom: 15%; right: 0; width:fit-content; font-size: 1em; padding: 1em 1em; border-radius: 8px;";
+
+alert.setAttribute("style", style_alert);
+var container = document.createElement('div');
+container.classList += 'confirm';
+var message_con = document.createElement('p');
+var btnOk = document.createElement('button');
+var btnCan = document.createElement('button');
+
+var style = "display: none;  z-index: 10000; padding: 50px; position: fixed; top: 40% ; transform: translateX(-50%); left: 50%; width: 500px;";
+container.id = 'container-confim';
+message_con.id = 'content-message';
+btnOk.id = 'btnOk';
+btnOk.classList += 'btn btn-danger';
+btnCan.id = 'btnCan';
+btnCan.classList += 'btn btn-defaul';
+
+btnOk.innerText = 'Xác nhận';
+btnCan.innerText = 'Hủy';
+//message_con.innerText = 'Bạn có chắc chắn muốn hủy ??';
+
+container.appendChild(message_con);
+container.appendChild(btnOk);
+container.appendChild(btnCan);
+
+container.setAttribute("style", style);
+
+$(document).ready(function () {
+    //alert('on load');
+    var main = document.getElementById('contents');
+    main.appendChild(alert);
+    main.appendChild(container);
+});
+
+var log = new Log();
+var confirm = new Confirm();
+
+
+function Log() {
+    this.show = function (message, result) {
+        span.innerText = message;
+        alert.style.display = 'block';
+        if (result) {           
+            alert.style.backgroundColor = 'rgba(7, 138, 5, 0.5)';
+            span.style.color = '#e5fbe0';
+            //alert.classList += 'alert-success';
+
+        }
+        else {
+            alert.style.backgroundColor = 'rgba(181, 72, 72, 0.5)';
+            span.style.color = '#e5fbe0';
+           // alert.classList += 'alert-danger';
+        }
+
+        setTimeout(function () {
+           alert.style.display = 'none';
+        }, 2500);
+    }
+}
+function Confirm() {
+    this.show = function (message, onOk, onNo) {
+        if (!!message) {
+            message_con.innerText =  message ;
+        } else {
+            message_con.innerText = 'Bạn có chắc chắn muốn xóa bản ghi này ??';
+        }
+
+        $('#container-confim').show();
+    
+        
+        $('#btnOk').unbind().click(function () {
+            onOk();
+            $('#container-confim').hide();
+        });
+        $('#btnCan').unbind().click(function () {
+            $('#container-confim').hide();
+        });
+    }
+}
+

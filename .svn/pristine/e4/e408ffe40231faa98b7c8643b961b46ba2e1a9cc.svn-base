@@ -1,0 +1,627 @@
+﻿var App = React.createClass({
+    getInitialState: function () {
+        return {
+            listGroupQuesion: [],
+            listQuestion: [],
+            listAnswer: [],
+            objHalltudent: null,
+            objExamForm: null,
+            listExamDetail: [],
+            listStudentAnswerFinish : [],
+            listStudentAnswer: [],
+            numberQuestion: 0
+    }
+    },
+    componentWillMount: function () {
+    },
+    componentDidMount: function () {
+        this.loadData();
+        window.getApp(this);
+    },
+    onload:function() {
+        window.setTimeout( console.log("a") ,5000);
+    },
+    loadData: function () {
+        var defaultvalue = window.getDefaultFromServer();
+        var markcode = defaultvalue.markcode;
+        var examtimecode = defaultvalue.examtimecode;
+        $.ajax({
+            url: "/studentexam/GetDetailExam",
+            dataType: 'json',
+            data: {
+                markcode: markcode,
+                examtimecode: examtimecode
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    this.setState({
+                        listGroupQuesion: data.liQuestiongroup,
+                        listQuestion: data.li_question,
+                        listAnswer: data.li_answer,
+                        objHalltudent: data.ObjexamHallstudent,
+                        objExamForm: data.ObjexamForm,
+                        listExamDetail: data.liExamformDetail,
+                        numberQuestion: data.numberQuestion
+                    });
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+    },
+    //submit data to server, format data to json string before
+    onSubmit: function () {
+        var list = JSON.stringify(this.state.listStudentAnswer);
+        var listExamdetail = JSON.stringify(this.state.listExamDetail);
+        var examformcode = JSON.stringify(this.state.objExamForm);
+        $.ajax({
+            url: "/ExamResult/UpdateExamResult",
+            dataType: 'json',
+            type:'POST',
+            data: {
+                listobj: list,
+                examformcode: examformcode,
+                listexamformdetail: listExamdetail,
+                examhallstudentcode: this.state.objHalltudent.CODE
+            },
+            success: function (data) {
+                if (data.ret >= 0) {
+                    log.show('Finished !!', true);
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.log(err.toString());
+            }
+        });
+
+    },
+    /**
+     * @param {string} mach -  Questioncode
+     * @param {string} mctl - sometimes here is answercode, sometimes here is answer text
+     * @param {string} thetype - Type of answer : MC,PA,LA,FI,FG,RW,WR or default is none
+     * @returns {} push answer into this state
+     */
+    onCheck(mach, mctl, thetype) {
+       // debugger
+        var obj = new Object();
+        obj.MaCauHoi = mach;
+        obj.MaCauTL = mctl;
+        obj.TYPE = thetype;
+        // var ques = {MaCauHoi:mach,MaCauTL:mctl,TYPE:thetype};
+        //check the existence of this obj in db
+        var check= this.containsObject(obj, this.state.listStudentAnswer);
+       //if update we will update
+        if (check) {
+            this.updateObject(obj, this.state.listStudentAnswer);
+       //     this.onSubmit();
+        } //add new
+        else {
+            console.log(this.state.listStudentAnswer);
+            this.state.listStudentAnswer.push(obj);
+            console.log(this.state.listStudentAnswer);
+            //     this.onSubmit();
+        }
+    },
+    /**
+     * check extistence of an object
+     * @param {object} obj
+     * @param {list<>} list
+     * @returns {boolean}
+     */
+    containsObject:  function (obj, list) {
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].MaCauHoi === obj.MaCauHoi) {
+                    //exist
+                    return true;
+                }
+            }
+           //none exist
+            return false;
+    },
+    /**
+     * check an object in arr and update it
+     * @param {Object} obj
+     * @param {Arr<>} arr
+     * @returns {}
+     */
+  updateObject:  function (obj,arr ) {
+   for (var i in arr) {
+          if (arr.hasOwnProperty(i)) {
+              if (arr[i].MaCauHoi === obj.MaCauHoi) {
+                  arr[i].MaCauTL = obj.MaCauTL;
+                  arr[i].TYPE = obj.TYPE;
+                  break; //Stop this loop, we found it!
+              }
+          }
+      }
+  },
+    render: function () {
+        var listQgroup = [];
+        var index = 0;
+        var that = this;
+        this.state.listGroupQuesion.forEach(function (rowitem) {
+            index++; 
+            switch (rowitem._QUESTIONTYPECODE.CODEVIEW) {
+                //multichoice
+                //một câu hỏi lớn và danh sách các câu hỏi nhỏ, trong các câu hỏi nhỏ thì sẽ có các câu trả lời
+                case 'MC':
+                    listQgroup.push(<QuestionGroup key={index}
+                                                   number={index}
+                                                   ident={rowitem.CODE}
+                                                   onCheck={that.onCheck}
+                                                   objQuestionGroup={rowitem.CONTENT}
+                                                   dataQuestion={that.state.listQuestion}
+                                                   dataAnswer={that.state.listAnswer}
+                                                   questiontype={"MC"}
+                                                   listAnswer={that.state.listStudentAnswer} />);
+                    break;
+                    // Single choice
+                    //dạng này không khác dạng multichoice cho lắm, chỉ hơi khác là chỉ gồm có 1 câu hỏi lớn và trong đó là các câu trả lời luôn
+                    //chứ không cần phải nhập câu hỏi nữa, khi nhập liệu thì dạng này đã tự động sinh ra 1 bản ghi là 1 question rồi
+                case 'MS':
+                    listQgroup.push(<QuestionTypeMS key={index}
+                                                   number={index}
+                                                   ident={rowitem.CODE}
+                                                   onCheck={that.onCheck}
+                                                   objQuestionGroup={rowitem.CONTENT}
+                                                   dataQuestion={that.state.listQuestion}
+                                                   dataAnswer={that.state.listAnswer}
+                                                   questiontype={"MS"}
+                                                   listAnswer={that.state.listStudentAnswer} />);
+                                                    break;
+                    //Co; Trường hợp câu hỏi tổng hợp, thực hiện giống như câu hỏi một nhiều
+                    //2
+                case 'CO':
+                    listQgroup.push(<QuestionGroup key={index}
+                                                   number={index}
+                                                   ident={rowitem.CODE}
+                                                   onCheck={that.onCheck}
+                                                   objQuestionGroup={rowitem.CONTENT}
+                                                   dataQuestion={that.state.listQuestion}
+                                                   dataAnswer={that.state.listAnswer}
+                                                   questiontype={"CO"}
+                                                   listAnswer={that.state.listStudentAnswer} />);
+                    break;
+                    //Pa : Dạng câu hỏi kéo thả theo group
+
+                case 'PA':
+                    listQgroup.push(<QuestionGroupPA  
+                                                   key={index}
+                                                   number={index}
+                                                   ident={rowitem.CODE}
+                                                   onCheck={that.onCheck}
+                                                   objQuestionGroup={rowitem}
+                                                   dataQuestion={that.state.listQuestion}
+                                                   dataAnswer={that.state.listAnswer}
+                                                   type={"PA"}
+                                                   listAnswer={that.state.listStudentAnswer} />);
+                    break;
+      
+                    //recording
+                    //3
+                case 'LA':
+                    listQgroup.push(<QuestionGroup key={index}
+                                                   number={index}
+                                                   ident={rowitem.CODE}
+                                                   objQuestionGroup={rowitem.CONTENT}
+                                                   dataQuestion={that.state.listQuestion}
+                                                   questiontype={"LA"}
+                                                   onCheck={that.onCheck}
+                                                   listAnswer={that.state.listStudentAnswer} />);
+                    break;
+                    //writing
+                    //4
+                case 'WR':
+                    listQgroup.push(<Writing    key={index}
+                                                number={index}
+                                                id={+that.props.iden+'WR'} 
+                                                objQuestionGroup={rowitem}
+                                                onCheck={that.onCheck}
+                                                questiontype={"WR"} />);
+                     break;
+                    // FG: Câu hỏi điền vào đoạn trống tự gõ từ
+                    //5
+                case 'FG':
+                    listQgroup.push(<QuestionTypeFG key={index}
+                                                    ref="child"
+                                                    number={index}
+                                                    objQuestionGroup={rowitem}
+                                                    onCheck={that.onCheck}
+                                                    questiontype={"FG"} />);
+                                            break;
+                 case 'FI':
+                                            ////debugger
+                                            listQgroup.push(<QuestionTypeFI key={index}
+                                                                            number={index}
+                                                                            quesGroupCode={rowitem.CODE}
+                                                                            dataAnswer={that.state.listAnswer}
+                                                                            objQuestionGroup={rowitem}
+                                                                            onCheck={that.onCheck}
+                                                                            type={"FI"} />);
+                                            break;
+                                            // RW: rewrite
+                                            //6
+                case 'RW':
+                                            //  debugger
+                                            listQgroup.push(<QuestionGroup key={index}
+                                                                           number={index}
+                                                                           ident={rowitem.CODE}
+                                                                           objQuestionGroup={rowitem.CONTENT}
+                                                                           dataQuestion={that.state.listQuestion}
+                                                                           dataAnswer={that.state.listAnswer}
+                                                                           onCheck={that.onCheck}
+                                                                           questiontype={"RW"} />);
+                                            break;
+
+                default:
+                                            console.log('chua lam');
+                                            break;
+                                            }
+                                            });
+return (
+
+        <div className="examform">
+            {listQgroup}
+                <div style={{margin:'10px',width:'100%',paddingLeft:'40px'}}>
+                 <button onClick={this.onSubmit} style={{fontFamily:'Verdana,sans-serif'}} id="btnSubmit"
+                         className="btn btnSubmit">
+                     Submit Your Answer »
+                 </button>
+                </div>
+        </div>
+        );
+}
+});
+
+
+//writing answer
+var Writing = React.createClass({
+    /**
+    * when any key up on this field will auto update and put it into listAstudentanswer
+    * @returns {}
+    */
+    onSubmit: function () {
+        var index = this.props.id;
+        var answer = $('#' + index).val();
+        if (!!answer) {
+            log.show("writing sent", true);
+            index = index.replace("WR", "");
+            var mch = index;
+            this.props.onCheck(mch, answer, "WR");
+        }
+    },
+    render: function () {
+        var index = this.props.id;
+        var questiongroup = $('<div />').html(this.props.objQuestionGroup.CONTENT).text().trim();
+        return (
+            <div>
+        <div className="container questiongroup">
+                <h4 style={{fontWeight:'bold'}}>{this.props.number}.</h4>
+           </div>
+                <div className="fieldsetGroup">
+                     <div className="col-sm-10" style={{ width :'fit-content' }}>
+                                        <span style={{ textAlign: 'left' }} key={'error_' + index} dangerouslySetInnerHTML={{ __html: questiongroup }}></span>
+                     </div>
+               <textarea id={index} className="form-control flex-item textareawriting"
+                          onBlur={this.onSubmit}></textarea>
+                </div>
+       </div>        
+       );
+    }
+});
+///câu hỏi dạng 1 câu hỏi lớn có nhiều câu trả lời 
+
+var QuestionTypeMS = React.createClass({
+    onChangeMS: function(e) {
+        var mch = e.target.name;
+        var mctl = e.target.id;
+        this.props.onCheck(mch, mctl,"MS");
+    },
+    render: function () {
+        var index = 0;
+        var that = this;
+        var listanswer = [];
+        this.props.dataAnswer.forEach(function (rowitem)
+        {
+            index++;
+            if (rowitem.QUESTIONGROUPCODE === that.props.ident) {
+                var answer = $("<div />").html(rowitem.CONTENT).text().trim();
+                listanswer.push(
+                    <li key={index} className='flex-item' name={rowitem.QUESTIONCODE}>
+                     <input type="radio"
+                            id={rowitem.CODE}
+                            name={rowitem.QUESTIONCODE}
+                            onClick={that.onChangeMS} />
+                        &nbsp; &nbsp;&nbsp; &nbsp;
+                        <label id={index} htmlFor={rowitem.CODE}>
+                     <span style={{ textAlign:'left' }} 
+                   key={'error_' + index} 
+                   dangerouslySetInnerHTML={{__html: answer}}>
+             </span>
+                    </label>
+                            </li>
+                );} });
+        var questiongroup = $("<div />").html(this.props.objQuestionGroup).text().trim();
+            return (
+                <div>
+             <div className="container questiongroup">
+                <h4 style={{fontWeight:'bold'}}>{this.props.number}.</h4>
+                        </div>
+    <div className="fieldsetGroup" >
+    <li style={{ 'listStyle':'none'}}>
+       <div className="container" style={{width:'100%',margin:'20px'}}>
+                <div className="col-sm-10" style={{ width :'fit-content' }}>
+     <span style={{ textAlign: 'left' }} key={'error_' + index} dangerouslySetInnerHTML={{ __html: questiongroup }}></span>
+                </div>
+       </div>
+            <ul className="list-unstyled flex-container marginBottom" >
+                {listanswer}
+            </ul>
+   </li>
+           </div>
+           </div>
+        );
+    }
+});
+
+//FG question
+var QuestionTypeFG = React.createClass({
+    sent:function() {
+        $("#btnSendFG").removeClass("btn-default");
+        $("#btnSendFG").addClass("btn-success");
+        $("#btnSendFG").html("Sent");
+    },
+    render:function() {
+        var questiongroupcontent = $("<div />").html(this.props.objQuestionGroup.CONTENT).text();
+        return (
+            <div>
+        <div className="container questiongroup">
+     <h4 style={{fontWeight:'bold'}}>{this.props.number}.</h4>
+        </div>
+        <div>
+    <div style={{position:'relative'}}>
+   <fieldset className="fieldsetGroup" style={{lineHeight: '2.3em'}}>
+         <span key={'error_'+ this.props.objQuestionGroup.CODE} dangerouslySetInnerHTML={{ __html: questiongroupcontent}}></span>
+   </fieldset>
+    </div>
+        </div>
+            </div>
+);
+    }
+});
+//show questiongroup
+var QuestionGroup = React.createClass({
+    controlvideo :function() {
+    },
+    render: function () {
+        var listQuestion = [];
+        var index = 0;
+        var that = this;
+        this.props.dataQuestion.forEach(function (rowitem) {
+            if (rowitem.QUESTIONGROUPCODE === that.props.ident) {
+                index++;
+                listQuestion.push(<Question key={index}
+                                            index={index}
+                                            iden={rowitem.CODE}
+                                            objQuestion={rowitem}
+                                            listanswer={that.props.dataAnswer}
+                                            onCheck={that.props.onCheck}
+                                            questiontype={that.props.questiontype} />);
+        }
+        });
+        var id = this.props.ident;
+        var questiongroup = $("<div />").html(this.props.objQuestionGroup).text();
+        return (
+            <div>
+        <div className="container questiongroup">
+     <h4 style={{fontWeight:'bold'}}>{this.props.number}.</h4>
+        </div>
+        <div>
+    <div style={{position:'relative'}}>
+            <fieldset className="fieldsetGroup">
+         <span key={'error_'+ id} dangerouslySetInnerHTML={{ __html: questiongroup}}></span>
+        <ul>
+            {listQuestion}
+        </ul>
+            </fieldset>
+    </div>
+        </div>
+    </div>
+            );
+        }
+});
+//show question
+var Question = React.createClass({
+    //only onchange of
+    onChangeInPut: function () {
+    },
+    /**
+     * @param {} e
+     * @returns {} answer of Multichoice question
+     */
+    onChangeMC: function(e) {
+        var mch = e.target.name;
+        var mctl = e.target.id;
+        this.props.onCheck(mch, mctl,"MC");
+    },
+    /**
+ * @param {} e
+ * @returns {} answer of Multichoice question
+ */
+    onChangeMS: function(e) {
+        var mch = e.target.name;
+        var mctl = e.target.id;
+        this.props.onCheck(mch, mctl,"MS");
+    },
+    /**
+    * @param {} e
+    * @returns {} answer of Multichoice question
+    */
+    onChangeCO: function(e) {
+        var mch = e.target.name;
+        var mctl = e.target.id;
+        this.props.onCheck(mch, mctl,"CO");
+    },
+    /**
+     * reder data
+     * @returns {}
+     */
+    render: function() {
+        var listanswer = [];//danh sach cau tra loi
+        var indent = 0;//đánh chỉ mục cho câu hỏi số bao nhiêu
+        var that = this;// vì không thể để this trong this, vì điều này làm confuse cho việc kiểm soát,nên nó không thể hiểu được this trong this là gì
+        //đo là lý do phải làm that  =this nhìn ngu ngu này
+        var questiontype = that.props.questiontype;//dạng câu hỏi
+        switch (questiontype) {
+            //vì mỗi câu hỏi có nhiều đáp án khác nhau nên render luôn tại đây
+            case 'MC':
+                this.props.listanswer.forEach(function(rowitem) {
+                    indent++;
+                    if (rowitem.QUESTIONCODE === that.props.iden) {
+                        var answer = $("<div />").html(rowitem.CONTENT).text().trim();
+                        listanswer.push(
+                            <li key={indent} className='flex-item' name={rowitem.QUESTIONCODE}>
+                                    <input type="radio"
+                                        id={rowitem.CODE}
+                                        name={rowitem.QUESTIONCODE}
+                                       onClick={that.onChangeMC} />
+                                &nbsp; &nbsp;&nbsp; &nbsp;
+                              <label id={indent} htmlFor={rowitem.CODE}>
+                        <span style={{ textAlign:'left' }} key={'error_'+ indent} dangerouslySetInnerHTML={{__html: answer}}></span>
+                    </label>
+                            </li>
+                );
+               }
+        });
+            break;
+
+        //Cau hoi tong hop
+        //dạng  này tương tự trên
+      case 'CO':
+     this.props.listanswer.forEach(function(rowitem) {
+     indent++;
+        if (rowitem.QUESTIONCODE === that.props.iden) {
+        var answer = $("<div />").html(rowitem.CONTENT).text();
+        listanswer.push(
+                <li key={indent} style={{display:'inline'}} name={rowitem.QUESTIONCODE}>
+                   <input type="radio" id={rowitem.CODE} name={rowitem.QUESTIONCODE} onClick={that.onChangeCO} />
+                    &nbsp; &nbsp;&nbsp; &nbsp;
+                <label id={indent} htmlFor={rowitem.CODE}>
+                <span style={{ textAlign:'left' }} key={'error_'+ indent} dangerouslySetInnerHTML={{__html: answer}}></span>
+                </label>
+                </li>
+                    );}
+        });
+    break;
+          //nghe noi
+            //dạng này thì khác, vị trí của câu trả lời hơi khó để viết tại đây luôn lên cho ra ngoài thành component để hiển thị cho dễ
+                        case 'LA':
+            listanswer = (<Recorder id={that.props.iden } onCheck={that.props.onCheck} />);
+                break;
+            //writing
+            //tương tự writing cũng làm như vậy,tạo component riêng, tuy nhiên thì nên để đây render luôn thì đẹp nhất
+            //    case 'WR':
+            //listanswer=(<Writing id={+that.props.iden+'WR'} onCheck={that.props.onCheck} />);
+            //FG: Dien tu vao o trong go tu
+                case 'FG':
+                    console.log("FG question, do nothing here, we did id before this component");
+                break;
+            //Viet lai cau
+            //xác địn mỗi câu hỏi có nhiều câu trả lời đúng, tuy nhiên chỉ cho nhập 1 lần để so sánh với danh sách câu trả lời đúng
+                        case 'RW':
+listanswer=(<Rewrite id={+that.props.iden+'RW'} onCheck={that.props.onCheck} />);
+break;
+
+            default:
+console.log('chua lam');
+break;
+}
+var index = this.props.index;
+var question = $('<div />').html(this.props.objQuestion.CONTENT).text();
+return (
+   <div>
+   <li style={{ 'listStyle':'none'}}>
+       <div className="container" style={{width:'100%',margin:'20px'}}>
+               <div className="col-sm-1" style={{ fontWeight:'bold' , fontFamily :'Times New Roman,serif' , fontSize:'13.0pt' }}>{this.props.index}.
+               </div>
+                <div className="col-sm-10" style={{ width :'fit-content' }}>
+                               <span style={{ textAlign:'left' }} key={'error_'+ index} dangerouslySetInnerHTML={{ __html: question }}></span>
+                </div>
+       </div>
+            <ul className="list-unstyled flex-container" style={{'marginBottom':'20px'}}>{listanswer}
+            </ul>
+   </li>
+   </div>
+            );
+}
+});
+
+var Recorder = React.createClass({
+    saveAudio: function () {
+        var index = this.props.id;//mã câu hỏi
+        var va = $('#hid' + index).val();//tìm dữ liệu đã lưu trong hidden
+        console.log('Du lieu len:', va);
+        this.props.onCheck(index, va, "LA");//tiến hành đẩy vào trong danh sách câu trả lời của sinh viên
+    },
+    componentDidMount: function () {
+        var index = this.props.id;
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.async = true;
+        script.innerHTML = 'var minutesLabel' + index + ' = document.querySelector(\'#minutes' + index + '\');\nvar secondsLabel' + index + ' = document.querySelector(\'#seconds' + index + '\');\nvar totalSeconds = 0;\n// setInterval(setTime, 1000);\n\nfunction setTime' + index + '() {\n  ++totalSeconds;\n  secondsLabel' + index + '.innerHTML = pad(totalSeconds % 60);\n  minutesLabel' + index + '.innerHTML = pad(parseInt(totalSeconds / 60));\n}\n\nfunction pad(val) {\n  var valString = val + "";\n  if (valString.length < 2) {\n    return "0" + valString;\n  }\n  else {\n    return valString;\n  }\n}\n\nvar chunks = [];\nvar record' + index + ' = document.querySelector(\'#record' + index + '\');\nvar stop' + index + ' = document.querySelector(\'#stop' + index + '\');\nvar soundClips' + index + ' = document.querySelector(\'#sound-clips' + index + '\');\nvar pause' + index + ' = document.querySelector(\'#pause' + index + '\');\n// kh\u1EDFi t\u1EA1o media recoder \n// read doc t\u1EA1i. https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/start \nif (navigator.mediaDevices) {\n  console.log(\'getUserMedia supported.\');\n\n  var constraints = { audio: true };\n\n  document.getElementById(\'record' + index + '\').onclick = function () {\n console.log(\'Chạy cái gì dây\',navigator.mediaDevices); \n   navigator.mediaDevices.getUserMedia(constraints)\n      .then(function (stream) {\n        var mediaRecorder = new MediaRecorder(stream);\n        var _time, time = 0;\n        //   mediaRecorder.onstop\n\n        if (mediaRecorder.state === "paused") {\n            document.querySelector(\'#record' + index + '\').disabled = true;\n          mediaRecorder.resume();\n          console.log(mediaRecorder.state);\n          //\n          _time = setInterval(setTime' + index + ', 1000);\n        }\n        else if (mediaRecorder.state !== \'recording\') {\n          mediaRecorder.start();\n          console.log(mediaRecorder.state);\n          //\n          _time = setInterval(setTime' + index + ', 1000);\n        }\n        ///pause onclick\n        pause' + index + '.onclick = function () {\n\n          if (mediaRecorder.state == \'recording\') {\n        document.querySelector(\'#record' + index + '\').disabled = true;\n            mediaRecorder.pause();\n            clearInterval(_time);\n\n          } else {\n            mediaRecorder.resume();\n            _time = setInterval(setTime' + index + ', 1000);\n          }\n          console.log(mediaRecorder.state);\n\n        }\n        //stop onclick\n        stop' + index + '.onclick = function () {\n          mediaRecorder.stop();\n          console.log(mediaRecorder.state);\n\n          clearInterval(_time);\n          totalSeconds = 0;\n        }\n\n        mediaRecorder.onstop = function (e) {\n          document.querySelector(\'#record' + index + '\').disabled = true;\n          document.querySelector(\'#pause' + index + '\').disabled = true;\n          console.log("data available after MediaRecorder.stop() called.");\n      \n         \n                \n\n\n          var clipContainer = document.createElement(\'article\');\n          var clipLabel = document.createElement(\'p\');\n          var audio = document.createElement(\'audio\');\n          var deleteButton = document.createElement(\'button\');\n          deleteButton.className = "btn btn-danger";\n\n          clipContainer.classList.add(\'clip\');\n          audio.setAttribute(\'controls\', \'\');\n          deleteButton.innerHTML = "Delete";\n        \n\n          clipContainer.appendChild(audio);\n          clipContainer.appendChild(clipLabel);\n          clipContainer.appendChild(deleteButton);\n          soundClips' + index + '.appendChild(clipContainer);\n\n          audio.controls = true;\n          var blob = new Blob(chunks, { \'type\': \'audio/ogg; codecs=opus\' });\n           var fd = new FormData();\n           fd.append(\'filename\', \'' + index + '.wav\');\n                fd.append(\'data\', blob,\'' + index + '.wav\');\n                $.ajax({\n                    type: \'POST\',\n                    url: \'ExamResult/UploadBlob\',\n                    data: fd,\n                    processData: false,\n                    contentType: false\n                }).done(function(data) {\n                       console.log(data);\n                });\n           console.log(blob);\n          var audioURL = URL.createObjectURL(blob);\n          audio.src = audioURL;\n          var url = document.URL;\n          console.log(url);\n          console.log(audioURL);\n          console.log("recorder stopped");\n $("#hid' + index + '").val("' + index + '.wav") ;\n\n          deleteButton.onclick = function (e) {\n\n            evtTgt = e.target;\n            evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);\n            chunks = [];\n            document.querySelector(\'#record' + index + '\').disabled = false;\n            document.querySelector(\'#pause' + index + '\').disabled = false;\n          }\n        }\n\n        mediaRecorder.ondataavailable = function (e) {\n          \n          chunks.push(e.data);\n           console.log(e.data); \n\n          console.log(chunks);\n\n          clearInterval(_time);\n          secondsLabel' + index + '.innerHTML = "00";\n          minutesLabel' + index + '.innerHTML = "00";\n        }\n      })\n  }\n}';
+        document.body.appendChild(script);
+    },
+    render: function () {
+        var index = this.props.id;
+        return (
+            <div className="flex-item" style={{width:'auto',margin:'auto'}}>
+                <div className="flex-item" style={{marginLeft:'20px'}}>
+                <label id={'minutes'+index}>00</label>:<label id={'seconds'+index}>00</label>
+                </div>
+               <div style={{display:"flex",flexDirection:"row",paddingLeft:'10px',paddingBottom:'40px'}}>
+                  <button className="btn btn-danger btnmarginright" id={'record'+ index}>Record <i className="fa fa-microphone" aria-hidden="true"></i></button>
+                  <button className="btn btn-group btnmarginright" id={'pause'+ index}>Pause <i className="fa fa-pause" aria-hidden="true"></i></button>
+                  <button className="btn btn-info btnmarginright" id={'stop'+index}>Stop <i className="fa fa-stop" aria-hidden="true"></i></button>
+                  <input type="hidden" id={'hid'+index} />
+                  <button className="btn btn-success" id={'btSave'+ index} onClick={this.saveAudio}> Save <i className="fa fa-floppy-o" aria-hidden="true"></i></button>
+               </div>
+                  <section id={'sound-clips'+index}></section>
+            </div>
+            );
+}
+});
+//rewrite
+var Rewrite = React.createClass({
+    /**
+     * khen anything up in this input will automate update into state
+     * @returns {}
+     */
+    inputChange: function () {
+        var index = this.props.id;
+        var answer = $('#' + index).val();
+        log.show("Đã trả lời câu'"+index+"'" , true);
+        index = index.replace("RW", "");
+        var mch = index;
+        this.props.onCheck(mch, answer,"RW");
+        if (!!answer) {
+            log.show("Đã trả lời câu'"+index+"'" , true);
+        } else {
+            log.show("Chưa trả lời câu '"+index + "'", false);
+        }
+    },
+    render: function () {
+        var id = this.props.id;
+        return (
+            <div style={{'marginLeft':'15%'}}>
+                <label> <b> &#8594;</b></label>
+              <input id={id} type="text" onBlur={this.inputChange} className="inputRW" />
+            </div>
+            );
+              }
+              });
+
+
+ReactDOM.render(<App />, document.getElementById('container'));
+
+var global = "";

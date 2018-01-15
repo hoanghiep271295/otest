@@ -1,0 +1,19 @@
+﻿  var FGAnswer  = React.createClass({
+
+      componentWillMount: function () {
+          component.add('FGAnswer', this);
+      },
+      render: function () {       
+          return (
+                        <div>
+                                   <div className="form-group" id="fgques">
+                                    <label className="col-sm-2 control-label">Từ cần điền là </label>
+                                    <div className="col-sm-10">
+                                        <input style={{ 'height': '60px', 'overflowY': 'scroll', 'fontFamily': 'serif', 'fontWeight': 'bold', 'textAlign': 'center', 'color': '#3e3838' }} className="form-control" id='FG_ANSWER' />                                                                          
+                                    </div>
+                                   </div>
+                        </div>
+                      
+            );
+  }
+  });

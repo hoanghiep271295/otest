@@ -1,0 +1,52 @@
+﻿var QuestionTypeWR = React.createClass({
+    /**
+   * when any key up on this field will auto update and put it into listAstudentanswer
+   * @param {string} id  : Mã của một câu hỏi
+   * @returns {}
+   */
+    onSubmit: function (idQuestion) {
+        var index = idQuestion + "WR";
+        var answer = this.refs[index].value;
+        if (!!answer) {
+            index = index.replace("WR", "");
+            var mch = index;
+            this.props.onCheck(mch, answer, "WR");
+        }
+    },
+    componentDidMount: function () {
+        document.getElementById(this.props.id + '_questiontypeWR').innerHTML =
+            this.props.objQuestionGroup.CONTENT;
+    },
+    render: function () {
+        var writingAnswer = [];
+        var index = 0;
+        this.props.dataQuestion.map((rowitem)=> {
+            if (rowitem.QUESTIONGROUPCODE === this.props.id)
+            {
+                writingAnswer.push(
+                    <div key={index}>
+                    <textarea id={rowitem.CODE+"WR"}
+                              ref={rowitem.CODE+"WR"}
+                         className="form-control flex-item textareawriting"
+                          onBlur={this.onSubmit.bind(this, rowitem.CODE)}>
+                     </textarea>
+                  </div>
+                    );
+        }
+            index++;
+    });
+return (
+    <div>
+<div className="container questiongroup">
+        <b >{this.props.number}.</b>
+</div>
+        <div className="fieldsetGroup">
+             <div className="col-sm-10 fitContent  lineHeight text-center">
+             <span id={this.props.id + '_questiontypeWR'} ></span>
+             </div>
+            {writingAnswer}
+    </div>
+</div>
+       );
+}
+});

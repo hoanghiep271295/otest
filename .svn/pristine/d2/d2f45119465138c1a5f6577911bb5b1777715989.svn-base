@@ -1,0 +1,141 @@
+﻿//var Select = require(['scripts/reactselect/react-select']);
+var HomeIndex = React.createClass({
+    getInitialState: function() {
+        return {
+            title: ''
+            ,cbo:[]
+        };
+    },
+    componentWillMount:function()
+    {
+
+        var options = [
+            { value: '1', label: 'One' },
+            { value: '2', label: 'Two' }
+        ];
+        var data = [
+           { id: "1", text: "ActionScript", parent: "#", idext: "1" },
+           { id: "2", text: "Asp", parent: "1", idext: "1.2" },
+           { id: "3", text: "BASIC", parent: "1", idext: "1.3" },
+           { id: "4", text: "C", parent: "1", idext: "1.4" },
+           { id: "5", text: "C++", parent: "3", idext: "1.3.5" },
+           { id: "6", text: "Clojure", parent: "5", idext: "1.3.5.6" },
+           { id: "7", text: "COBOL", parent: "2", idext: "1.2.7" },
+           { id: "8", text: "Erlang", parent: "2", idext: "1.2.8" },
+           { id: "9", text: "Haskell", parent: "1", idext: "1.9" }
+        ];
+        this.setState({ cbo: data });
+
+    },
+
+
+    componentDidMount: function () {
+        setTitle('sys_title', 'Hệ thống hỗ trợ dạy và học tiếng Nga');
+        var path = [{ title: 'Xin chào', status: 'active', link: '' }];
+        setTree('sys_path', path);
+        var data = [
+           { id: "1", text: "ActionScript", parent: "#", idext: "1" },
+           { id: "2", text: "Asp", parent: "1", idext: "1.2" },
+           { id: "3", text: "BASIC", parent: "1", idext: "1.3" },
+           { id: "4", text: "C", parent: "1", idext: "1.4" },
+           { id: "5", text: "C++", parent: "3", idext: "1.3.5" },
+           { id: "6", text: "Clojure", parent: "5", idext: "1.3.5.6" },
+           { id: "7", text: "COBOL", parent: "2", idext: "1.2.7" },
+           { id: "8", text: "Erlang", parent: "2", idext: "1.2.8" },
+           { id: "9", text: "Haskell", parent: "1", idext: "1.9" }
+        ];
+ //       this.setState({ cbo: data });
+        var dataDepart = [{ "value": 411, "parentid": 0, "data": "Sở Thông Tin & Truyền Thông", "metadata": { "id": 411 }, "idext": "411", "state": "leaf", "order": 1, "level": 1, "attr": { "id": 411, "rel": "dept", "idext": "411", "label": "\\Sở Thông Tin & Truyền Thông" }, "label": "\\Sở Thông Tin & Truyền Thông" }, { "value": 413, "parentid": 411, "data": "BCVT", "metadata": { "id": 413 }, "idext": "411.413", "state": "leaf", "order": 1, "level": 1, "attr": { "id": 413, "rel": "dept", "idext": "411.413", "label": "\\Sở Thông Tin & Truyền Thông\\BCVT" }, "label": "\\Sở Thông Tin & Truyền Thông\\BCVT" }, { "value": 416, "parentid": 411, "data": "Bộ phận tiếp nhận", "metadata": { "id": 416 }, "idext": "411.416", "state": "leaf", "order": 2, "level": 2, "attr": { "id": 416, "rel": "dept", "idext": "411.416", "label": "\\Sở Thông Tin & Truyền Thông\\Bộ phận tiếp nhận" }, "label": "\\Sở Thông Tin & Truyền Thông\\Bộ phận tiếp nhận" }, { "value": 417, "parentid": 411, "data": "Bộ phận trả kết quả", "metadata": { "id": 417 }, "idext": "411.417", "state": "leaf", "order": 3, "level": 2, "attr": { "id": 417, "rel": "dept", "idext": "411.417", "label": "\\Sở Thông Tin & Truyền Thông\\Bộ phận trả kết quả" }, "label": "\\Sở Thông Tin & Truyền Thông\\Bộ phận trả kết quả" }, { "value": 412, "parentid": 411, "data": "Phòng Báo Chí - Xuất Bản", "metadata": { "id": 412 }, "idext": "411.412", "state": "leaf", "order": 1, "level": 1, "attr": { "id": 412, "rel": "dept", "idext": "411.412", "label": "\\Sở Thông Tin & Truyền Thông\\Phòng Báo Chí - Xuất Bản" }, "label": "\\Sở Thông Tin & Truyền Thông\\Phòng Báo Chí - Xuất Bản" }, { "value": 415, "parentid": 411, "data": "Phòng Công nghệ thông tin", "metadata": { "id": 415 }, "idext": "411.415", "state": "leaf", "order": 1, "level": 1, "attr": { "id": 415, "rel": "dept", "idext": "411.415", "label": "\\Sở Thông Tin & Truyền Thông\\Phòng Công nghệ thông tin" }, "label": "\\Sở Thông Tin & Truyền Thông\\Phòng Công nghệ thông tin" }, { "value": 414, "parentid": 411, "data": "Phòng Kế hoạch - Tài chính", "metadata": { "id": 414 }, "idext": "411.414", "state": "leaf", "order": 1, "level": 1, "attr": { "id": 414, "rel": "dept", "idext": "411.414", "label": "\\Sở Thông Tin & Truyền Thông\\Phòng Kế hoạch - Tài chính" }, "label": "\\Sở Thông Tin & Truyền Thông\\Phòng Kế hoạch - Tài chính" }, { "value": 418, "parentid": 411, "data": "Trung tâm CN-TT&TT", "metadata": { "id": 418 }, "idext": "411.418", "state": "leaf", "order": 4, "level": 2, "attr": { "id": 418, "rel": "dept", "idext": "411.418", "label": "\\Sở Thông Tin & Truyền Thông\\Trung tâm CN-TT&TT" }, "label": "\\Sở Thông Tin & Truyền Thông\\Trung tâm CN-TT&TT" }]
+        var config = { id: "value", text: "data", parent: "parentid", idext: "idext" };
+
+        //var dropdown = $("#drop").dropdownTree({
+        //    data: dataDepart,
+        //    mapper: { id: "value", text: "data", parent: "parentid", idext: "idext" },
+        //    ajax: { url: "http://localhost:33118/API/Index" },
+        //    onChoose: function () {
+        //        console.table(dropdown.value);
+        //    },
+        //    check: false
+        //});
+    },
+    doChange:function()
+    {
+        var data = [
+           { id: "1", text: "ActionScript", parent: "#", idext: "1" },
+           { id: "6", text: "Clojure", parent: "5", idext: "1.3.5.6" },
+           { id: "7", text: "COBOL", parent: "2", idext: "1.2.7" },
+           { id: "8", text: "Erlang", parent: "2", idext: "1.2.8" },
+           { id: "2", text: "Asp", parent: "1", idext: "1.2" },
+           { id: "3", text: "BASIC", parent: "1", idext: "1.3" },
+           { id: "4", text: "C", parent: "1", idext: "1.4" },
+           { id: "5", text: "C++", parent: "3", idext: "1.3.5" },
+           { id: "9", text: "Haskell", parent: "1", idext: "1.9" }
+        ];
+        //this.setState({ cbo: data });
+        this.refs.democombo.setList(data);
+    },
+    hell:function(obj, ev)
+    {
+        console.log('ON change', obj);
+    },
+    ComboOnSelect: function (element)
+    {
+        console.log('On ComboOnSelect', element);
+    },
+    ComboOnCheck: function (elements, status)
+    {
+        console.log("on ComboOnCheck", elements, status);
+    },
+    ComboOnExpand: function (element, status) {
+        console.log('ComboOnExpand', element, status);
+    },
+    getChecked:function()
+    {
+        console.log(this.refs.dropme.getChecked());
+    },
+    render: function () {
+        var arr3 = [
+        { id: "1", title: "Khong", parent:'' }
+        , { id: "2", title: "Có không", parent: '' }
+        , { id: "4", title: "Có 1", parent: '1' }
+        , { id: "5", title: "Có 11", parent: '4' }
+        , { id: "6", title: "Có 12", parent: '4' }
+        ];
+        var mapping = { id: 'id', text: 'title', parent: 'parent', idext:'id' };
+        return(
+    <div className="box">
+        <div className="row">
+            <div className="col-xs-12" style={{borderRight: '1px solid gray', minHeight:550}}>
+                Xin chào, đến với chương trình quản lý trang thiết bị
+                
+                <div className="row">
+                    <div className="col-sm-4">
+                        <input type="checkbox" />
+                        <input type="text"  />
+                         <Combobox lst={this.state.cbo} valuefield='id' textfield='{text}'  id='cbo' callback={this.hell}  tooltip="Click hoặc space chọn" multiple={true} ref='democombo'></Combobox>
+                        <input type="button" value="click" onClick={this.doChange} />
+                        <input type="checkbox" />
+                        {/*<Container/>*/}
+                        <div>
+                              <DropdownTree title='Thử tý' id='dropSubjectContent' lst={arr3} onSelect={this.ComboOnSelect} onCheck={this.ComboOnCheck} onExpand={this.ComboOnExpand} check={true} selectChildren={true} mapper={mapping} ref='dropSubjectContent' />
+                        </div>
+                        <input type="button" value="click" onClick={this.getChecked} />
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+
+        );
+		}
+    
+});
+
+
+//----------------
+ReactDOM.render(
+    <HomeIndex />,
+    document.getElementById('container')
+);

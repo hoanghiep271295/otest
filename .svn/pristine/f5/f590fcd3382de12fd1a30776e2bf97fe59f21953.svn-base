@@ -1,0 +1,23 @@
+﻿
+//dạng câu hỏi chọn combobox trong 
+var QuestionTypeFF = React.createClass({
+    componentDidMount:function() {
+        document.getElementById(this.props.quesGroupCode + '_questiontypeFF').innerHTML = this.props.objQuestionGroup;
+    },
+
+    render: function () {
+        //var indexQgroup = this.props.id;
+        //var questiongroup = $('<div />').html(this.props.objQuestionGroup.CONTENT).text().trim();
+        return (
+            <div>
+        <div className="container questiongroup">
+                <b>{this.props.number}.</b>
+        </div>
+                <div className="fieldsetGroup lineHeight">
+                     <span id={this.props.quesGroupCode + '_questiontypeFF'}> </span>
+            </div>
+
+            </div>
+       );
+    }
+});

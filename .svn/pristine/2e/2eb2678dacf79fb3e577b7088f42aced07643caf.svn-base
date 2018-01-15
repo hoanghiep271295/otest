@@ -1,0 +1,414 @@
+﻿.flex-container {
+    display: -webkit-flex;
+    display: flex;
+    width: 100%;
+    height: auto;
+    -ms-flex-direction:column;
+    -o-flex-direction:column;
+    -webkit-flex-direction:column;
+    flex-direction:column;
+}
+.index {
+    flex: 1;
+}
+.flex-item {
+    width: auto;
+    height: auto;
+    margin: 7px;
+}
+.examform {
+    height: 100%;
+    background-color: #fffaf0;
+    max-width: 85%;
+    margin: auto;
+    overflow-y: scroll;
+    padding-left: 12px; 
+    padding-right: 12px; 
+}
+.formexam {
+    padding: 0 8px;
+    box-shadow: 1px 1px 11px 2px #888888;
+}
+.questiongroup {
+    margin-bottom: 15px;
+    width: 95%;
+    margin-top: 15px;
+    min-height: 20px;
+}
+.dragFi {
+    overflow: auto;
+}
+
+.btnmarginright {
+    margin-right: 10px;
+}
+.textareawriting {
+    margin: auto;
+    display: block;
+    width: 95%;
+    min-height: 130px;
+    font-family: Times New Roman, serif;
+    font-size: 14.0pt;
+    padding: .5rem .75rem;
+    line-height: 1.25;
+    color: #464a4c;
+    background-color: #fff;
+    word-wrap: break-word;
+}
+.textareawritingAnswer {
+    display: block;
+    width: 87%;
+    min-height: 130px;
+    font-family: Times New Roman, serif;
+    font-size: 14.0pt;
+    padding: .5rem .75rem;
+    line-height: 1.25;
+    color: #464a4c;
+    background-color: #fff;
+    word-wrap: break-word;
+}
+.btn-group:hover {
+    background-color: white;
+    color: black;
+    border: 1px solid #e7e7e7;
+}
+.fieldsetGroup {
+    padding: 20px 20px 10px;
+    margin-right: 0;
+    border: 1px solid #c0c0c0;
+    clear: both;
+    margin-left: 0;
+    margin-bottom: 20px;
+    background-color: #f1f1f1;
+    box-shadow: 0 2px 4px 0 #000000,0 2px 10px 0 #000000!important;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)!important;
+}
+.btnSubmit {
+        color: #FFFFFF;
+    background-color: #4CAF50;
+}
+.btnSubmit:hover {
+    color: #FFFFFF;
+    box-shadow: 0 8px 16px 0 #000000, 0 6px 20px 0 #000000;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    outline-width: 0
+}
+
+.inputRW {
+    margin-left: 1%;
+    min-width: 80%;
+    width: 90%;
+    padding: 5px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 0.5px dashed;
+}
+.inputFG {
+    min-width: 150px;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 0.5px dashed;
+    background-color: white;
+    margin-left: 2px;
+    padding: 3px;
+    margin-right: 2px;
+}
+#clockdiv{
+	font-family: sans-serif;
+	color: #fff;
+	display: inline-block;
+	font-weight: 100;
+	text-align: center;
+	font-size: 30px;
+}
+#clockdiv > div {
+    margin: 1px;
+	display: inline-block;
+}
+
+#clockdiv div > span {
+    padding: 15px;
+    -ms-border-radius: 3px;
+    border-radius: 3px;
+	background: #00816A;
+	display: inline-block;
+}
+.boxFI {
+    display: inline-block;
+    min-width: 120px;
+    margin-left: 2px;
+    height: 25px;
+    margin-right: 2px;
+    border-bottom: 1px solid black;
+    background-color: #f5edb2;
+}
+.contentsFI {
+    width: 100px;
+    height: 20px;
+}
+.spanFI {
+	font-size:20px;
+	line-height: 20px;	
+	margin-left:20%;
+	vertical-align: middle;	
+}
+
+.gridContent {
+  display: grid;
+  background-color: #3CE9FF;
+  /* ReSharper disable once CssNotResolved */
+  grid-gap: 0.75rem;
+  grid-template: repeat(5, 1fr) / repeat(5, 1fr);
+  width: 100%;
+  background-color: #3CE9FF;
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem;
+}
+
+ul.gridContent > li {
+    position: relative;
+    border-radius: 3px;
+    background: #ffffff;
+    margin-bottom: 20px;
+    width: 100%;
+    background-color: #a5ffa5;
+     display: block;
+     border-top: 0; 
+}
+.gridContent > li > div {
+      margin: 1rem 0.5rem;
+}
+
+* {box-sizing: border-box;}
+ 
+.cd-top.cd-is-visible {
+  /* the button becomes visible */
+  visibility: visible;
+  opacity: 1;
+}
+.cd-top.cd-fade-out {
+  /* if the user keeps scrolling down, the button is out of focus and becomes less visible */
+  opacity: .5;
+}
+
+#outer-dropzone {
+  height: 140px;
+}
+
+#inner-dropzone {
+  height: 80px;
+}
+
+.cd-top.cd-is-visible {
+  /* the button becomes visible */
+  visibility: visible;
+  opacity: 1;
+}
+.cd-top.cd-fade-out {
+  /* if the user keeps scrolling down, the button is out of focus and becomes less visible */
+  opacity: .5;
+}
+.portfolio-grid {
+	list-style: none;
+	padding: 0;
+	margin: 0 auto;
+	text-align: center;
+	width: 100%;
+}
+.portfolio-grid li {
+    border: 2px solid #2A97AB;
+    color: #1f911f;
+    display: inline-block;
+    margin: 5px 5px 5px 5px;
+    vertical-align: top;
+    min-width:200px;
+    width: fit-content;
+    height: auto;
+    min-height: 35px;
+    text-align: center;
+}
+.portfolio-grid div{
+  width :fit-content;
+  padding: 5px;
+  height:100%;
+  margin: auto;
+    
+}
+.marginBottom {
+    margin-bottom:20px;
+}
+.box1 {
+    border: 2px solid #2A97AB;
+        margin-bottom: 5%;
+            position: relative;
+    display: block;
+    padding: 5px;
+    background-color: #fff;
+    min-height: 35px; 
+}
+
+.customcontainer {
+    display: flex;
+    padding: 20px 20px 10px;
+    margin-right: 0;
+    margin-top: 20px;
+    clear: both;
+    margin-left: 0;
+    margin-bottom: 20px;
+  }
+.licustom {
+    display: flex;
+    min-height: 35px;
+       margin-bottom: 5%;
+}
+
+.flex {
+    width: 45%;
+    padding: 10px;
+}
+.dropClass {
+    display: inline-block;
+    min-width: 120px;
+    margin-left: 2px;
+    height: 25px;
+    margin-right: 2px;
+    border-bottom: 1px solid black;
+    background-color: #f5edb2;
+}
+ #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 999;
+            border: none;
+            outline: none;
+            background-color: #078a05;
+            background-color: rgba(7, 138, 5, 0.5);
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 50%;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+    #return-to-top {
+           display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+             border: none;
+            outline: none;
+            z-index: 999;
+            border: none;
+            outline: none;
+            background-color: #078a05;
+            background-color: rgba(7, 138, 5, 0.5);
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 50%;
+            -webkit-border-radius: 35px;
+            -moz-border-radius: 35px;
+            border-radius: 35px;
+            -webkit-transition: all 0.3s linear;
+            -moz-transition: all 0.3s ease;
+            -ms-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
+            transition: all 0.3s ease;
+}
+#return-to-top i {
+    color: #fff;
+    margin: 0;
+    position: relative;
+    left: 16px;
+    top: 13px;
+    font-size: 19px;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+#return-to-top:hover {
+   background-color: #555;
+}
+#return-to-top:hover i {
+    color: #fff;
+    top: 5px;
+}
+
+        .fitContent {
+            width: fit-content;
+        }
+        .fitContentHeight {
+            height: fit-content;
+        }
+        .green {
+            color: green;
+        }
+        .red {
+            color: red;
+        }
+        .none-style {
+            list-style-type: none;
+        }
+        .divCenter {
+            text-align: center;
+        }
+        .textLeft {
+            text-align: left;
+        }
+        .lineHeight {
+            line-height: 2;
+        }
+        @media (min-width: 768px) {
+          .modal-dialog.as-container {
+            width: 750px;
+          }
+        }
+        @media (min-width: 992px) {
+          .modal-dialog.as-container {
+            width: 970px;
+          }
+}
+@media (min-width: 1200px) {
+  .modal-dialog.as-container {
+    width: 1170px;
+  }
+}
+
+.dialogPopup {
+    width: 75%;
+}
+
+
+        .modal-dialog.as-container 
+        .modal-content {
+                float: none;
+                margin: auto;
+            }
+        .liRA {
+            border:2px solid green;
+            padding: 10px;
+            color: black;
+            margin: 10px;
+            width: fit-content;
+            cursor: pointer;
+            list-style-type: none;
+
+        }
+            .placeholder {
+            border:2px solid green;
+            padding: 10px;
+            color: black;
+            margin: 10px;
+            width: fit-content;
+            list-style-type: none;
+            background-color: silver;
+        }

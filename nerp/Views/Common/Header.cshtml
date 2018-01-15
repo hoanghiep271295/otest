@@ -1,0 +1,141 @@
+﻿@{
+    Layout = null;
+}
+@if (ViewBag.isloged)
+{
+
+    <li class="dropdown user user-menu">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <img src="/@ViewBag.loginImg" class="user-image" alt="User Image">
+            <span class="hidden-xs">@ViewBag.loginname</span>
+        </a>
+        <ul class="dropdown-menu">
+            <!-- User image -->
+            <li class="user-header">
+                <img src="/@ViewBag.loginImg" class="img-circle" alt="User Image">
+
+                <p>
+                    @ViewBag.loginname
+                    <small>@ViewBag.departmentname</small>
+                </p>
+            </li>
+            <li class="user-footer">
+                <div class="pull-left">
+                    <a href="/admin/changepass" class="btn btn-default btn-flat"><i class="fa fa-key"></i> <span>Đổi mật khẩu</span></a>
+                </div>
+                <div class="pull-right">
+                    <a href="#" class="btn btn-default btn-flat" onclick="logout()"><i class="fa fa-ban"></i> <span>Thoát</span></a>
+                </div>
+            </li>
+        </ul>
+    </li>
+    <script>
+        /**
+* Thông báo kết thúc đăng nhập của một giáo viên, sinh viên
+*/
+        function logout() {
+            $.ajax({
+                url: "/admin/logoutjs",
+                dataType: 'json',
+                success: function (data) {
+                    if (data.ret >= 0) {
+                        window.location.replace("/home/index");
+                    }
+
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error('unknow:url', status, err.toString());
+                }.bind(this)
+            });
+        }
+    </script>
+                <!-- Control Sidebar Toggle Button -->
+                @*<li>
+                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                    </li>*@
+}
+else
+{
+    <li class="user user-menu">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <img src="/Content/sysimage/logo.png" class="user-image" alt="User Image" />
+            <span class="hidden-xs">Đăng nhập</span>
+        </a>
+        <ul class="dropdown-menu">
+            <!-- User image -->
+            <li>
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Đăng nhập</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label>Tên đăng nhập</label>
+                            <input type="text" class="form-control" id="txtUsername" ref="txtUsername" placeholder="Tên đăng nhập" />
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu</label>
+                            <input type="password" class="form-control" id="txtPassword" ref="txtPassword" placeholder="Mật khẩu" />
+                        </div>
+                        <div id="divShowsec" class="form-group hidden">
+                            <label>Nhập giá trị kết quả: (<span id="txtQuestion">dđ</span>)</label>
+                            <input type="text" class="form-control" id="txtSectext" ref="txtSectext" placeholder="Chuỗi bảo mật" />
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button type="button" class="btn btn-primary" onclick="logme()">Đăng nhập</button>
+                        <button type="button" class="btn pull-right">Thoát</button>
+                    </div>
+
+                </div>
+            </li>
+
+        </ul>
+    </li>
+    <script>
+        /**
+        *Giáo viên đăng nhập
+        */
+        function logme(event) {
+            //try to save data
+            //        console.log("Ghi dữ liệu");
+            var NAME = $("#txtUsername").val();
+            var PAS = $("#txtPassword").val();
+            var SEC = $("#txtSectext").val();
+
+            var data = {
+                NAME: NAME,
+                PAS: PAS,
+                SEC: SEC
+            }
+            //            console.log(data);
+            //Add or edit 1 item
+            $.ajax({
+                url: "/admin/doLogin",
+                type: 'POST',
+                data: data,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.ret >= 0) {
+                        if (data.logintype === "LECTURER") {
+                            window.location.replace('/home/admin');
+
+                        } else {
+                            window.location.replace('/student/profile');
+                        }
+                        //                        bootbox.alert('Đang nhập thành công', function () { window.location.replace('/home/admin'); });
+                    }
+                    else {
+                        bootbox.alert('Không đăng nhập được (' + data.COUNT + ')');
+                    }
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error('unknow:url', status, err.toString());
+                }.bind(this)
+            });
+            event.preventDefault()
+            return false;
+        }
+    </script>
+}
+

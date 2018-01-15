@@ -1,0 +1,68 @@
+﻿var CourseStudentApp = React.createClass({
+    getInitialState: function () {
+        return {
+            ListCourse: [],
+            databreadcrumb: [{ name: 'Course', id: 'home' }] ,
+            keyvalue: []
+        }
+    },
+    componentWillMount: function () {
+        
+    },
+
+
+    componentDidMount: function () {
+        setTitle('sys_title', 'Danh sách lớp môn học');
+        this.setKeyValue("breadcrumb", this.state.databreadcrumb);
+      //  this.setState({ databreadcrumb: [{ name: 'Course', id: 'home' }] });
+    },
+    setBreadCrumb: function(value) {
+        this.setState({ databreadcrumb: value });
+    },
+    getBreadCrumb: function () {
+        var data = this.state.databreadcrumb;
+        if (!!data)
+            return data;
+    },
+    setKeyValue: function (key, value) {
+        keyvalue = this.state.keyvalue;
+        keyvalue[key] = value;
+        this.state.keyvalue = keyvalue;
+    },
+    /**
+    * Lấy một giá trị theo key, nếu chưa có thì trả về null - dành cho các trường hợp cần truyền tham số từ các tab
+    */
+    getKeyValue: function (key) {
+        keyvalue = this.state.keyvalue;
+        if (!isMiss(keyvalue[key])) return keyvalue[key];
+        else return null;
+    },
+    render: function () {
+        var self = this;
+        return (
+    <div>
+        
+        <div className="box">
+            <div className="row box" id="box-breadcrumb" style={{marginLeft: '5px'}}>
+                <BreadCrumb data={this.state.databreadcrumb} parent={this}/>
+            </div>
+            <div className="row" style={{marginLeft: '5px'}}>
+                <div id="content" className="ag-fresh" style={{width: '100%' , height:'500px'}}>
+                    <input type="hidden" ref="COURSECODE" id="COURSECODE" />
+                    <input type="hidden" ref="SUBJECTCODE" id="SUBJECTCODE" />
+                    <ListCourse parent={this}/>
+                </div>
+            </div>
+        </div>
+   </div>
+
+        );
+    }
+
+});
+
+//----------------
+ReactDOM.render(
+    <CourseStudentApp />,
+    document.getElementById('container')
+);

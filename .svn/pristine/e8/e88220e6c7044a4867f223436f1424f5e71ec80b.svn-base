@@ -1,0 +1,254 @@
+﻿/**
+ * Quy tắc đặt tên
+ *Cung cấp ra ngoài các hàm:
+ * ClearInput(obj): Xóa các text box - được gọi từ cha
+ * SetInput(obj): Thiết lập thông tin trên các ô text tương ứng - được gọi từ cha
+ * ReloadData(): callback function được gán từ cha vào để cập nhật lại thông tin của cha nếu cần thiết
+ */
+var CoursePopup = React.createClass({
+    componentWillMount: function () {
+        //Load các thông tin về danh mục các thứ khác nếu cần hiết
+    },
+    componentDidMount: function () {
+    },
+    /**
+    *hàm được gọi để xóa dữ liệu trên form cho phép thêm mới; được gọi bởi component có component này (list)
+    */
+    ClearInput: function () {
+        //this.refs.religion_popup_parentcode.value = obj.PARENTCODE;
+        //this.refs.religion_popup_parentextcode.value = obj.PARENTEXT;
+        //this.refs.religion_popup_thetype.value = obj.THETYPE;
+        //  this.refs.txtParent.value = obj.PARENTNAME;
+        this.ClearThing();//clear
+    },
+    /**
+    *thực tế xóa trên form
+    */
+    ClearThing: function () {
+        this.refs[this.props.id + '_CODE'].value = '';
+        this.refs[this.props.id + '_CODEVIEW'].value = '';
+        this.refs[this.props.id + '_NAME'].value = '';
+        this.refs[this.props.id + '_BEGINDATE'].value = '';
+        this.refs[this.props.id + '_ENDDATE'].value = '';
+        this.refs[this.props.id + '_NOTE'].value = '';
+        this.refs[this.props.id + '_LOCK'].checked = false;
+        this.refs[this.props.id + '_YEAR'].value = '';
+        this.refs[this.props.id + '_TERM'].value = '';
+        this.refs[this.props.id + '_STUDENTAMOUNT'].value = '';
+        //Set status
+        this.refs[this.props.id + '_status'].innerHTML = 'new';
+
+    },
+    /**
+    *Hàm gán dữ liệu để sửa, được gọi bởi component cha của component này
+    *para obj: thông tin về dữ liệu được thay đổi
+    */
+    SetInput: function (obj) {
+        this.refs[this.props.id + '_CODE'].value = obj.CODE;
+        this.refs[this.props.id + '_NAME'].value = obj.NAME;
+        this.refs[this.props.id + '_CODEVIEW'].value = obj.CODEVIEW;
+        this.refs[this.props.id + '_NOTE'].value = obj.NOTE;
+        this.refs[this.props.id + '_YEAR'].value = obj.YEAR;
+        this.refs[this.props.id + '_STUDENTAMOUNT'].value = obj.STUDENTAMOUNT;
+        this.refs[this.props.id + '_TERM'].value = obj.TERM;
+        this.refs[this.props.id + '_LOCK'].checked = (obj.LOCK === 0);
+        this.refs[this.props.id + '_BEGINDATE'].value = window.moment(obj.BEGINDATE).format('YYYY-MM-DD');
+        this.refs[this.props.id + '_ENDDATE'].value = window.moment(obj.ENDDATE).format('YYYY-MM-DD');
+        //Set status
+        this.refs[this.props.id + '_status'].innerHTML = 'edit';
+    },
+    /**
+    *Hiển thị, được gọi bởi component cha
+    */
+    Show: function () {
+        $('#' + this.props.id).modal('show');
+    },
+    /**
+    *Ẩn form hiện tại
+    */
+    Hide: function () {
+        $('#' + this.props.id).modal('hide');
+    },
+    /**
+    *Kiểm tra để gọi load lại cho dữ liệu từ component cha (danh sách)
+    *para obj: là mã của bản ghi mới được thao tác
+    */
+    ReloadData: function (obj) {
+        if (this.props.ReloadData === null || this.props.ReloadData === 'undefined') {
+            //console.log('Call load data');
+            return false;
+        }
+        else {
+            //console.log('Call load data!!!!!!!!!!!!!');
+            this.props.ReloadData(obj);
+            return true;
+        }
+    },
+    /**
+    *gọi khi bấm nút ghi
+    */
+    SaveClick: function () {
+        this.SaveData(true);
+    },
+    /**
+    *gọi khi bấm nút ghi và tạo mới
+    */
+    SaveContinueClick: function () {
+        this.SaveData(false);
+    },
+    /**
+    *Thực tế ghi dữ liệu
+    *para isClose xác định sau khi ghi xong sẽ đóng form, hay là tiếp tục tạo mới
+    */
+    SaveData: function (isClose) {
+      
+        var subjectcode = this.props.parent.getKeyValue('subjectCode').CODE;
+        console.log(subjectcode);
+        //var subjectcode = '1708310001';
+        // if (!subjectcode) {
+            //try to save data
+            //console.log("Ghi dữ liệu");
+            var name = this.refs[this.props.id + '_NAME'].value;
+            var codeview = this.refs[this.props.id + '_CODEVIEW'].value;
+            //  var THEORDER = this.refs.txtTheorder.value;
+            var note = this.refs[this.props.id + '_NOTE'].value;
+            var lock = 0;
+            if (!this.refs[this.props.id + '_LOCK'].checked) {
+                lock = 1;
+            }
+            //default
+            var code = this.refs[this.props.id + '_CODE'].value;
+            var data = {
+                SUBJECTCODE: subjectcode,
+                NAME: name,
+                CODEVIEW: codeview,
+                BEGINDATE: this.refs[this.props.id + "_BEGINDATE"].value,
+                ENDDATE: this.refs[this.props.id + "_ENDDATE"].value,
+                STUDENTAMOUNT :  this.refs[this.props.id + "_STUDENTAMOUNT"].value,
+                YEAR :  this.refs[this.props.id + "_YEAR"].value,
+                TERM :  this.refs[this.props.id + "_TERM"].value,
+                NOTE: note,
+                LOCK: lock,
+                CODE: code
+        }
+        //console.log(data);
+        //Add or edit 1 item
+        $.ajax({
+            url: "/Course/update",
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function (data) {
+                if (data.ret >= 0) {
+                    if (isClose) {
+                        this.Hide();
+                    }
+                    else {
+                        this.ClearThing();
+                    }
+                    this.ReloadData(data.obj);
+
+                }
+                else {
+                    bootbox.alert('Lỗi ghi dữ liệu');
+                }
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+      //  }
+      
+
+    },
+    render: function () {
+        var id = this.props.id;
+        return (
+<div className="modal fade" id={id} ref={id} role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div className="modal-dialog">
+          <div className="box box-info">
+              {/*Tiêu đề của form*/}
+            <div className="box-header with-border">
+                <button type="button" className="close ui-icon-circle-close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+              <h3 className="box-title">Các khóa học</h3>
+                <input type="hidden" id={id + '_CODE' } ref={id + '_CODE' } />{/*Lưu lại mã code của bản ghi hiện tại*/}
+            </div>{/*Nội dung của form*/}
+                  <div className="modal-body">
+                      {/*Trong trường hợp nhiều trường hơn - độ cao vượt quá trang thì đặt thông số này để xác định độ cao tối đa tự động tạo thanh cuộn: style={{ height: '300px', overflow:'auto'}}*/}
+            <form className="form-horizontal">
+              <div className="box-body">
+
+                <div className="form-group">
+                  <label htmlFor="txtCodeview" className="col-sm-3 control-label">Mã</label>
+                  <div className="col-sm-9">
+                    <input type="text" className="form-control" id={id + '_CODEVIEW' } ref={id + '_CODEVIEW' } placeholder="Mã" />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="txtName" className="col-sm-3 control-label">Tên khóa học</label>
+                  <div className="col-sm-9">
+                    <input type="text" className="form-control" id={id + '_NAME' } ref={id + '_NAME' } placeholder="Tên hình thức" />
+                  </div>
+                </div>
+      
+                <div className="form-group">
+                    <label htmlFor="txtTheorder" className="col-sm-3 control-label">Hiển thị</label>
+                  <div className="col-sm-9">
+                    <input type="checkbox" id={id + '_LOCK' } ref={id + '_LOCK' } />
+                  </div>
+                </div>
+                  <div className="form-group">
+                    <label className="col-sm-3 control-label">Năm học</label>
+                    <div className="col-sm-9">
+                        <input type="number" className="form-control" id={id + "_YEAR"} ref={id + "_YEAR"}/>
+                    </div>
+                </div>
+                    <div className="form-group">
+                    <label className="col-sm-3 control-label">Học kỳ</label>
+                    <div className="col-sm-9">
+                        <input type="number" className="form-control" id={id + "_TERM"} ref={id + "_TERM"}/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="col-sm-3 control-label">Số lượng học viên</label>
+                    <div className="col-sm-9">
+                        <input type="number" className="form-control" id={id + "_STUDENTAMOUNT"} ref={id + "_STUDENTAMOUNT"}/>
+                    </div>
+                </div>
+                 <div className="form-group">
+                    <label className="col-sm-3 control-label">Ngày bắt đầu</label>
+                    <div className="col-sm-9">
+                        <input type="date" className="form-control" id={id + "_BEGINDATE"} ref={id + "_BEGINDATE"}/>
+                    </div>
+                </div>
+                                <div className="form-group">
+                    <label className="col-sm-3 control-label">Ngày kết thúc</label>
+                    <div className="col-sm-9">
+                        <input type="date" className="form-control" id={id + "_ENDDATE"} ref={id + "_ENDDATE"}/>
+                    </div>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="txtNote" className="col-sm-3 control-label">Ghi chú</label>
+                  <div className="col-sm-9">
+                    <input type="text" className="form-control" id={id + '_NOTE' } ref={id + '_NOTE' } placeholder="Ghi chú" />
+                  </div>
+                </div>
+
+
+              </div>
+                    
+                    {/*Các nút lệnh ở dưới*/}
+            </form>
+                  </div>
+              <div className="box-footer modal-footer">
+                <span className="label label-warning" style={{float:'left'}} id={id + '_status' } ref={id + '_status' }>i</span>
+                <button type="button" className="btn btn-primary" onClick={this.SaveClick}><i className="fa fa-floppy-o"></i> Ghi</button>
+                <button type="button" className="btn btn-primary" onClick={this.SaveContinueClick}><i className="fa fa-plus-circle"></i> Ghi và thêm mới</button>
+                <button type="button" className="btn btn-default " data-dismiss="modal"><i className="fa fa-sign-out"></i>Thoát</button>
+              </div>
+          </div>
+    </div>
+</div>
+            );
+}
+});

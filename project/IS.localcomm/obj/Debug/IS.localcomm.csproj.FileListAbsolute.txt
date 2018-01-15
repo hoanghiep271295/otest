@@ -1,0 +1,10 @@
+E:\hiep\NewOne\project\IS.localcomm\bin\Debug\IS.localcomm.dll
+E:\hiep\NewOne\project\IS.localcomm\bin\Debug\IS.localcomm.pdb
+E:\hiep\NewOne\project\IS.localcomm\bin\Debug\IS.basetype.dll
+E:\hiep\NewOne\project\IS.localcomm\bin\Debug\IS.Comm.dll
+E:\hiep\NewOne\project\IS.localcomm\bin\Debug\IS.Config.dll
+E:\hiep\NewOne\project\IS.localcomm\bin\Debug\IS.basetype.pdb
+E:\hiep\NewOne\project\IS.localcomm\bin\Debug\IS.Config.pdb
+E:\hiep\NewOne\project\IS.localcomm\obj\Debug\IS.localcomm.csprojResolveAssemblyReference.cache
+E:\hiep\NewOne\project\IS.localcomm\obj\Debug\IS.localcomm.dll
+E:\hiep\NewOne\project\IS.localcomm\obj\Debug\IS.localcomm.pdb

@@ -1,0 +1,387 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CC019228-7F89-4DED-B0FC-C01B6E087604}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IS.uni</RootNamespace>
+    <AssemblyName>IS.uni</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="IS.Base, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\share\IS.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Comm">
+      <HintPath>..\..\share\IS.Comm.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.fitframework">
+      <HintPath>..\..\share\IS.fitframework.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Pool, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\share\IS.Pool.dll</HintPath>
+    </Reference>
+    <Reference Include="IS.Sec">
+      <HintPath>..\..\share\IS.Sec.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="COMMONTOOL\COMMONTOOL.cs" />
+    <Compile Include="CORE\ETHNIC_BUS.cs" />
+    <Compile Include="CORE\ETHNIC_OBJ.cs" />
+    <Compile Include="CORE\MAPPINGLINK_BUS.cs" />
+    <Compile Include="CORE\MAPPINGLINK_OBJ.cs" />
+    <Compile Include="CORE\MAPPING_BUS.cs" />
+    <Compile Include="CORE\MAPPING_OBJ.cs" />
+    <Compile Include="CORE\REGION_BUS.cs" />
+    <Compile Include="CORE\REGION_OBJ.cs" />
+    <Compile Include="CORE\RESEARCHSTATUS_BUS.cs" />
+    <Compile Include="CORE\RESEARCHSTATUS_OBJ.cs" />
+    <Compile Include="PLACE\NATIONREFERENCE_OBJ.cs" />
+    <Compile Include="PLACE\NATION_BUS.cs" />
+    <Compile Include="PLACE\NATION_OBJ.cs" />
+    <Compile Include="CORE\RELIGION_BUS.cs" />
+    <Compile Include="CORE\RELIGION_OBJ.cs" />
+    <Compile Include="CORE\TASKNOTE_BUS.cs" />
+    <Compile Include="CORE\TASKNOTE_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\ACADEMICLEVELHISTORY_BUS.cs" />
+    <Compile Include="STAFFHISTORY\ACADEMICLEVELHISTORY_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\ACEDEMICTITLEHISTORY_BUS.cs" />
+    <Compile Include="STAFFHISTORY\ACEDEMICTITLEHISTORY_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\APPROVEDSTATUS_BUS.cs" />
+    <Compile Include="STAFFHISTORY\APPROVEDSTATUS_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\ARMYRANKHISTORY_BUS.cs" />
+    <Compile Include="STAFFHISTORY\ARMYRANKHISTORY_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\DEGREEHISTORY_BUS.cs" />
+    <Compile Include="STAFFHISTORY\DEGREEHISTORY_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\DEPARTMENTHISTORY_BUS.cs" />
+    <Compile Include="STAFFHISTORY\DEPARTMENTHISTORY_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\HISTORYLOG_BUS.cs" />
+    <Compile Include="STAFFHISTORY\HISTORYLOG_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\LEVELTITLEHISTORY_BUS.cs" />
+    <Compile Include="STAFFHISTORY\LEVELTITLEHISTORY_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\PARTYLEVELTITLEHISTORY_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\STAFFINFO_BUS.cs" />
+    <Compile Include="STAFFHISTORY\STAFFINFO_OBJ.cs" />
+    <Compile Include="STAFFHISTORY\STAFFSTATUSHISTORY_BUS.cs" />
+    <Compile Include="STAFFHISTORY\STAFFSTATUSHISTORY_OBJ.cs" />
+    <Compile Include="SYSTEM\ADMINGROUPPRIORITY_BUS.cs" />
+    <Compile Include="SYSTEM\ADMINGROUPPRIORITY_OBJ.cs" />
+    <Compile Include="SYSTEM\ADMINGROUP_BUS.cs" />
+    <Compile Include="SYSTEM\ADMINGROUP_OBJ.cs" />
+    <Compile Include="DIRE\DAYOFF_BUS.cs" />
+    <Compile Include="DIRE\DAYOFF_OBJ.cs" />
+    <Compile Include="SYSTEM\DEPARTMENTADMINGROUP_BUS.cs" />
+    <Compile Include="SYSTEM\DEPARTMENTADMINGROUP_OBJ.cs" />
+    <Compile Include="SYSTEM\DEPARTMENTPRIORITY_BUS.cs" />
+    <Compile Include="SYSTEM\DEPARTMENTPRIORITY_OBJ.cs" />
+    <Compile Include="SYSTEM\GROUPNAME_OBJ.cs" />
+    <Compile Include="SYSTEM\LEVELTITLEADMINGROUP_BUS.cs" />
+    <Compile Include="SYSTEM\LEVELTITLEADMINGROUP_OBJ.cs" />
+    <Compile Include="SYSTEM\LEVELTITLEPRIORITY_BUS.cs" />
+    <Compile Include="SYSTEM\LEVELTITLEPRIORITY_OBJ.cs" />
+    <Compile Include="SYSTEM\LOGERROR_BUS.cs" />
+    <Compile Include="SYSTEM\LOGERROR_OBJ.cs" />
+    <Compile Include="SYSTEM\LOGME_BUS.cs" />
+    <Compile Include="SYSTEM\LOGME_OBJ.cs" />
+    <Compile Include="SYSTEM\LOGRESETPASSWORD_BUS.cs" />
+    <Compile Include="SYSTEM\LOGRESETPASSWORD_OBJ.cs" />
+    <Compile Include="SYSTEM\PERSONALPARAMETER_BUS.cs" />
+    <Compile Include="SYSTEM\PERSONALPARAMETER_OBJ.cs" />
+    <Compile Include="SYSTEM\PRIORITY_BUS.cs" />
+    <Compile Include="SYSTEM\PRIORITY_OBJ.cs" />
+    <Compile Include="SYSTEM\RESETPASSWORD_BUS.cs" />
+    <Compile Include="SYSTEM\RESETPASSWORD_OBJ.cs" />
+    <Compile Include="SYSTEM\STAFFADMINGROUP_BUS.cs" />
+    <Compile Include="SYSTEM\STAFFADMINGROUP_OBJ.cs" />
+    <Compile Include="SYSTEM\STAFFAUTHORIZE_BUS.cs" />
+    <Compile Include="SYSTEM\STAFFAUTHORIZE_OBJ.cs" />
+    <Compile Include="SYSTEM\STAFFPRIORITY_BUS.cs" />
+    <Compile Include="SYSTEM\STAFFPRIORITY_OBJ.cs" />
+    <Compile Include="SYSTEM\STAFFPROPERTY_BUS.cs" />
+    <Compile Include="SYSTEM\STAFFPROPERTY_OBJ.cs" />
+    <Compile Include="SYSTEM\SYSCOMPONENT_BUS.cs" />
+    <Compile Include="SYSTEM\SYSCOMPONENT_OBJ.cs" />
+    <Compile Include="SYSTEM\SYSMENUPRIORITY_BUS.cs" />
+    <Compile Include="SYSTEM\SYSMENUPRIORITY_OBJ.cs" />
+    <Compile Include="SYSTEM\SYSMENU_BUS.cs" />
+    <Compile Include="SYSTEM\SYSMENU_OBJ.cs" />
+    <Compile Include="SYSTEM\SYSTEMPARAMETER_BUS.cs" />
+    <Compile Include="SYSTEM\SYSTEMPARAMETER_OBJ.cs" />
+    <Compile Include="SYSTEM\THEFILE_BUS.cs" />
+    <Compile Include="SYSTEM\THEFILE_OBJ.cs" />
+    <Compile Include="SYSTEM\UNIVERSITY_BUS.cs" />
+    <Compile Include="SYSTEM\UNIVERSITY_OBJ.cs" />
+    <Compile Include="DIRE\WEEKDAY_BUS.cs" />
+    <Compile Include="DIRE\WEEKDAY_OBJ.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="STUDENTHISTORY\CLASSMORALHISTORY_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\CLASSMORALHISTORY_OBJ.cs" />
+    <Compile Include="STUDENT\CLASSSTAFF_BUS.cs" />
+    <Compile Include="STUDENT\CLASSSTAFF_OBJ.cs" />
+    <Compile Include="STUDENT\CLASS_BUS.cs" />
+    <Compile Include="STUDENT\CLASS_OBJ.cs" />
+    <Compile Include="STUDENT\GRADESTAFF_BUS.cs" />
+    <Compile Include="STUDENT\GRADESTAFF_OBJ.cs" />
+    <Compile Include="STUDENT\GRADE_BUS.cs" />
+    <Compile Include="STUDENT\GRADE_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\LEARNRESULTTYPE_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\LEARNRESULTTYPE_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\MORALTYPE_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\MORALTYPE_OBJ.cs" />
+    <Compile Include="STUDENT\PRIORITYPOLICY_BUS.cs" />
+    <Compile Include="STUDENT\PRIORITYPOLICY_OBJ.cs" />
+    <Compile Include="STUDENT\PRIORITYREGION_BUS.cs" />
+    <Compile Include="STUDENT\PRIORITYREGION_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTDISCIPLINEHISTORY_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTDISCIPLINEHISTORY_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTDISCIPLINELEVEL_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTDISCIPLINELEVEL_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTDISCIPLINETYPE_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTDISCIPLINETYPE_OBJ.cs" />
+    <Compile Include="STUDENT\STUDENTGROUPTYPE_BUS.cs" />
+    <Compile Include="STUDENT\STUDENTGROUPTYPE_OBJ.cs" />
+    <Compile Include="STUDENT\STUDENTLEVELTITLE_BUS.cs" />
+    <Compile Include="STUDENT\STUDENTLEVELTITLE_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTMORALHISTORY_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTMORALHISTORY_OBJ.cs" />
+    <Compile Include="STUDENT\STUDENTPARAMETER_BUS.cs" />
+    <Compile Include="STUDENT\STUDENTPARAMETER_OBJ.cs" />
+    <Compile Include="STUDENT\STUDENTRANK_BUS.cs" />
+    <Compile Include="STUDENT\STUDENTRANK_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTRESULTHISTORY_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTRESULTHISTORY_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTRESULTTYPE_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTRESULTTYPE_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTREWARDLEVEL_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTREWARDLEVEL_OBJ.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTREWARDTYPE_BUS.cs" />
+    <Compile Include="STUDENTHISTORY\STUDENTREWARDTYPE_OBJ.cs" />
+    <Compile Include="STUDENT\STUDENT_BUS.cs" />
+    <Compile Include="STUDENT\STUDENT_OBJ.cs" />
+    <Compile Include="SUBJECT\BRANCH_BUS.cs" />
+    <Compile Include="SUBJECT\BRANCH_OBJ.cs" />
+    <Compile Include="SUBJECT\CONTENTGROUP_BUS.cs" />
+    <Compile Include="SUBJECT\CONTENTGROUP_OBJ.cs" />
+    <Compile Include="SUBJECT\CONTENTLEVEL_BUS.cs" />
+    <Compile Include="SUBJECT\CONTENTLEVEL_OBJ.cs" />
+    <Compile Include="SUBJECT\CONTENTTYPE_BUS.cs" />
+    <Compile Include="SUBJECT\CONTENTTYPE_OBJ.cs" />
+    <Compile Include="LEARN\COURSECONTENT_BUS.cs" />
+    <Compile Include="LEARN\COURSECONTENT_OBJ.cs" />
+    <Compile Include="LEARN\COURSESTUDIED_BUS.cs" />
+    <Compile Include="LEARN\COURSESTUDIED_OBJ.cs" />
+    <Compile Include="LEARN\COURSE_BUS.cs" />
+    <Compile Include="LEARN\COURSE_OBJ.cs" />
+    <Compile Include="SUBJECT\EDUCATIONFIELDSTAFF_BUS.cs" />
+    <Compile Include="SUBJECT\EDUCATIONFIELDSTAFF_OBJ.cs" />
+    <Compile Include="SUBJECT\EDUCATIONFIELD_BUS.cs" />
+    <Compile Include="SUBJECT\EDUCATIONFIELD_OBJ.cs" />
+    <Compile Include="SUBJECT\EDUCATIONLEVELSTAFF_BUS.cs" />
+    <Compile Include="SUBJECT\EDUCATIONLEVELSTAFF_OBJ.cs" />
+    <Compile Include="SUBJECT\EDUCATIONLEVEL_BUS.cs" />
+    <Compile Include="SUBJECT\EDUCATIONLEVEL_OBJ.cs" />
+    <Compile Include="SUBJECT\EDUCATIONTYPESTAFF_BUS.cs" />
+    <Compile Include="SUBJECT\EDUCATIONTYPESTAFF_OBJ.cs" />
+    <Compile Include="SUBJECT\EDUCATIONTYPE_BUS.cs" />
+    <Compile Include="SUBJECT\EDUCATIONTYPE_OBJ.cs" />
+    <Compile Include="TEST\CONTENTTYPEQUESTIONUSE_BUS.cs" />
+    <Compile Include="TEST\CONTENTTYPEQUESTIONUSE_OBJ.cs" />
+    <Compile Include="TEST\EXAMHALLSTUDENT_BUS.cs" />
+    <Compile Include="TEST\EXAMHALLSTUDENT_OBJ.cs" />
+    <Compile Include="TEST\EXAMHALL_BUS.cs" />
+    <Compile Include="TEST\EXAMHALL_OBJ.cs" />
+    <Compile Include="TEST\EXAMTIME_BUS.cs" />
+    <Compile Include="TEST\EXAMTIME_OBJ.cs" />
+    <Compile Include="LEARN\FACTORGROUP_BUS.cs" />
+    <Compile Include="LEARN\FACTORGROUP_OBJ.cs" />
+    <Compile Include="SUBJECT\GRADETYPE_BUS.cs" />
+    <Compile Include="SUBJECT\GRADETYPE_OBJ.cs" />
+    <Compile Include="SUBJECT\HALL_BUS.cs" />
+    <Compile Include="SUBJECT\HALL_OBJ.cs" />
+    <Compile Include="LEARN\MARKDETAIL_BUS.cs" />
+    <Compile Include="LEARN\MARKDETAIL_OBJ.cs" />
+    <Compile Include="LEARN\MARKTYPE_BUS.cs" />
+    <Compile Include="LEARN\MARKTYPE_OBJ.cs" />
+    <Compile Include="LEARN\MARK_BUS.cs" />
+    <Compile Include="LEARN\MARK_OBJ.cs" />
+    <Compile Include="SUBJECT\REQUIREMENTCREDIT_BUS.cs" />
+    <Compile Include="SUBJECT\REQUIREMENTCREDIT_OBJ.cs" />
+    <Compile Include="SUBJECT\SKILL_BUS.cs" />
+    <Compile Include="SUBJECT\SKILL_OBJ.cs" />
+    <Compile Include="LEARN\STAFFCOURSE_BUS.cs" />
+    <Compile Include="LEARN\STAFFCOURSE_OBJ.cs" />
+    <Compile Include="SUBJECT\STAFFSUBJECT_BUS.cs" />
+    <Compile Include="SUBJECT\STAFFSUBJECT_OBJ.cs" />
+    <Compile Include="SUBJECT\SUBJECTCONTENTTEST_BUS.cs" />
+    <Compile Include="SUBJECT\SUBJECTCONTENTTEST_OBJ.cs" />
+    <Compile Include="SUBJECT\SUBJECTCONTENT_BUS.cs" />
+    <Compile Include="SUBJECT\SUBJECTCONTENT_OBJ.cs" />
+    <Compile Include="SUBJECT\SUBJECT_BUS.cs" />
+    <Compile Include="SUBJECT\SUBJECT_OBJ.cs" />
+    <Compile Include="SUBJECT\TAG_BUS.cs" />
+    <Compile Include="SUBJECT\TAG_OBJ.cs" />
+    <Compile Include="LEARN\TESTGROUPDETAIL_BUS.cs" />
+    <Compile Include="LEARN\TESTGROUPDETAIL_OBJ.cs" />
+    <Compile Include="LEARN\TESTGROUP_BUS.cs" />
+    <Compile Include="LEARN\TESTGROUP_OBJ.cs" />
+    <Compile Include="CORE\ACADEMICLEVEL_BUS.cs" />
+    <Compile Include="CORE\ACADEMICLEVEL_OBJ.cs" />
+    <Compile Include="CORE\ACADEMICTITLE_BUS.cs" />
+    <Compile Include="CORE\ACADEMICTITLE_OBJ.cs" />
+    <Compile Include="CORE\ARMYRANK_BUS.cs" />
+    <Compile Include="CORE\ARMYRANK_OBJ.cs" />
+    <Compile Include="CORE\DEGREE_BUS.cs" />
+    <Compile Include="CORE\DEGREE_OBJ.cs" />
+    <Compile Include="CORE\DEPARTMENT_BUS.cs" />
+    <Compile Include="CORE\DEPARTMENT_OBJ.cs" />
+    <Compile Include="CORE\LEVELTITLE_BUS.cs" />
+    <Compile Include="CORE\LEVELTITLE_OBJ.cs" />
+    <Compile Include="CORE\MANAGELEVEL_BUS.cs" />
+    <Compile Include="CORE\MANAGELEVEL_OBJ.cs" />
+    <Compile Include="CORE\PARTYLEVELTITLE_BUS.cs" />
+    <Compile Include="CORE\PARTYLEVELTITLE_OBJ.cs" />
+    <Compile Include="PLACE\PROVINCEREFERENCE_BUS.cs" />
+    <Compile Include="PLACE\PROVINCEREFERENCE_OBJ.cs" />
+    <Compile Include="PLACE\PROVINCE_BUS.cs" />
+    <Compile Include="PLACE\PROVINCE_OBJ.cs" />
+    <Compile Include="CORE\STAFFSTATUS_BUS.cs" />
+    <Compile Include="CORE\STAFFSTATUS_OBJ.cs" />
+    <Compile Include="CORE\STAFF_BUS.cs" />
+    <Compile Include="CORE\STAFF_OBJ.cs" />
+    <Compile Include="PLACE\TOWNREFERENCE_BUS.cs" />
+    <Compile Include="PLACE\TOWNREFERENCE_OBJ.cs" />
+    <Compile Include="PLACE\TOWN_BUS.cs" />
+    <Compile Include="PLACE\TOWN_OBJ.cs" />
+    <Compile Include="TEST\ANSWER_BUS.cs" />
+    <Compile Include="TEST\ANSWER_OBJ.cs" />
+    <Compile Include="PLACE\DISTRICTREFERENCE_BUS.cs" />
+    <Compile Include="PLACE\DISTRICTREFERENCE_OBJ.cs" />
+    <Compile Include="PLACE\DISTRICT_BUS.cs" />
+    <Compile Include="PLACE\DISTRICT_OBJ.cs" />
+    <Compile Include="TEST\EXAMFORMDETAIL_BUS.cs" />
+    <Compile Include="TEST\EXAMFORMDETAIL_OBJ.cs" />
+    <Compile Include="TEST\EXAMFORM_BUS.cs" />
+    <Compile Include="TEST\EXAMFORM_OBJ.cs" />
+    <Compile Include="TEST\EXAMRESULT_BUS.cs" />
+    <Compile Include="TEST\EXAMRESULT_OBJ.cs" />
+    <Compile Include="TEST\QUESTIONGROUPUSE_BUS.cs" />
+    <Compile Include="TEST\QUESTIONGROUPUSE_OBJ.cs" />
+    <Compile Include="TEST\QUESTIONGROUP_BUS.cs" />
+    <Compile Include="TEST\QUESTIONGROUP_OBJ.cs" />
+    <Compile Include="TEST\QUESTIONTYPE_BUS.cs" />
+    <Compile Include="TEST\QUESTIONTYPE_OBJ.cs" />
+    <Compile Include="TEST\QUESTIONUSE_BUS.cs" />
+    <Compile Include="TEST\QUESTIONUSE_OBJ.cs" />
+    <Compile Include="TEST\QUESTION_BUS.cs" />
+    <Compile Include="TEST\QUESTION_OBJ.cs" />
+    <Compile Include="TEST\TESTSTRUCTCONTENT_BUS.cs" />
+    <Compile Include="TEST\TESTSTRUCTCONTENT_OBJ.cs" />
+    <Compile Include="TEST\TESTSTRUCTDETAIL_BUS.cs" />
+    <Compile Include="TEST\TESTSTRUCTDETAIL_OBJ.cs" />
+    <Compile Include="TEST\TESTSTRUCT_BUS.cs" />
+    <Compile Include="TEST\TESTSTRUCT_OBJ.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IS.basetype\IS.basetype.csproj">
+      <Project>{cae5b00b-9822-42c1-b9c8-7b73d4665c48}</Project>
+      <Name>IS.basetype</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IS.Config\IS.Config.csproj">
+      <Project>{68ca99aa-8ef7-41db-9a56-e5f6d45c6546}</Project>
+      <Name>IS.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IS.Lang\IS.Lang.csproj">
+      <Project>{445aa2a1-2632-48e2-a980-ed431cbc95d0}</Project>
+      <Name>IS.Lang</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IS.localcomm\IS.localcomm.csproj">
+      <Project>{e6a06d03-dda3-4db1-b299-673ae177844b}</Project>
+      <Name>IS.localcomm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IS.sess\IS.Sess.csproj">
+      <Project>{4887aad1-5501-4097-8b75-156231d67807}</Project>
+      <Name>IS.Sess</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

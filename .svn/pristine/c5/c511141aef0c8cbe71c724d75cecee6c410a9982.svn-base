@@ -1,0 +1,401 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using IS.Sess;
+using IS.uni;
+using IS.basetype;
+using IS.fitframework;
+using System.Dynamic;
+using Newtonsoft.Json;
+
+namespace nerp.Controllers
+{
+    public class AdminController : Controller
+    {
+        session ses = new session();
+        // GET: Staff
+        public ActionResult Index()
+        {
+            return View();
+        }
+        public ActionResult Login()
+        {
+            return View();
+        }
+        public ActionResult Logout()
+        {
+            ses.logout();
+            Response.Redirect("/home/");
+            return View();
+        }
+        public ActionResult Warning()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateInput(true)]
+        public JsonResult doLogin(string name, string pas, string sec)
+        {
+
+            int ret = 0;
+            string nextsec = "";
+            string thetype = "";
+            string staffname = "";
+            if (ses.loginFailCount > 3)
+            {
+                if (sec != ses.securityCode)
+                {
+                    ret = 1;
+                }
+                //login
+            }
+            STAFF_BUS bus = new STAFF_BUS();
+            STAFF_OBJ obj = new STAFF_OBJ();
+            STAFF_OBJ objGot = new STAFF_OBJ();
+            if (ret == 0)
+            {
+                if (bus.OpenConnection() != 0)
+                {
+                    ret = -2;
+                }
+
+            }
+            List<STAFFPRIORITY> lipermission = new List<STAFFPRIORITY>();
+            if (ret >= 0)
+            {
+                obj.USERNAME = name;
+                obj.USERPASSWORD = pas;
+                obj.CODEVIEW = name;
+                ret = bus.login(obj, out objGot, out lipermission);
+                if (ret < 0)
+                {
+                    ret = -3;
+                }
+            }
+            bus.CloseConnection();
+            if (ret >= 0)
+            {
+                thetype = "LECTURER";
+                STAFF_INFO inf = new STAFF_INFO(objGot.UNIVERSITYCODE, objGot.CODE, objGot.CODEVIEW, objGot.NAME, objGot.DEPARTMENTCODE,  objGot.DEGREECODE, objGot.LEVELTITLECODE, objGot.ACADEMICTITLECODE, objGot.ARMYRANKCODE, objGot.PARTYLEVELTITLECODE, objGot.CHANGEPASS, DateTime.Now, thetype, objGot.PHOTO, objGot._DEPARTMENTCODE.NAME);// objGot._RESEARCHDEPARTMENTCODE.NAME);
+                //login as lecturer or management
+                //ses.login(objGot.CODE, objGot.CODEVIEW, objGot.NAME, DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss"), lipermission, objGot.DEPARTMENTCODE, obj.RESEARCHDEPARTMENTCODE, objGot.LEVELTITLECODE);
+                ses.login(inf, lipermission);
+                ses.clearLoginFail();
+                getPersonalParameter(objGot.CODE);
+                getGlobalParameter();
+                staffname = inf.NAME;
+                //logme
+                COMMONTOOL comt = new COMMONTOOL();
+                //                System.Web.UI.Page pgCallingPage = (System.Web.UI.Page)HttpContext.CurrentHandler;
+                comt.logLogin(Request, "Login to admin");
+                //end logme
+            }
+            //Kiểm tra đăng nhập cho sinh viên
+            if (ret != 0)
+            {
+                STUDENT_BUS bus_student = new STUDENT_BUS();
+                STUDENT_OBJ obj_student = new STUDENT_OBJ();
+                STUDENT_OBJ obj_out = new STUDENT_OBJ();
+                string functions = "";
+                obj_student.CODEVIEW = obj.CODEVIEW;
+                obj_student.USERPASSWORD = obj.USERPASSWORD;
+                ret = bus_student.login(obj_student, out obj_out, out lipermission);
+                if (ret < 0)
+                {
+                    ret = -10;
+                }
+                bus_student.CloseConnection();
+                if (ret == 0)
+                {
+                    thetype = "STUDENT";
+                    STAFF_INFO inf = new STAFF_INFO(obj_out.UNIVERSITYCODE, obj_out.CODE, obj_out.CODEVIEW, obj_out.NAME, obj_out.CLASSCODE, "", "", "", "", "", obj_out.CHANGEPASS,  DateTime.Now, thetype, obj_out.PHOTO, obj_out._CLASSCODE.NAME);
+                    ses.login(inf, lipermission);
+                    ses.clearLoginFail();
+                    getStudentParameter(obj_out.CODE);
+                    getGlobalParameter();
+                    COMMONTOOL comt = new COMMONTOOL();
+                    comt.logLogin(Request, "Student login");
+                }
+            }
+            if (ret != 0)
+            {
+                if (ses.loginFail() >= 3)
+                {
+                   // nextsec = genNextQuestion();
+                }
+                ses.loginFail();
+            }
+
+
+            //some thing like that
+            return Json(new { ret = ret, logintype = thetype, NAME= staffname, COUNT= ses.loginFailCount }, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Thông tin về các giá trị chung
+        /// </summary>
+        /// <returns></returns>
+        private int getGlobalParameter()
+        {
+            int ret = 0;
+            SYSTEMPARAMETER_BUS bus = new SYSTEMPARAMETER_BUS();
+            ret = bus.loadParameter();
+            bus.CloseConnection();
+            return ret;
+        }
+        /// <summary>
+        /// Thông tin riêng của từng giáo viên
+        /// </summary>
+        /// <param name="staffCode"></param>
+        /// <returns></returns>
+        private int getPersonalParameter(string staffCode)
+        {
+            PERSONALPARAMETER_BUS bus = new PERSONALPARAMETER_BUS();
+            PERSONALPARAMETER_OBJ obj = bus.GetByKey(new fieldpara("STAFFCODE", staffCode));
+            bus.CloseConnection();
+            if (obj != null)
+            {
+                //ses.pCLASSCODE = obj.CLASSCODE;
+                //ses.pSTAFFCODE = obj.STAFFCODE;
+                //ses.pCOURSECODE = obj.COURSECODE;
+                //ses.pYEAR1 = obj.YEAR;
+                //ses.pTERM = obj.TERM;
+                //ses.pDEPARTMENTCODE2 = obj.DEPARTMENTCODE;
+                //obj.DISTRICTCODE = ses.pDISTRICTCODE;
+                //ses.pPROVINCECODE = obj.PROVINCECODE;
+                //ses.pSUBJECT = obj.SUBJECTCODE;
+                //obj.COURSECODE = ses.pCOURSECODE;
+            }
+            return 0;
+        }
+        /// <summary>
+        /// Thông tin riêng của từng sinh viên
+        /// </summary>
+        /// <param name="staffCode"></param>
+        /// <returns></returns>
+        private int getStudentParameter(string staffCode)
+        {
+            PERSONALPARAMETER_BUS bus = new PERSONALPARAMETER_BUS();
+            PERSONALPARAMETER_OBJ obj = bus.GetByKey(new fieldpara("STAFFCODE", staffCode));
+            bus.CloseConnection();
+            if (obj != null)
+            {
+                //ses.pCLASSCODE = obj.CLASSCODE;
+                //ses.pSTAFFCODE = obj.STAFFCODE;
+                //ses.pCOURSECODE = obj.COURSECODE;
+                //ses.pYEAR1 = obj.YEAR;
+                //ses.pTERM = obj.TERM;
+                //ses.pDEPARTMENTCODE2 = obj.DEPARTMENTCODE;
+                //obj.DISTRICTCODE = ses.pDISTRICTCODE;
+                //ses.pPROVINCECODE = obj.PROVINCECODE;
+                //ses.pSUBJECT = obj.SUBJECTCODE;
+                //obj.COURSECODE = ses.pCOURSECODE;
+            }
+            return 0;
+        }
+        /// <summary>
+        /// Kết thúc phiên đăng nhập hiện tại của người dùng
+        /// </summary>
+        /// <returns></returns>
+        public JsonResult logoutjs()
+        {
+            int up = 1;
+            session ses = new session();
+            if (ses.loginCode != "")//only do for staff
+            {
+                //have code
+                PERSONALPARAMETER_BUS bus = new PERSONALPARAMETER_BUS();
+                PERSONALPARAMETER_OBJ obj = bus.GetByKey(new fieldpara("staffcode", ses.loginCode));
+                if (obj == null)
+                {
+                    obj = new PERSONALPARAMETER_OBJ();
+                    up = 0;//for insert
+                }
+
+                bus.CloseConnection();
+            }
+            if (ses.pLoginSession != "")
+            {
+                COMMONTOOL comt = new COMMONTOOL();
+                comt.logLogout();
+            }
+
+            ses.logout();
+
+            return Json(new
+            {
+                ret = 0//ok
+            }, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Đổi mật khẩu người dùng đã đăng nhập
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ChangePass()
+        {
+            if (ses.isLogin() != 0)
+            {
+                Response.Redirect("/admin/login");
+            }
+            if (ses.isLogin() != 0)
+            {
+                //unlogined yet
+                //                ses.gotoPage("/staff/login", "Thông báo", "Không có quyền thực hiện chức năng", 3000);
+                return Redirect("/home/index");
+            }
+            dynamic defaultobject = new ExpandoObject();
+            defaultobject.codeview = ses.loginName;
+            defaultobject.thetype = ses.loginType;
+            ViewBag.defaultvalue = JsonConvert.SerializeObject(defaultobject);
+            string[] jsx = {
+                "/jsx/Admin/Changepass/Changepass.jsx"
+                ,"/jsx/Admin/Changepass/App.jsx"
+                };
+            ViewBag.jsx = jsx;
+            return View("Adminindex");
+        }
+        /// <summary>
+        /// Thực hiện thao tác đổi mật khẩu
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="passwordOld"></param>
+        /// <param name="password"></param>
+        /// <param name="passwordRe"></param>
+        /// <param name="secText"></param>
+        /// <param name="thetype"></param>
+        /// <returns></returns>
+        public JsonResult ChangeMyPass(string username, string passwordOld, string password, string passwordRe, string secText, string thetype)
+        {
+
+            //Kiểm tra phân quyền
+            if (ses.isLogin() < 0)
+            {
+                return Json(new { ret = -1 }, JsonRequestBehavior.AllowGet);
+            }
+            if (string.Compare(password, passwordRe, false) != 0)
+            {
+                return Json(new { ret = -1 }, JsonRequestBehavior.AllowGet);
+            }
+            int ret = -1;
+            if (ses.loginType == "LECTURER")
+            {
+                //if (thetype == "LECTURER")
+                //{
+                //Lấy dữ iệu
+                STAFF_BUS bus = new STAFF_BUS();
+                ret = bus.changePass(username, passwordOld, password);
+                bus.CloseConnection();
+                //}
+            }
+            else//STUDENT
+            {
+                STUDENT_BUS bus = new STUDENT_BUS();
+                ret = bus.changePass(username, passwordOld, password);
+                bus.CloseConnection();
+
+            }
+
+            //Trả về cho client
+            return Json(new { ret = ret, thetype = thetype }, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Thực hiện quản lý phân quyền
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="subid"></param>
+        /// <returns></returns>
+        public ActionResult admingroup(string id, string subid)
+        {
+            //Kiểm tra phân quyền
+            if (ses.func("SADPRIORIT") <= 0)
+            {
+                if (ses.isLogin() != 0)
+                {
+                    ses.gotoPage("/admin/login", "Chưa đăng nhập");
+                }
+                else
+                {
+                    ses.gotoPage("/home/", "Không có phân quyền");
+                    //Thông báo thời gian chi tiết - số cuối là miligiay - -1 là không đếm; mặc định 3000 - 3 giây
+//                    ses.gotoPage("/home/", "Thông báo","Không có phân quyền",3000);
+                }
+                return null;
+            }
+            if(string.IsNullOrEmpty(id))
+            {
+                id = "admingroup";
+            }
+            //if (ses.isLogin() != 0)
+            //{
+            //    Response.Redirect("/admin/login");
+            //}
+            //if (ses.isLogin() != 0)
+            //{
+            //    //unlogined yet
+            //    //                ses.gotoPage("/staff/login", "Thông báo", "Không có quyền thực hiện chức năng", 3000);
+            //    return Redirect("/home/index");
+            //}
+            dynamic defaultobject = new ExpandoObject();
+            defaultobject.defaulttab = id;
+            defaultobject.thetype = ses.loginType;
+            ViewBag.defaultvalue = JsonConvert.SerializeObject(defaultobject);
+            string[] jsx = {
+                "/Jsx/_Shared/ButtonList.jsx"
+                ,"/Jsx/_Shared/PopupSearch.jsx"
+                ,"/Scripts/Ag-grid/ag-grid.js"
+                ,"/Jsx/_Shared/AgGrid.jsx"
+                ,"/Jsx/_Shared/TabHeader.jsx"//Phụ trách hiển thị các tab
+                ,"/jsx/Admin/Admingroup/AdmingroupPopup.jsx" //Hiển thị popup
+                ,"/jsx/Admin/Admingroup/AdmingroupList.jsx"//Hiển thị danh sách
+                ,"/jsx/Admin/Admingroup/AdmingroupPriorityAdd.jsx"//Hiển thị danh sách
+                ,"/jsx/Admin/Admingroup/AdmingroupPriority.jsx"//Hiển thị danh sách
+                ,"/jsx/Admin/Admingroup/AdmingroupStaff.jsx"//Hiển thị danh sách
+                ,"/jsx/Admin/Admingroup/AdmingroupApp.jsx"//Tạo khai báo tab
+                };
+            ViewBag.jsx = jsx;
+            return View("Adminindex");
+        }
+        /// <summary>
+        /// Quản trị các nhóm về dân tộc
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="subid"></param>
+        /// <returns></returns>
+        public ActionResult ethnic(string id, string subid)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                id = "ethnic";
+            }
+            //if (ses.isLogin() != 0)
+            //{
+            //    Response.Redirect("/admin/login");
+            //}
+            //if (ses.isLogin() != 0)
+            //{
+            //    //unlogined yet
+            //    //                ses.gotoPage("/staff/login", "Thông báo", "Không có quyền thực hiện chức năng", 3000);
+            //    return Redirect("/home/index");
+            //}
+            dynamic defaultobject = new ExpandoObject();
+            defaultobject.defaulttab = id;
+            defaultobject.thetype = ses.loginType;
+            ViewBag.defaultvalue = JsonConvert.SerializeObject(defaultobject);
+            string[] jsx = {
+                "/Jsx/_Shared/ButtonList.jsx"
+                ,"/Jsx/_Shared/PopupSearch.jsx"
+                ,"/Scripts/Ag-grid/ag-grid.js"
+                ,"/Jsx/_Shared/AgGrid.jsx"
+                ,"/Jsx/_Shared/TabHeader.jsx"//Phụ trách hiển thị các tab
+                ,"/jsx/Core/ethnic/ethnicpopup.jsx" //Hiển thị popup
+                ,"/jsx/Core/ethnic/ethniclist.jsx" //Hiển thị danh sách
+                ,"/jsx/Core/religion/religionpopup.jsx" //Hiển thị popup
+                ,"/jsx/Core/religion/religionlist.jsx" //Hiển thị danh sách
+                ,"/jsx/Core/ethnic/EthnicApp.jsx"//Tạo khai báo tab
+                };
+            ViewBag.jsx = jsx;
+            return View("Adminindex");
+        }
+    }
+}

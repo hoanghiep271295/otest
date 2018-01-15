@@ -1,0 +1,121 @@
+﻿
+//dạng câu hỏi ghép đôi
+//gồm 1 danh sách các câu trả lời nằm trên cùng cho phép kéo vào danh sách các đáp án cho các câu hỏi
+//một danh sách các câu hỏi chỉ để hiển thị nằm phía bên trái
+var QuestionGroupPA = React.createClass({
+    allowDrop: function (event) {
+        if (!!event) {
+            event.preventDefault();
+        }
+    },
+    drop: function (event) {
+        debugger
+        //1712240001_1712270010_FI
+        var targetdrop = event.currentTarget.id;
+        // var idDropTarget = targetdrop.split('_')[1];
+        console.log(global);
+        //1712240001_1712270010_FIMOVE
+        if (!!global) {
+            //lay questiongroup cua vi tri dang duoc drop
+            var targetdraggroupcode = global.split('_')[0];
+            //lay questiongroup cua vi tri dang duoc drag
+            var targetdropgroupcode = targetdrop.split('_')[0];
+            //kiem tra neu hop le có nghĩa là 2 questiongroup === nhau thì chúng cùng 1 group
+            //-> cho phép tranferdata
+            if (targetdropgroupcode === targetdraggroupcode) {
+                var data = event.dataTransfer.getData("text");
+                event.target.appendChild(document.getElementById(data));
+            } else {
+                log.show("Không thể thực hiện được thao tác này", false);
+            }
+        }
+    },
+    dragStart: function (event) {
+        if (!!event) {
+            global = event.target.id;
+            event.dataTransfer.setData("text", event.target.id);
+        }
+    },
+    dragstart_handler: function (event) {
+        // Add the target element's id to the data transfer object
+        event.dataTransfer.setData("text", event.target.id);
+        event.dropEffect = "move";
+    },
+         
+    render: function () {
+        var listQuestion = [];
+        var listAnswer = [];
+        var listContainer = [];
+        var that = this;
+
+        var index = 0;
+        // danh sách các câu hỏi ở cột bên trái
+        this.props.dataQuestion.forEach(function(rowitem) {
+            if (rowitem.QUESTIONGROUPCODE === that.props.ident) {
+                index++;
+                var contentQuestion = $('<div />').html(rowitem.CONTENT).text().trim();
+                ///in ra danh sách các câu hỏi nằm ở cột bên trái
+                listQuestion.push(
+                    <li key={index} className="licustom">
+                        <div>{index}.</div>
+                        <div>
+                              <span style={{ textAlign: 'left' }}
+                                    key={'error_' + index}
+                                    dangerouslySetInnerHTML={{ __html: contentQuestion }}>
+                              </span>
+                        </div>
+                    </li>
+                    );
+//in ra danh sách các khung chứa nằm ở bên phải
+// id thì gồm có mã nhóm câu hỏi + mã câu hỏi
+//cần để các area drop là các questiongroup
+listContainer.push(
+<li key={index}
+                id={+rowitem.QUESTIONGROUPCODE + "_PA_CONTAINER"}
+className="box1"
+onDrop={that.drop}
+onDragStart={that.dragstart_handler}
+onDragOver={that.allowDrop}>
+</li>
+                    );
+}
+});
+//load ra danh sach các đáp án để kéo thả
+this.props.dataAnswer.forEach(function (rowitem) {
+    if (rowitem.QUESTIONGROUPCODE === that.props.ident) {
+        index++;
+        var contentAnswer = $('<div />').html(rowitem.CONTENT).text().trim();
+        listAnswer.push(
+                        <Drag key={index}
+    id={rowitem.QUESTIONGROUPCODE + "_" + rowitem.CODE}
+    content={contentAnswer}
+    type={that.props.type} />
+);}
+    });
+var questiongroup = $('<div />').html(this.props.objQuestionGroup.CONTENT).text().trim();
+
+return (
+        <div>
+            <div className="questiongroup">
+                  <span style={{ textAlign: 'left' }} key={'error_' + index}
+dangerouslySetInnerHTML={{ __html: questiongroup }}></span>
+</div>
+<fieldset className="fieldsetGroup">
+<ul className="portfolio-grid">{listAnswer}
+</ul>
+    </fieldset>
+        <div className="customcontainer">
+      <div className="flex list-group">
+      <ul className="list-unstyled">{listQuestion}
+      </ul>
+      </div>
+      <div className="flex list-group">
+            <ul className="list-unstyled">{listContainer}
+            </ul>
+      </div>
+        </div>
+        </div>
+    );
+            }
+
+            });

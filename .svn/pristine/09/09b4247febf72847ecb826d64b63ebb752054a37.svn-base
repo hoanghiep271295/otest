@@ -1,0 +1,56 @@
+﻿
+///câu hỏi dạng 1 câu hỏi lớn có nhiều câu trả lời
+var QuestionTypeLA = React.createClass({
+    saveAudio: function () {
+        var index  = this.props.id+'_LA';//mã nhóm câu hỏi
+        var va = $('#hid' + index).val();//tìm dữ liệu đã lưu trong hidden
+
+        console.log('Du lieu len:', va);
+        this.props.onCheck(index, va, "LA");
+        //tiến hành đẩy vào trong danh sách câu trả lời của sinh viên
+    },
+    componentDidMount: function () {
+        document.getElementById(this.props.id + '_questiontypeLA').innerHTML = this.props.objQuestionGroup.CONTENT;
+        var index = this.props.id+"_LA";
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+
+        script.async = true;
+        script.innerHTML = 'var minutesLabel' + index + ' = document.querySelector(\'#minutes' + index + '\');\nvar secondsLabel' + index + ' = document.querySelector(\'#seconds' + index + '\');\nvar totalSeconds = 0;\n// setInterval(setTime, 1000);\n\nfunction setTime' + index + '() {\n  ++totalSeconds;\n  secondsLabel' + index + '.innerHTML = pad(totalSeconds % 60);\n  minutesLabel' + index + '.innerHTML = pad(parseInt(totalSeconds / 60));\n}\n\nfunction pad(val) {\n  var valString = val + "";\n  if (valString.length < 2) {\n    return "0" + valString;\n  }\n  else {\n    return valString;\n  }\n}\n\nvar chunks = [];\nvar record' + index + ' = document.querySelector(\'#record' + index + '\');\nvar stop' + index + ' = document.querySelector(\'#stop' + index + '\');\nvar soundClips' + index + ' = document.querySelector(\'#sound-clips' + index + '\');\nvar pause' + index + ' = document.querySelector(\'#pause' + index + '\');\n// kh\u1EDFi t\u1EA1o media recoder \n// read doc t\u1EA1i.  \nif (navigator.mediaDevices) {\n  console.log(\'getUserMedia supported.\');\n\n  var constraints = { audio: true };\n\n  document.getElementById(\'record' + index + '\').onclick = function () {\n console.log(\'Chạy cái gì dây\',navigator.mediaDevices); \n   navigator.mediaDevices.getUserMedia(constraints)\n      .then(function (stream) {\n        var mediaRecorder = new MediaRecorder(stream);\n        var _time, time = 0;\n        //   mediaRecorder.onstop\n\n        if (mediaRecorder.state === "paused") {\n            document.querySelector(\'#record' + index + '\').disabled = true;\n          mediaRecorder.resume();\n          console.log(mediaRecorder.state);\n          //\n          _time = setInterval(setTime' + index + ', 1000);\n        }\n        else if (mediaRecorder.state !== \'recording\') {\n          mediaRecorder.start();\n          console.log(mediaRecorder.state);\n          //\n          _time = setInterval(setTime' + index + ', 1000);\n        }\n        ///pause onclick\n        pause' + index + '.onclick = function () {\n\n          if (mediaRecorder.state == \'recording\') {\n        document.querySelector(\'#record' + index + '\').disabled = true;\n            mediaRecorder.pause();\n            clearInterval(_time);\n\n          } else {\n            mediaRecorder.resume();\n            _time = setInterval(setTime' + index + ', 1000);\n          }\n          console.log(mediaRecorder.state);\n\n        }\n        //stop onclick\n        stop' + index + '.onclick = function () {\n          mediaRecorder.stop();\n          console.log(mediaRecorder.state);\n\n          clearInterval(_time);\n          totalSeconds = 0;\n        }\n\n        mediaRecorder.onstop = function (e) {\n          document.querySelector(\'#record' + index + '\').disabled = true;\n          document.querySelector(\'#pause' + index + '\').disabled = true;\n          console.log("data available after MediaRecorder.stop() called.");\n      \n         \n                \n\n\n          var clipContainer = document.createElement(\'article\');\n          var clipLabel = document.createElement(\'p\');\n          var audio = document.createElement(\'audio\');\n          var deleteButton = document.createElement(\'button\');\n          deleteButton.className = "btn btn-danger";\n\n          clipContainer.classList.add(\'clip\');\n          audio.setAttribute(\'controls\', \'\');\n          deleteButton.innerHTML = "Delete";\n        \n\n          clipContainer.appendChild(audio);\n          clipContainer.appendChild(clipLabel);\n          clipContainer.appendChild(deleteButton);\n          soundClips' + index + '.appendChild(clipContainer);\n\n          audio.controls = true;\n          var blob = new Blob(chunks, { \'type\': \'audio/ogg; codecs=opus\' });\n           var fd = new FormData();\n           fd.append(\'filename\', \'' + index + '.wav\');\n                fd.append(\'data\', blob,\'' + index + '.wav\');\n                $.ajax({\n                    type: \'POST\',\n                    url: \'ExamResult/UploadBlob\',\n                    data: fd,\n                    processData: false,\n                    contentType: false\n                }).done(function(data) {\n                       console.log(data);\n                });\n           console.log(blob);\n          var audioURL = URL.createObjectURL(blob);\n          audio.src = audioURL;\n          var url = document.URL;\n          console.log(url);\n          console.log(audioURL);\n          console.log("recorder stopped");\n  $("#hid' + index + '").val("' + index + '.wav") ;\n\n          deleteButton.onclick = function (e) {\n\n            evtTgt = e.target;\n            evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);\n            chunks = [];\n            document.querySelector(\'#record' + index + '\').disabled = false;\n            document.querySelector(\'#pause' + index + '\').disabled = false;\n          }\n        }\n\n        mediaRecorder.ondataavailable = function (e) {\n          \n          chunks.push("chunk.edata",e.data);\n           console.log(e.data); \n\n          console.log(chunks);\n\n          clearInterval(_time);\n          secondsLabel' + index + '.innerHTML = "00";\n          minutesLabel' + index + '.innerHTML = "00";\n        }\n      })\n  }\n}';
+        document.body.appendChild(script);
+    },
+    render: function () {
+        var index = this.props.id + "_LA";
+        return (
+            <div>
+         <div className="container questiongroup">
+            <b>{this.props.number}.</b>
+         </div>
+         <div className="fieldsetGroup lineHeight">
+         <li style={{ 'listStyle':'none'}}>
+                   <div className="container" >
+                            <div className="col-sm-10 fitContent" >
+                                <span id={this.props.id + '_questiontypeLA'}></span>            
+                                </div>
+                </div>
+                <ul className="list-unstyled flex-container marginBottom">
+                     <div className="flex-item" style={{width:'auto',margin:'auto'}}>
+                <div className="flex-item" style={{marginLeft:'20px'}}>
+                <label id={'minutes'+index}>00</label>:<label id={'seconds'+index}>00</label>
+                </div>
+               <div style={{display:"flex",flexDirection:"row",paddingLeft:'10px',paddingBottom:'40px'}}>
+                  <button className="btn btn-danger btnmarginright" id={'record'+ index}>Record <i className="fa fa-microphone" aria-hidden="true"></i></button>
+                  <button className="btn btn-group btnmarginright" id={'pause'+ index}>Pause <i className="fa fa-pause" aria-hidden="true"></i></button>
+                  <button className="btn btn-info btnmarginright" id={'stop'+index}>Stop <i className="fa fa-stop" aria-hidden="true"></i></button>
+                  <input type="hidden" id={'hid'+index} />
+                  <button className="btn btn-success" id={'btSave'+ index} onClick={this.saveAudio}> Save <i className="fa fa-floppy-o" aria-hidden="true"></i></button>
+               </div>
+                  <section id={'sound-clips'+index}></section>
+                     </div>
+                </ul>
+                </li>
+                </div>
+                </div>
+        );
+}
+});
